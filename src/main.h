@@ -1,7 +1,7 @@
 #ifndef _main_h
 #define _main_h
 
-#define NUM_SHAPES 8
+#define NUM_SHAPES 5
 
 #define WIDTH 480
 #define HEIGHT 640

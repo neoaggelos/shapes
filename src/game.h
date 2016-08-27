@@ -18,7 +18,7 @@ private:
     int startTime;
     int lastAddTime;
 
-    void addShape();
+    void addShape(Uint32 newTime);
 
 public:
 

@@ -1,5 +1,6 @@
 #include "main.h"
 
+
 Super::Super()
 {
     currentGame = NULL;
@@ -9,8 +10,8 @@ Super::Super()
 Super::~Super()
 {
     delete data;
-    if (currentGame) delete currentGame;
 }
+
 
 void
 Super::playGame(int difficulty)
@@ -18,10 +19,16 @@ Super::playGame(int difficulty)
     SDL_Event event;
     currentGame = new Game(difficulty);
 
-    while (SDL_PollEvent(&event) && currentGame->isPlaying()) {
+    SDLU_FPS_Init(30);
+
+    while (currentGame->isPlaying()) {
+        SDL_PollEvent(&event);
+        SDLU_FPS_Start();
         currentGame->handleEvents(event);
 
         currentGame->render(data);
+
+        SDLU_FPS_Cap();
     }
 
     delete currentGame;

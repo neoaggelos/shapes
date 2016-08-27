@@ -6,14 +6,14 @@
 class Shape {
 private:
 	int lane;
-	int speed;
-	int height;
+	double speed;
+	double height;
 
 	int type;
 
 public:
     Shape();                /* creates player shape */
-	Shape(int speed);       /* creates falling shape */
+	Shape(double speed);       /* creates falling shape */
     
 	~Shape() {}
 

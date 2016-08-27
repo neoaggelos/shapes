@@ -11,6 +11,9 @@ static const int rndflags = SDL_RENDERER_PRESENTVSYNC;
 SDL_Texture *RenderData::load_texture(const char* file)
 {
 	SDL_Surface *tmp = SDL_LoadBMP(file);
+    SDL_CHECK(tmp != NULL, "Could not load BMP file");
+
+    SDL_SetColorKey(tmp, 1, SDL_MapRGB(tmp->format, 0xff, 0xff, 0xff));
 	SDL_Texture *ret = SDL_CreateTextureFromSurface(renderer, tmp);
 	SDL_FreeSurface(tmp);
 
@@ -37,7 +40,7 @@ RenderData::RenderData()
 #ifdef ASSETSDIR
 	assetsDir = ASSETSDIR;
 #else
-	assetsDir = "assets/";
+	assetsDir = "C:/assets";
 #endif
 
 
@@ -62,12 +65,13 @@ RenderData::RenderData()
 
 RenderData::~RenderData()
 {
+    
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	for (int i = 0; i < NUM_SHAPES; i++)
 		SDL_DestroyTexture(textures[i]);
-
-	SDL_Quit();
+	
+    SDL_Quit();
 }
 
 SDL_Window*
@@ -86,6 +90,4 @@ SDL_Texture*
 RenderData::getTexture(int type)
 {
 	return textures[type];
-
-	return NULL;
 }

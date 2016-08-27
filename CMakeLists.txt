@@ -14,9 +14,8 @@ link_libraries(${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDLU_LIBRARY})
 file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*)
 file(GLOB TXT_FILES ${CMAKE_SOURCE_DIR}/*.txt)
 
-add_executable(Shapes ${SOURCES})
+add_executable(Shapes WIN32 ${SOURCES} ${TXT_FILES})
 link_libraries(${LIBS})
-add_custom_target(Docs ${TXT_FILES})
 
 install(TARGETS Shapes DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
