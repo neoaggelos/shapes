@@ -13,7 +13,7 @@ private:
 
 public:
     Shape();                /* creates player shape */
-	Shape(double speed);       /* creates falling shape */
+	Shape(double speed, int range);       /* creates falling shape */
     
 	~Shape() {}
 

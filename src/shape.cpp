@@ -2,7 +2,7 @@
 
 Shape::Shape()
 {
-    
+    /* No arguments constructor creates a player */
     lane = 2;
     height = 550.0;
     speed = 0;
@@ -10,13 +10,13 @@ Shape::Shape()
     type = 0;
 }
 
-Shape::Shape(double spd)
+Shape::Shape(double spd, int range)
 {
 	lane = random(1, 3);
-	speed = spd*random(1,3);
+    speed = spd;
 	height = 40;
 
-    type = random(0, NUM_SHAPES-1);
+    type = random(0, range-1);
 }
 
 void

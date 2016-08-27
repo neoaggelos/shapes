@@ -65,7 +65,6 @@ RenderData::RenderData()
 
 RenderData::~RenderData()
 {
-    
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	for (int i = 0; i < NUM_SHAPES; i++)

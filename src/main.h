@@ -1,7 +1,7 @@
 #ifndef _main_h
 #define _main_h
 
-#define NUM_SHAPES 5
+#define NUM_SHAPES 7
 
 #define WIDTH 480
 #define HEIGHT 640
@@ -27,9 +27,11 @@ class Shape;
 class Game;
 class RenderData;
 class Super;
+class Difficulty;
 
 /* Shape headers */
 #include "random.h"
+#include "difficulty.h"
 #include "shape.h"
 #include "render.h"
 #include "game.h"

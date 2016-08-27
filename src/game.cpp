@@ -2,9 +2,9 @@
 
 typedef list<Shape*>::iterator ShapeIter;
 
-Game::Game(int d)
+Game::Game(DifficultyLevel difficulty)
+    : d(difficulty)
 {
-    difficulty = d;
     score = 0;
 
     playerShape = new Shape();
@@ -32,7 +32,7 @@ void
 Game::addShape(Uint32 newTime)
 {
     lastAddTime = newTime;
-    Shape * newShape = new Shape(difficulty);
+    Shape * newShape = new Shape(d.shapeSpeed(), d.numShapes());
 
     shapes.push_back(newShape);
 }
@@ -46,7 +46,7 @@ Game::isPlaying()
 int
 Game::getTime()
 {
-    return (SDL_GetTicks() - startTime) / 1000;
+    return (SDL_GetTicks() - startTime)/1000;
 }
 
 int
@@ -74,12 +74,12 @@ Game::render(RenderData *data)
     playerShape->render(data);
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0x00, 0xff, 0xff);
-    SDLU_RenderText(data->getRenderer(), 0, 5, "SCORE: %d TIME: %.1lf", score, (double)(SDL_GetTicks() - startTime) / 1000.0);
+    SDLU_RenderText(data->getRenderer(), 0, 5, "SCORE: %d TIME: %d", getScore(), getTime());
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xff, 0x00, 0xff);
     SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "FPS: %d", SDLU_FPS_GetRealFramerate());
 
-    for (int i = 0; i < NUM_SHAPES; i++) {
+    for (int i = 0; i < d.numShapes(); i++) {
         SDL_Rect dest = { 480 - 25, 520 - i * 20, 20, 20 };
 
         SDL_RenderCopy(data->getRenderer(), data->getTexture(i), NULL, &dest);
@@ -98,8 +98,10 @@ Game::handleEvents(SDL_Event event)
         None,
         MovedRight,
         MovedLeft,
-        ChangedShape
-    } lastAction;
+        ChangedShapeUp,
+        ChangedShapeDown
+    } lastAction = None;
+
     switch (event.type) {
     case SDL_KEYDOWN:
         if ((lastAction != MovedRight) && (event.key.keysym.scancode == SDL_SCANCODE_RIGHT)) {
@@ -116,11 +118,17 @@ Game::handleEvents(SDL_Event event)
             playerShape->setLane(lane);
             lastAction = MovedLeft;
         }
-        else if ((lastAction != ChangedShape) && (event.key.keysym.scancode == SDL_SCANCODE_SPACE)) {
+        else if ((lastAction != ChangedShapeUp) && (event.key.keysym.scancode == SDL_SCANCODE_SPACE || event.key.keysym.scancode == SDL_SCANCODE_UP)) {
             int type = playerShape->getType();
-            type = (type == NUM_SHAPES - 1) ? 0 : type + 1;
+            type = (type == d.numShapes() - 1) ? 0 : type + 1;
             playerShape->setType(type);
-            lastAction = ChangedShape;
+            lastAction = ChangedShapeUp;
+        }
+        else if ((lastAction != ChangedShapeDown) && (event.key.keysym.scancode == SDL_SCANCODE_DOWN)) {
+            int type = playerShape->getType();
+            type = (type == 0) ? d.numShapes() - 1 : type - 1;
+            playerShape->setType(type);
+            lastAction = ChangedShapeDown;
         }
         break;
     case SDL_KEYUP:
@@ -151,7 +159,7 @@ Game::handleEvents(SDL_Event event)
     }
 
     Uint32 newTime = SDL_GetTicks();
-    if ((newTime - lastAddTime >= 4000)) {
+    if (newTime - lastAddTime >= d.respawnTime()) {
         addShape(newTime);
     }
 }

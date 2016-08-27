@@ -13,7 +13,7 @@ public:
     ~Super();
 
     void mainMenu();
-    void playGame(int difficulty);
+    void playGame(DifficultyLevel difficulty);
 };
 
 #endif /* _super_h */

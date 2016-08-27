@@ -6,7 +6,7 @@
 class Game {
 private:
 
-	int difficulty;
+	Difficulty d;
 	int score;
 
 	list <Shape*> shapes;
@@ -22,7 +22,7 @@ private:
 
 public:
 
-	Game(int difficulty = 1);
+	Game(DifficultyLevel difficulty = Easy);
 
 	~Game();
 
@@ -30,7 +30,7 @@ public:
 	bool isPlaying();
 
 	void render(RenderData *data);
-
+    
 	int getTime();
 	int getScore();
 };
