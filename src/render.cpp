@@ -53,6 +53,8 @@ RenderData::RenderData()
 	renderer = SDL_CreateRenderer(window, rnddriver, rndflags);
 	SDL_CHECK(renderer != NULL, "Could not create renderer");
 
+    SDL_RenderSetLogicalSize(renderer, 480, 640);
+
 	for (int i = 0; i < NUM_SHAPES; i++) {
 		// TODO this must be changed if NUM_SHAPES >= 10
 		

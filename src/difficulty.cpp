@@ -28,7 +28,7 @@ Difficulty::respawnTime()
 int
 Difficulty::score()
 {
-    return level * 1.5;
+    return 5 + 5 * level;
 }
 
 int

@@ -3,28 +3,30 @@
 
 Super::Super()
 {
-    currentGame = NULL;
     data = new RenderData();
+    settings = new Settings();
+
+    currentGame = NULL;
 }
 
 Super::~Super()
 {
     delete data;
+    delete settings;
 }
 
-
 void
-Super::playGame(DifficultyLevel difficulty)
+Super::playGame()
 {
     SDL_Event event;
-    currentGame = new Game(difficulty);
+    currentGame = new Game(settings->difficulty());
 
     SDLU_FPS_Init(30);
 
     while (currentGame->isPlaying()) {
         SDL_PollEvent(&event);
         SDLU_FPS_Start();
-        currentGame->handleEvents(event);
+        currentGame->handleEvents(event, settings);
         currentGame->render(data);
         
         SDLU_FPS_Cap();
@@ -80,7 +82,7 @@ Super::mainMenu()
     }
 
     if (action == StartNewGame) {
-        playGame(Medium);
+        playGame();
     }
     else if (action == Exit) {
         return;

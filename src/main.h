@@ -28,10 +28,12 @@ class Game;
 class RenderData;
 class Super;
 class Difficulty;
+class Settings;
 
 /* Shape headers */
 #include "random.h"
 #include "difficulty.h"
+#include "settings.h"
 #include "shape.h"
 #include "render.h"
 #include "game.h"

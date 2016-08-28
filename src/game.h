@@ -26,7 +26,7 @@ public:
 
 	~Game();
 
-	void handleEvents(SDL_Event event);
+	void handleEvents(SDL_Event event, Settings *settings);
 	bool isPlaying();
 
 	void render(RenderData *data);
