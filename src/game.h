@@ -22,7 +22,7 @@ private:
 
 public:
 
-	Game(DifficultyLevel difficulty = Easy);
+	Game(Super *parent);
 
 	~Game();
 

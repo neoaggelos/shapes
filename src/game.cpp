@@ -2,8 +2,8 @@
 
 typedef list<Shape*>::iterator ShapeIter;
 
-Game::Game(DifficultyLevel difficulty)
-    : d(difficulty)
+Game::Game(Super *parent)
+    : d(parent->getSettings()->difficulty)
 {
     score = 0;
 
@@ -104,27 +104,27 @@ Game::handleEvents(SDL_Event event, Settings *settings)
 
     switch (event.type) {
     case SDL_KEYDOWN:
-        if ((lastAction != MovedRight) && (event.key.keysym.scancode == settings->moveRightKey())) {
+        if ((lastAction != MovedRight) && (event.key.keysym.scancode == settings->moveRightKey)) {
             int lane = playerShape->getLane();
             lane++;
             if (lane > 3) lane = 1;
             playerShape->setLane(lane);
             lastAction = MovedRight;
         }
-        else if ((lastAction != MovedLeft) && (event.key.keysym.scancode == settings->moveLeftKey())) {
+        else if ((lastAction != MovedLeft) && (event.key.keysym.scancode == settings->moveLeftKey)) {
             int lane = playerShape->getLane();
             lane--;
             if (lane < 1) lane = 3;
             playerShape->setLane(lane);
             lastAction = MovedLeft;
         }
-        else if ((lastAction != ChangedShapeUp) && (event.key.keysym.scancode == settings->changeShapeUpKey())) {
+        else if ((lastAction != ChangedShapeUp) && (event.key.keysym.scancode == settings->changeShapeUpKey)) {
             int type = playerShape->getType();
             type = (type == d.numShapes() - 1) ? 0 : type + 1;
             playerShape->setType(type);
             lastAction = ChangedShapeUp;
         }
-        else if ((lastAction != ChangedShapeDown) && (event.key.keysym.scancode == settings->changeShapeDownKey())) {
+        else if ((lastAction != ChangedShapeDown) && (event.key.keysym.scancode == settings->changeShapeDownKey)) {
             int type = playerShape->getType();
             type = (type == 0) ? d.numShapes() - 1 : type - 1;
             playerShape->setType(type);
@@ -143,9 +143,9 @@ Game::handleEvents(SDL_Event event, Settings *settings)
         for (ShapeIter i = shapes.begin(); i != shapes.end(); i++) {
             if (!(*i)->isFalling()) {
                 if (*playerShape == **i) {
+					delete *i;
                     shapes.erase(i);
-                    delete *i;
-                    score += 10;
+                    score += d.score();
                     break;
                 }
                 else {

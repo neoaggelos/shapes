@@ -5,24 +5,22 @@
 
 class Settings {
 private:
-    SDLU_IniHandler *settings;
-    string settingsIni;
+	string settingsIni;
 
     bool savingSettings;
-
-    void setProperty(string section, string prop, int val);
+	bool isOK(SDLU_IniHandler *h);
 
 public:
     Settings();
-
     ~Settings();
-    
-    DifficultyLevel difficulty();
-    SDL_Scancode moveRightKey();
-    SDL_Scancode moveLeftKey();
-    SDL_Scancode changeShapeUpKey();
-    SDL_Scancode changeShapeDownKey();
 
+	DifficultyLevel difficulty;
+	SDL_Scancode moveRightKey;
+	SDL_Scancode moveLeftKey;
+	SDL_Scancode changeShapeUpKey;
+	SDL_Scancode changeShapeDownKey;
+
+	void reset();
 };
 
 #endif /* _settings_h */

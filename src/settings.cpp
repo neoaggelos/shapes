@@ -2,96 +2,83 @@
 
 static int StringToInt(string s)
 {
-    int j = 0;
-    for (unsigned int i = 0; i < s.length(); i++) {
-        j = 10 * j + s[i] - '0';
-    }
+	int j = 0;
+	for (unsigned int i = 0; i < s.length(); i++) {
+		j = 10 * j + s[i] - '0';
+	}
 
-    return j;
+	return j;
 }
 
-static string IntToString(int i)
+static char* IntToString(int i)
 {
-    string ret;
-    do {
-        ret = static_cast<char>(i % 10 + '0') + ret;
-    } while (i /= 10);
+	string ret;
+	do {
+		ret = static_cast<char>(i % 10 + '0') + ret;
+	} while (i /= 10);
 
-    return ret;
+	return SDL_strdup(ret.c_str());
+}
+
+bool
+Settings::isOK(SDLU_IniHandler* h)
+{
+	const int num = 5;
+	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeUpKey", "changeShapeDownKey" };
+	bool OK = true;
+
+	for (int i = 0; (i < num) && OK; i++) {
+		OK = SDLU_GetIniProperty(h, NULL, check_strings[i]) != NULL;
+	}
+
+	return OK;
 }
 
 Settings::Settings()
 {
-    bool firstTime = false;
-    char* settingsPath = SDL_GetPrefPath("shapes", "shapes");
+	char* settingsPath = SDL_GetPrefPath("shapes", "shapes");
 
-    if (!settingsPath) {
-        savingSettings = false;
-        /* TODO warning? */
-    }
-
-    settingsIni = string(settingsPath) + "settings.ini";
-
-    settings = SDLU_CreateIni();
-	firstTime = true;
-    if (firstTime) {
-        SDLU_SetIniProperty(&settings, "controls", "moveRightKey", IntToString(SDL_SCANCODE_RIGHT).c_str());
-        SDLU_SetIniProperty(&settings, "controls", "moveLeftKey", IntToString(SDL_SCANCODE_LEFT).c_str());
-        SDLU_SetIniProperty(&settings, "controls", "changeShapeUpKey", IntToString(SDL_SCANCODE_UP).c_str());
-        SDLU_SetIniProperty(&settings, "controls", "changeShapeDownKey", IntToString(SDL_SCANCODE_DOWN).c_str());
-        SDLU_SetIniProperty(&settings, "options", "difficulty", IntToString(DifficultyLevel::Medium).c_str());
+	if (!settingsPath) {
+		savingSettings = false;
+		/* TODO warning? */
 	}
-    else {
-        /* Make sure configuration is OK */
-    }
+
+	settingsIni = string(settingsPath) + "settings.ini";
+
+	SDLU_IniHandler *settings = SDLU_LoadIni(settingsIni.c_str());
+
+	if (!settings || !isOK(settings)) {
+		reset();
+	}
+	else {
+		moveRightKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "moveRightKey")));
+		moveLeftKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "moveLeftKey")));
+		changeShapeUpKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeUpKey")));
+		changeShapeDownKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeDownKey")));
+		difficulty = static_cast<DifficultyLevel>(StringToInt(SDLU_GetIniProperty(settings, NULL, "difficulty")));
+	}
 }
 
 Settings::~Settings()
 {
-    if (savingSettings) {
-        SDLU_SaveIni(settings, settingsIni.c_str());
-    }
+	if (savingSettings) {
+		SDLU_IniHandler *h = SDLU_CreateIni();
+		SDLU_SetIniProperty(&h, NULL, "moveRightKey", IntToString(moveRightKey));
+		SDLU_SetIniProperty(&h, NULL, "moveLeftKey", IntToString(moveLeftKey));
+		SDLU_SetIniProperty(&h, NULL, "changeShapeUpKey", IntToString(changeShapeUpKey));
+		SDLU_SetIniProperty(&h, NULL, "changeShapeDownKey", IntToString(changeShapeDownKey));
+		SDLU_SetIniProperty(&h, NULL, "difficulty", IntToString(difficulty));
+
+		SDLU_SaveIni(h, settingsIni.c_str());
+	}
 }
 
-DifficultyLevel
-Settings::difficulty()
+void
+Settings::reset()
 {
-    const char *prop = SDLU_GetIniProperty(settings, "options", "difficulty");
-	std::cout << "PROP" << prop << std::endl; //DEBUG
-	int r = StringToInt(prop);
-
-	std::cout << "Diff: " << r << std::endl; //DEBUG
-    return static_cast<DifficultyLevel>(r);
-}
-
-SDL_Scancode
-Settings::moveRightKey()
-{
-    int r = StringToInt(SDLU_GetIniProperty(settings, "controls", "moveRightKey"));
-
-    return static_cast<SDL_Scancode>(r);
-}
-
-SDL_Scancode
-Settings::moveLeftKey()
-{
-    int r = StringToInt(SDLU_GetIniProperty(settings, "controls", "moveLeftKey"));
-
-    return static_cast<SDL_Scancode>(r);
-}
-
-SDL_Scancode
-Settings::changeShapeUpKey()
-{
-    int r = StringToInt(SDLU_GetIniProperty(settings, "controls", "changeShapeUpKey"));
-
-    return static_cast<SDL_Scancode>(r);
-}
-
-SDL_Scancode
-Settings::changeShapeDownKey()
-{
-    int r = StringToInt(SDLU_GetIniProperty(settings, "controls", "changeShapeDownKey"));
-
-    return static_cast<SDL_Scancode>(r);
+	moveRightKey = SDL_SCANCODE_RIGHT;
+	moveLeftKey = SDL_SCANCODE_LEFT;
+	changeShapeUpKey = SDL_SCANCODE_UP;
+	changeShapeDownKey = SDL_SCANCODE_DOWN;
+	difficulty = DifficultyLevel::Medium;
 }

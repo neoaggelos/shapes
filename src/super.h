@@ -15,6 +15,10 @@ public:
 
     void mainMenu();
     void playGame();
+
+	Settings *getSettings() { return settings; }
+
+	void finish();
 };
 
 #endif /* _super_h */

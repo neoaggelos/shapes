@@ -1,6 +1,5 @@
 #include "main.h"
 
-
 Super::Super()
 {
     data = new RenderData();
@@ -11,15 +10,23 @@ Super::Super()
 
 Super::~Super()
 {
-    delete data;
-    delete settings;
+	finish();
+}
+
+void
+Super::finish()
+{
+	delete data;
+	delete settings;
+
+	exit(0);
 }
 
 void
 Super::playGame()
 {
     SDL_Event event;
-    currentGame = new Game(settings->difficulty());
+    currentGame = new Game(this);
 
     SDLU_FPS_Init(30);
 
@@ -33,6 +40,8 @@ Super::playGame()
     }
 
     delete currentGame;
+
+	mainMenu();
 }
 
 
@@ -73,12 +82,15 @@ Super::mainMenu()
             }
         }
 
+		SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
         SDL_RenderClear(data->getRenderer());
 
         SDLU_RenderButton(start_button);
         SDLU_RenderButton(exit_button);
 
         SDL_RenderPresent(data->getRenderer());
+
+		SDL_Delay(1);
     }
 
     if (action == StartNewGame) {
