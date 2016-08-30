@@ -78,10 +78,10 @@ Game::render()
 
     playerShape->render(data);
 
-    SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0x00, 0xff, 0xff);
+    SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xaa);
     SDLU_RenderText(data->getRenderer(), 0, 5, "SCORE: %d TIME: %d", getScore(), getTime());
 
-    SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xff, 0x00, 0xff);
+    SDL_SetRenderDrawColor(data->getRenderer(), 0xaf, 0xaf, 0xaf, 0xaf);
     SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "FPS: %d", SDLU_FPS_GetRealFramerate());
 
     for (int i = 0; i < d.numShapes(); i++) {
@@ -89,6 +89,7 @@ Game::render()
 
         SDL_RenderCopy(data->getRenderer(), data->getTexture(i), NULL, &dest);
         if (playerShape->getType() == i) {
+			SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xff, 0x00, 0xff);
             SDL_RenderDrawRect(data->getRenderer(), &dest);
         }
     }
