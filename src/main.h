@@ -29,6 +29,7 @@ class RenderData;
 class Super;
 class Difficulty;
 class Settings;
+class SettingsMenu;
 
 /* Shape headers */
 #include "random.h"
@@ -37,6 +38,7 @@ class Settings;
 #include "shape.h"
 #include "render.h"
 #include "game.h"
+#include "settingsmenu.h"
 #include "super.h"
 
 #endif /* _main_h */

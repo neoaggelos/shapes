@@ -2,9 +2,9 @@
 
 typedef list<Shape*>::iterator ShapeIter;
 
-Game::Game(Super *parent)
-    : d(parent->getSettings()->difficulty)
+Game::Game(Super *super)
 {
+	parent = super;
     score = 0;
 
     playerShape = new Shape();
@@ -31,6 +31,7 @@ Game::~Game()
 void
 Game::addShape(Uint32 newTime)
 {
+	Difficulty d(parent->getSettings()->difficulty);
     lastAddTime = newTime;
     Shape * newShape = new Shape(d.shapeSpeed(), d.numShapes());
 
@@ -56,10 +57,14 @@ Game::getScore()
 }
 
 void
-Game::render(RenderData *data)
+Game::render()
 {
-    SDL_RenderClear(data->getRenderer());
-    SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
+	Difficulty d(parent->getSettings()->difficulty);
+	RenderData *data = parent->getRenderData();
+
+	SDL_RenderClear(data->getRenderer());
+	SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
+	SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
     SDL_RenderFillRect(data->getRenderer(), NULL);
 
     if (!shapes.empty()) {
@@ -92,7 +97,7 @@ Game::render(RenderData *data)
 }
 
 void
-Game::handleEvents(SDL_Event event, Settings *settings)
+Game::handleEvents(SDL_Event event)
 {
     static enum LastAction {
         None,
@@ -101,6 +106,9 @@ Game::handleEvents(SDL_Event event, Settings *settings)
         ChangedShapeUp,
         ChangedShapeDown
     } lastAction = None;
+
+	Settings *settings = parent->getSettings();
+	Difficulty d(settings->difficulty);
 
     switch (event.type) {
     case SDL_KEYDOWN:
@@ -135,8 +143,7 @@ Game::handleEvents(SDL_Event event, Settings *settings)
         lastAction = None;
         break;
     case SDL_QUIT:
-        playing = false;
-        break;
+		parent->finish();
     }
 
     if (!shapes.empty()) {

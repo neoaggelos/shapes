@@ -5,7 +5,8 @@ Super::Super()
     data = new RenderData();
     settings = new Settings();
 
-    currentGame = NULL;
+	game = NULL;
+	settingsMenu = NULL;
 }
 
 Super::~Super()
@@ -16,9 +17,11 @@ Super::~Super()
 void
 Super::finish()
 {
+	if (game) delete game;
+	if (settingsMenu) delete settingsMenu;
+
 	delete data;
 	delete settings;
-
 	exit(0);
 }
 
@@ -26,20 +29,32 @@ void
 Super::playGame()
 {
     SDL_Event event;
-    currentGame = new Game(this);
+    game = new Game(this);
 
     SDLU_FPS_Init(30);
 
-    while (currentGame->isPlaying()) {
+    while (game->isPlaying()) {
         SDL_PollEvent(&event);
         SDLU_FPS_Start();
-        currentGame->handleEvents(event, settings);
-        currentGame->render(data);
+        game->handleEvents(event);
+        game->render();
         
         SDLU_FPS_Cap();
     }
 
-    delete currentGame;
+    delete game;
+	game = NULL;
+
+	mainMenu();
+}
+
+void
+Super::openSettings()
+{
+	settingsMenu = new SettingsMenu(this);
+	settingsMenu->run();
+	delete settingsMenu;
+	settingsMenu = NULL;
 
 	mainMenu();
 }
@@ -51,22 +66,28 @@ Super::mainMenu()
     enum ActionToTake {
         None,
         StartNewGame,
+		OpenSettings,
         Exit
     } action = None;
 
     SDL_Event event;
-    SDLU_Button *start_button, *exit_button;
+    SDLU_Button *start_button, *settings_button, *exit_button;
 
-    start_button = SDLU_CreateButton(data->getWindow(), "New Game", SDLU_BUTTON_TEXT | SDLU_BUTTON_ROUND);
+    start_button = SDLU_CreateButton(data->getWindow(), "New Game", SDLU_BUTTON_TEXT);
     SDLU_SetButtonAction(start_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
     SDLU_SetButtonAction(start_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-    SDLU_SetButtonGeometry(start_button, 100, 300, -1, 30);
+    SDLU_SetButtonGeometry(start_button, 140, 300, 200, 40);
+	
+	settings_button = SDLU_CreateButton(data->getWindow(), "Settings", SDLU_BUTTON_TEXT);
+	SDLU_SetButtonAction(settings_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
+	SDLU_SetButtonAction(settings_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonGeometry(settings_button, 140, 380, 200, 40);
 
-    exit_button = SDLU_CreateButton(data->getWindow(), "Exit", SDLU_BUTTON_ROUND | SDLU_BUTTON_TEXT);
+    exit_button = SDLU_CreateButton(data->getWindow(), "Exit", SDLU_BUTTON_TEXT);
     SDLU_SetButtonAction(exit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
     SDLU_SetButtonAction(exit_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-    SDLU_SetButtonGeometry(exit_button, 100, 350, -1, 30);
-    
+    SDLU_SetButtonGeometry(exit_button, 140, 460, 200, 40);
+
     while (action == None) {
         SDL_PollEvent(&event);
 
@@ -74,9 +95,13 @@ Super::mainMenu()
             action = Exit;
         }
         if (event.type == SDLU_BUTTON_PRESS) {
-            if ((Uint32)event.user.code == start_button->id) {
+			Uint32 button_id = static_cast<Uint32>(event.user.code);
+			if (button_id == start_button->id) {
                 action = StartNewGame;
-            }
+			}
+			else if (button_id == settings_button->id) {
+				action = OpenSettings;
+			}
             else if ((Uint32)event.user.code == exit_button->id) {
                 action = Exit;
             }
@@ -86,17 +111,30 @@ Super::mainMenu()
         SDL_RenderClear(data->getRenderer());
 
         SDLU_RenderButton(start_button);
+		SDLU_RenderButton(settings_button);
         SDLU_RenderButton(exit_button);
+
+		SDL_SetRenderDrawColor(data->getRenderer(), 0xff, 0xff, 0xff, 0xff);
+		SDLU_SetFontSize(SDLU_TEXT_SIZE_SMALL);
+		SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, SDLU_ALIGN_BOTTOM, "Shapes v0.1");
+		SDLU_SetFontSize(SDLU_TEXT_SIZE_LARGE);
+		SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 100, "SHAPES");
 
         SDL_RenderPresent(data->getRenderer());
 
-		SDL_Delay(1);
+		SDL_Delay(1); /* let the CPU rest */
     }
 
+	SDLU_DestroyButton(start_button);
+	SDLU_DestroyButton(settings_button);
+	SDLU_DestroyButton(exit_button);
     if (action == StartNewGame) {
         playGame();
-    }
+	}
+	else if (action == OpenSettings) {
+		openSettings();
+	}
     else if (action == Exit) {
-        return;
+		finish();
     }
 }

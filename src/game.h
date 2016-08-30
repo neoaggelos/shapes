@@ -6,7 +6,7 @@
 class Game {
 private:
 
-	Difficulty d;
+	Super *parent;
 	int score;
 
 	list <Shape*> shapes;
@@ -22,14 +22,14 @@ private:
 
 public:
 
-	Game(Super *parent);
+	Game(Super *super);
 
 	~Game();
 
-	void handleEvents(SDL_Event event, Settings *settings);
+	void handleEvents(SDL_Event event);
 	bool isPlaying();
 
-	void render(RenderData *data);
+	void render();
     
 	int getTime();
 	int getScore();

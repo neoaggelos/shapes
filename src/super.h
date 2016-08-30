@@ -5,9 +5,11 @@
 
 class Super {
 private:
-    Game *currentGame;
     RenderData *data;
     Settings *settings;
+
+	Game *game;
+	SettingsMenu* settingsMenu;
 
 public:
     Super();
@@ -15,8 +17,10 @@ public:
 
     void mainMenu();
     void playGame();
+	void openSettings();
 
 	Settings *getSettings() { return settings; }
+	RenderData *getRenderData() { return data; }
 
 	void finish();
 };
