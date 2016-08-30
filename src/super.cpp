@@ -28,20 +28,9 @@ Super::finish()
 void
 Super::playGame()
 {
-    SDL_Event event;
     game = new Game(this);
 
-    SDLU_FPS_Init(30);
-
-    while (game->isPlaying()) {
-        SDL_PollEvent(&event);
-        SDLU_FPS_Start();
-        game->handleEvents(event);
-        game->render();
-        
-        SDLU_FPS_Cap();
-    }
-
+	game->run();
     delete game;
 	game = NULL;
 

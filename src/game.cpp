@@ -11,9 +11,8 @@ Game::Game(Super *super)
 
     playing = true;
 
-    startTime = SDL_GetTicks();
-    lastAddTime = startTime;
-    addShape(startTime);
+    lastAddTime = SDL_GetTicks();
+    addShape(lastAddTime);
 }
 
 Game::~Game()
@@ -45,12 +44,6 @@ Game::isPlaying()
 }
 
 int
-Game::getTime()
-{
-    return (SDL_GetTicks() - startTime)/1000;
-}
-
-int
 Game::getScore()
 {
     return score;
@@ -62,7 +55,6 @@ Game::render()
 	Difficulty d(parent->getSettings()->difficulty);
 	RenderData *data = parent->getRenderData();
 
-	SDL_RenderClear(data->getRenderer());
 	SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
 	SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
     SDL_RenderFillRect(data->getRenderer(), NULL);
@@ -79,7 +71,7 @@ Game::render()
     playerShape->render(data);
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xaa);
-    SDLU_RenderText(data->getRenderer(), 0, 5, "SCORE: %d TIME: %d", getScore(), getTime());
+    SDLU_RenderText(data->getRenderer(), 0, 5, "Score: %5d", getScore());
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0xaf, 0xaf, 0xaf, 0xaf);
     SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "FPS: %d", SDLU_FPS_GetRealFramerate());
@@ -93,8 +85,6 @@ Game::render()
             SDL_RenderDrawRect(data->getRenderer(), &dest);
         }
     }
-
-    SDL_RenderPresent(data->getRenderer());
 }
 
 void
@@ -113,7 +103,10 @@ Game::handleEvents(SDL_Event event)
 
     switch (event.type) {
     case SDL_KEYDOWN:
-        if ((lastAction != MovedRight) && (event.key.keysym.scancode == settings->moveRightKey)) {
+		if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+			pauseMenu();
+		}
+        else if ((lastAction != MovedRight) && (event.key.keysym.scancode == settings->moveRightKey)) {
             int lane = playerShape->getLane();
             lane++;
             if (lane > 3) lane = 1;
@@ -170,4 +163,109 @@ Game::handleEvents(SDL_Event event)
     if (newTime - lastAddTime >= d.respawnTime()) {
         addShape(newTime);
     }
+}
+
+void
+Game::run()
+{
+	SDL_Event event;
+	RenderData *data = parent->getRenderData();
+	
+	SDLU_FPS_Init(30);
+	while (isPlaying()) {
+		SDLU_FPS_Start();
+		
+		SDL_PollEvent(&event);
+		handleEvents(event);
+		
+		SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
+		SDL_RenderClear(data->getRenderer());
+		render();
+		SDL_RenderPresent(data->getRenderer());
+
+		SDLU_FPS_Cap();
+	}
+}
+
+void
+Game::pauseMenu()
+{
+	int pauseTime = SDL_GetTicks();
+
+	SDL_Event event;
+	SDLU_Button *resume_button, *exit_button;
+	RenderData *data = parent->getRenderData();
+
+	resume_button = SDLU_CreateButton(data->getWindow(), "Resume Game", SDLU_BUTTON_TEXT);
+	SDLU_SetButtonAction(resume_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
+	SDLU_SetButtonAction(resume_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonGeometry(resume_button, 140, 270, 200, 45);
+
+	exit_button = SDLU_CreateButton(data->getWindow(), "Exit Game", SDLU_BUTTON_TEXT);
+	SDLU_SetButtonAction(exit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
+	SDLU_SetButtonAction(exit_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonGeometry(exit_button, 140, 370, 200, 45);
+
+	enum {
+		Resume, Exit, None
+	} action = None;
+
+	while (action == None) {
+		if (SDL_PollEvent(&event)) {
+			if (event.type == SDLU_BUTTON_PRESS) {
+				Uint32 button_id = static_cast<Uint32>(event.user.code);
+				if (button_id == resume_button->id)
+					action = Resume;
+				else if (button_id == exit_button->id)
+					action = Exit;
+			}
+			else if (event.type == SDL_QUIT) {
+				action = Exit;
+			}
+
+			SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
+			SDL_RenderClear(data->getRenderer());
+			this->render();
+
+			SDLU_SetFontSize(SDLU_TEXT_SIZE_LARGE);
+			SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
+			SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 130, "Game Paused");
+
+			SDLU_RenderButton(resume_button);
+			SDLU_RenderButton(exit_button);
+
+			SDL_RenderPresent(data->getRenderer());
+		}
+
+		SDL_Delay(10);
+	}
+
+	SDLU_DestroyButton(resume_button);
+	SDLU_DestroyButton(exit_button);
+
+	if (action == Resume) {
+		for (int i = 0; i < 3; i++) {
+			SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
+			SDL_RenderClear(data->getRenderer());
+			
+			this->render();
+
+			SDLU_SetFontSize(SDLU_TEXT_SIZE_LARGE);
+			SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
+			SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, SDLU_ALIGN_CENTER, "Resuming in %d...", 3 - i);
+
+			SDL_RenderPresent(data->getRenderer());
+
+			SDL_Delay(1000);
+		}
+
+		lastAddTime += SDL_GetTicks() - pauseTime;
+	}
+	else if (action == Exit) {
+		parent->finish();
+	}
+	else
+	{
+		std::cout << "Just slowly walk away from your PC. Don't look back in anger" << std::endl;
+	}
 }

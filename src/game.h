@@ -15,7 +15,6 @@ private:
 
     bool playing;
 
-    int startTime;
     int lastAddTime;
 
     void addShape(Uint32 newTime);
@@ -31,7 +30,8 @@ public:
 
 	void render();
     
-	int getTime();
+	void pauseMenu();
+	void run();
 	int getScore();
 };
 
