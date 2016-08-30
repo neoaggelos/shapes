@@ -1,0 +1,12 @@
+Theme support
+iOS android support (events? swipes? assets?)
+High scores
+Properly handle asset installation - packaging
+Add help or tutorial
+create bundle on os x
+
+
+---------
+
+move main menu in separate class
+move pause menu in separate class
