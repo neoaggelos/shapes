@@ -11,11 +11,11 @@ static SDLU_Button* new_button(RenderData *data, const char *title, int x, int y
 	return ret;
 }
 
-static SDLU_ComboBox* new_cbox(RenderData *data, int x, int y)
+static SDLU_ComboBox* new_cbox(RenderData *data, int x, int y, int w = -1, int h = -1)
 {
 	SDLU_ComboBox* ret = SDLU_CreateComboBox(data->getWindow());
 
-	SDLU_SetComboBoxGeometry(ret, x, y, -1, -1);
+	SDLU_SetComboBoxGeometry(ret, x, y, w, h);
 
 	return ret;
 }
@@ -26,16 +26,16 @@ SettingsMenu::SettingsMenu(Super *super)
 
 	RenderData* data = parent->getRenderData();
 	
-	rightButton = new_button(data, "Change", 300, 90, -1, 35);
-	leftButton = new_button(data, "Change", 300, 140, -1, 35);
+	rightButton = new_button(data, "Change", 350, 120, 85, 35);
+	leftButton = new_button(data, "Change", 350, 170, 85, 35);
 
-	upButton = new_button(data, "Change", 300, 190, -1, 35);
-	downButton = new_button(data, "Change", 300, 240, -1, 35);
+	upButton = new_button(data, "Change", 350, 220, 85, 35);
+	downButton = new_button(data, "Change", 350, 270, 85, 35);
 	
-	resetButton = new_button(data, "Reset to defaults", 140, 450, 200, 35);
-	backButton = new_button(data, "Back to Menu", 140, 500, 200, 35);
+	resetButton = new_button(data, "Reset to defaults", 140, 480, 200, 35);
+	backButton = new_button(data, "Back to Menu", 140, 530, 200, 35);
 
-	diffBox = new_cbox(data, 300, 350);
+	diffBox = new_cbox(data, 350, 380, 85, 35);
 	SDLU_AddComboBoxItem(&diffBox, "Easy");
 	SDLU_AddComboBoxItem(&diffBox, "Medium");
 	SDLU_AddComboBoxItem(&diffBox, "Hard");
@@ -116,20 +116,27 @@ SettingsMenu::render()
 	SDL_RenderClear(target);
 
 	SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
+	SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
 	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 5, "SETTINGS");
-	SDLU_RenderText(target, 5, 40, "Controls");
-	SDL_RenderDrawLine(target, 5, 75, 475, 75);
+	SDLU_RenderText(target, 5, 70, "Controls");
+	SDLU_RenderText(target, 5, 330, "Difficulty");
 
-	SDLU_RenderText(target, 15, 90, "Move Right: %s", SDL_GetScancodeName(s->moveRightKey));
-	SDLU_RenderText(target, 15, 140, "Move Left: %s", SDL_GetScancodeName(s->moveLeftKey));
-	SDLU_RenderText(target, 15, 190, "Change Shape Up: %s", SDL_GetScancodeName(s->changeShapeUpKey));
-	SDLU_RenderText(target, 15, 240, "Change Shape Down: %s", SDL_GetScancodeName(s->changeShapeDownKey));
+	SDL_RenderDrawLine(target, 180, 40, 300, 40);
+	SDL_RenderDrawLine(target, 5, 105, 475, 105);
+	SDL_RenderDrawLine(target, 5, 365, 475, 365);
 
-	SDLU_RenderText(target, 5, 300, "Difficulty");
-	SDL_RenderDrawLine(target, 5, 335, 475, 335);
-	SDLU_RenderText(target, 5, 350, "Choose Difficulty");
-
-
+	SDLU_SetFontSize(18);
+	SDL_SetRenderDrawColor(target, 0xaa, 0xaa, 0xaa, 0xff);
+	SDLU_RenderText(target, 15, 130, "Move Right");
+	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 130, "%s", SDL_GetScancodeName(s->moveRightKey));
+	SDLU_RenderText(target, 15, 180, "Move Left");
+	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 180, "%s", SDL_GetScancodeName(s->moveLeftKey));
+	SDLU_RenderText(target, 15, 230, "Change Shape Up");
+	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 230, "%s", SDL_GetScancodeName(s->changeShapeUpKey));
+	SDLU_RenderText(target, 15, 280, "Change Shape Down");
+	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 280, "%s", SDL_GetScancodeName(s->changeShapeDownKey));
+	SDLU_RenderText(target, 15, 390, "Choose Difficulty");
+	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 390, "%s", diffBox->current);
 
 	SDLU_RenderButton(upButton);
 	SDLU_RenderButton(downButton);
