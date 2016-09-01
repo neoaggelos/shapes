@@ -37,11 +37,7 @@ Settings::isOK(SDLU_IniHandler* h)
 Settings::Settings()
 {
 	char* settingsPath = SDL_GetPrefPath("shapes", "shapes");
-
-	if (!settingsPath) {
-		savingSettings = false;
-		/* TODO warning? */
-	}
+	savingSettings = settingsPath != NULL;
 
 	settingsIni = string(settingsPath) + "settings.ini";
 

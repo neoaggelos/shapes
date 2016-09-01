@@ -2,6 +2,16 @@
 
 typedef list<Shape*>::iterator ShapeIter;
 
+static char* IntToString(int i)
+{
+	string ret;
+	do {
+		ret = static_cast<char>(i % 10 + '0') + ret;
+	} while (i /= 10);
+
+	return SDL_strdup(ret.c_str());
+}
+
 Game::Game(Super *super)
 {
 	parent = super;
@@ -17,13 +27,18 @@ Game::Game(Super *super)
 
 Game::~Game()
 {
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Game Ended", "TODO", NULL);
-    /* add highscores */
-    if (!shapes.empty()) {
-        for (ShapeIter it = shapes.begin(); it != shapes.end(); it++) {
-            delete (*it);
-        }
-    }
+	if (!shapes.empty()) {
+		for (ShapeIter it = shapes.begin(); it != shapes.end(); it++) {
+			delete (*it);
+		}
+	}
+
+	string res = IntToString(score);
+	string msg = "You scored " + res + " points. Congratulations!";
+
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Game Ended", msg.c_str(), NULL);
+    
+	int i = parent->getHighscores()->addScore(score);
 }
 
 
@@ -54,6 +69,7 @@ Game::render()
 {
 	Difficulty d(parent->getSettings()->difficulty);
 	RenderData *data = parent->getRenderData();
+	Highscores *h = parent->getHighscores();
 
 	SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
 	SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
@@ -71,11 +87,13 @@ Game::render()
     playerShape->render(data);
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xaa);
-    SDLU_RenderText(data->getRenderer(), 0, 5, "Score: %5d", getScore());
+    SDLU_RenderText(data->getRenderer(), 0, 5,  "Score: %d", getScore());
+	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 5, "High Score: %d", h->getScore(0));
+
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0xaf, 0xaf, 0xaf, 0xaf);
     SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "FPS: %d", SDLU_FPS_GetRealFramerate());
-
+	
     for (int i = 0; i < d.numShapes(); i++) {
         SDL_Rect dest = { 480 - 25, 520 - i * 20, 20, 20 };
 
@@ -207,7 +225,7 @@ Game::pauseMenu()
 	SDLU_SetButtonGeometry(exit_button, 140, 370, 200, 45);
 
 	enum {
-		Resume, Exit, None
+		Resume, BackToMenu, Exit, None
 	} action = None;
 
 	while (action == None) {
@@ -217,7 +235,7 @@ Game::pauseMenu()
 				if (button_id == resume_button->id)
 					action = Resume;
 				else if (button_id == exit_button->id)
-					action = Exit;
+					action = BackToMenu;
 			}
 			else if (event.type == SDL_QUIT) {
 				action = Exit;
@@ -263,6 +281,9 @@ Game::pauseMenu()
 	}
 	else if (action == Exit) {
 		parent->finish();
+	}
+	else if (action == BackToMenu) {
+		playing = false;
 	}
 	else
 	{

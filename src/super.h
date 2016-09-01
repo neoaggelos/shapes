@@ -7,6 +7,7 @@ class Super {
 private:
     RenderData *data;
     Settings *settings;
+	Highscores *highscores;
 
 	Game *game;
 	SettingsMenu* settingsMenu;
@@ -21,6 +22,7 @@ public:
 
 	Settings *getSettings() { return settings; }
 	RenderData *getRenderData() { return data; }
+	Highscores* getHighscores() { return highscores; }
 
 	void finish();
 };

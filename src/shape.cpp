@@ -14,7 +14,7 @@ Shape::Shape(double spd, int range)
 {
 	lane = random(1, 3);
     speed = spd;
-	height = 40;
+	height = 20;
 
     type = random(0, range-1);
 }

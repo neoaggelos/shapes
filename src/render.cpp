@@ -40,7 +40,7 @@ RenderData::RenderData()
 #ifdef ASSETSDIR
 	assetsDir = ASSETSDIR;
 #else
-	assetsDir = "C:/assets";
+	assetsDir = "assets";
 #endif
 
 

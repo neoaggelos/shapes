@@ -30,6 +30,7 @@ class Super;
 class Difficulty;
 class Settings;
 class SettingsMenu;
+class Highscores;
 
 /* Shape headers */
 #include "random.h"
@@ -38,6 +39,7 @@ class SettingsMenu;
 #include "shape.h"
 #include "render.h"
 #include "game.h"
+#include "highscores.h"
 #include "settingsmenu.h"
 #include "super.h"
 

@@ -4,6 +4,7 @@ Super::Super()
 {
     data = new RenderData();
     settings = new Settings();
+	highscores = new Highscores(this);
 
 	game = NULL;
 	settingsMenu = NULL;
@@ -20,6 +21,8 @@ Super::finish()
 	if (game) delete game;
 	if (settingsMenu) delete settingsMenu;
 
+
+	delete highscores;
 	delete data;
 	delete settings;
 	exit(0);
@@ -56,26 +59,32 @@ Super::mainMenu()
         None,
         StartNewGame,
 		OpenSettings,
+		OpenHighScores,
         Exit
     } action = None;
 
     SDL_Event event;
-    SDLU_Button *start_button, *settings_button, *exit_button;
+    SDLU_Button *start_button, *settings_button, *scores_button, *exit_button;
 
     start_button = SDLU_CreateButton(data->getWindow(), "New Game", SDLU_BUTTON_TEXT);
     SDLU_SetButtonAction(start_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
     SDLU_SetButtonAction(start_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-    SDLU_SetButtonGeometry(start_button, 140, 300, 200, 40);
+    SDLU_SetButtonGeometry(start_button, 140, 270, 200, 40);
 	
 	settings_button = SDLU_CreateButton(data->getWindow(), "Settings", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(settings_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(settings_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonGeometry(settings_button, 140, 380, 200, 40);
+	SDLU_SetButtonGeometry(settings_button, 140, 350, 200, 40);
+
+	scores_button = SDLU_CreateButton(data->getWindow(), "High Scores", SDLU_BUTTON_TEXT);
+	SDLU_SetButtonAction(scores_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
+	SDLU_SetButtonAction(scores_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonGeometry(scores_button, 140, 430, 200, 40);
 
     exit_button = SDLU_CreateButton(data->getWindow(), "Exit", SDLU_BUTTON_TEXT);
     SDLU_SetButtonAction(exit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
     SDLU_SetButtonAction(exit_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-    SDLU_SetButtonGeometry(exit_button, 140, 460, 200, 40);
+    SDLU_SetButtonGeometry(exit_button, 140, 510, 200, 40);
 
     while (action == None) {
         SDL_PollEvent(&event);
@@ -91,7 +100,10 @@ Super::mainMenu()
 			else if (button_id == settings_button->id) {
 				action = OpenSettings;
 			}
-            else if ((Uint32)event.user.code == exit_button->id) {
+			else if (button_id == scores_button->id) {
+				action = OpenHighScores;
+			}
+            else if (button_id == exit_button->id) {
                 action = Exit;
             }
         }
@@ -101,6 +113,7 @@ Super::mainMenu()
 
         SDLU_RenderButton(start_button);
 		SDLU_RenderButton(settings_button);
+		SDLU_RenderButton(scores_button);
         SDLU_RenderButton(exit_button);
 
 		SDL_SetRenderDrawColor(data->getRenderer(), 0xff, 0xff, 0xff, 0xff);
@@ -122,6 +135,9 @@ Super::mainMenu()
 	}
 	else if (action == OpenSettings) {
 		openSettings();
+	}
+	else if (action == OpenHighScores) {
+		highscores->openMenu();
 	}
     else if (action == Exit) {
 		finish();
