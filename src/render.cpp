@@ -37,12 +37,14 @@ RenderData::RenderData()
     //TODO with this, we can't create two RenderData objects. Not a bad thing,
     //something that is worth to be noted though
 
-#ifdef ASSETSDIR
+#if defined( ASSETSDIR )
 	assetsDir = ASSETSDIR;
+#elif defined( __APPLE__ )
+	assetsDir = SDL_GetBasePath();
 #else
-	assetsDir = "assets";
+  assetsDir = "assets";
+#warning Assets directory may not be correct
 #endif
-
 
 	int r = SDL_Init(SDL_INIT_VIDEO);
 	SDL_CHECK(r != -1, "Could not initialize SDL");
@@ -53,7 +55,7 @@ RenderData::RenderData()
 	renderer = SDL_CreateRenderer(window, rnddriver, rndflags);
 	SDL_CHECK(renderer != NULL, "Could not create renderer");
 
-    SDL_RenderSetLogicalSize(renderer, 480, 640);
+  SDL_RenderSetLogicalSize(renderer, 480, 640);
 
 	for (int i = 0; i < NUM_SHAPES; i++) {
 		// TODO this must be changed if NUM_SHAPES >= 10

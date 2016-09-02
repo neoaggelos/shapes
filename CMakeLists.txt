@@ -13,11 +13,20 @@ link_libraries(${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDLU_LIBRARY})
 
 file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*)
 file(GLOB TXT_FILES ${CMAKE_SOURCE_DIR}/*.txt)
+file(GLOB ASSETS ${CMAKE_SOURCE_DIR}/assets/*.bmp)
 
-add_executable(Shapes ${SOURCES} ${TXT_FILES})
-link_libraries(${LIBS})
-add_definitions("-DASSETSDIR=\"${CMAKE_SOURCE_DIR}/assets\"")
-
-install(TARGETS Shapes DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-
-## TODO assets directory
+if (APPLE)
+  add_executable(Shapes MACOSX_BUNDLE ${SOURCES} ${TXT_FILES} ${ASSETS})
+  set_source_files_properties(${ASSETS} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+  install(TARGETS Shapes DESTINATION /Applications)
+elseif(UNIX)
+  add_executable(Shapes ${SOURCES} ${TXT_FILES} ${ASSETS})
+  add_definitions("-DASSETSDIR=\"${CMAKE_INSTALL_PREFIX}/local/share/shapes\"")
+  install(TARGETS Shapes DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+  install(FILES ${ASSETS} DESTINATION ${CMAKE_INSTALL_PREFIX}/local/share/shapes)
+elseif(WIN32)
+  add_executable(Shapes WIN32 ${SOURCES} ${TXT_FILES} ${ASSETS})
+  add_definitions("-DASSETSDIR=\".\\assets\\\"")
+  install(TARGETS Shapes DESTINATION ${CMAKE_INSTALL_PREFIX})
+  install(FILES ${ASSETS} DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()

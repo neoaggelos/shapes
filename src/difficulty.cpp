@@ -18,7 +18,7 @@ Difficulty::respawnTime()
     switch (level)
     {
     case Easy: return 3000;
-    case Medium: return 2500;
+    case Medium: return 3000;
     case Hard: return random(2000, 2500);
     }
 
