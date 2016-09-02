@@ -5,8 +5,8 @@ Difficulty::shapeSpeed()
 {
     switch (level) {
     case Easy: return 1.5;
-	case Medium: return 1.6 + 0.5 * random(0,2);
-	case Hard: return 1.5 + 0.5 * random(1, 3);
+	case Medium: return 1.5 * random(1,2);
+	case Hard: return 2 * random(1,3);
     }
 
     return 1;

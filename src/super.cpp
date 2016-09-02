@@ -124,7 +124,7 @@ Super::mainMenu()
 
         SDL_RenderPresent(data->getRenderer());
 
-		SDL_Delay(1); /* let the CPU rest */
+		//SDL_Delay(1); /* let the CPU rest */
     }
 
 	SDLU_DestroyButton(start_button);

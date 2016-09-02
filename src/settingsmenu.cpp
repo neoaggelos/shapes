@@ -83,7 +83,7 @@ SettingsMenu::handleEvent(SDL_Event event)
 						parent->finish();
 					}
 				}
-				SDL_Delay(10);
+				//SDL_Delay(10);
 			}
 
 			if (newKey != SDL_SCANCODE_ESCAPE) {
@@ -160,7 +160,7 @@ SettingsMenu::run()
 			render();
 		}
 
-		SDL_Delay(4);
+		//SDL_Delay(4);
 	}
 }
 

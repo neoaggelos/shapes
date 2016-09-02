@@ -16,6 +16,7 @@ file(GLOB TXT_FILES ${CMAKE_SOURCE_DIR}/*.txt)
 
 add_executable(Shapes ${SOURCES} ${TXT_FILES})
 link_libraries(${LIBS})
+add_definitions("-DASSETSDIR=\"${CMAKE_SOURCE_DIR}/assets\"")
 
 install(TARGETS Shapes DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 

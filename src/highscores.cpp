@@ -32,16 +32,20 @@ Highscores::Highscores(Super *super)
 	ini = SDLU_LoadIni(scoresIni.c_str());
 
 	bool isOK = true;
-	for (int i = 0; i < 5 && isOK; i++) {
-		const char *prop = SDLU_GetIniProperty(ini, NULL, IntToString(i));
-		
-		isOK = prop != NULL;
-		if (isOK)
-			scores[i] = StringToInt(prop);
+	for (int diff = 0; diff < 3 && isOK; diff++) {
+		for (int i = 0; i < 5 && isOK; i++) {
+			const char *prop = SDLU_GetIniProperty(ini, IntToString(diff+1), IntToString(i));
+
+			isOK = prop != NULL;
+			if (isOK)
+				scores[diff][i] = StringToInt(prop);
+		}
 	}
 
 	if (!isOK) {
-		for (int i = 0; i < 5; i++) scores[i] = 0;
+		for (int diff = 0; diff < 3; diff++)
+			for (int i = 0; i < 5; i++)
+				scores[diff][i] = 0;
 	}
 }
 
@@ -50,9 +54,10 @@ Highscores::~Highscores()
 	if (savingScores) {
 		SDLU_IniHandler *ini = SDLU_CreateIni();
 		
-
-		for (int i = 0; i < 5; i++) {
-			SDLU_SetIniProperty(&ini, NULL, IntToString(i), IntToString(scores[i]));
+		for (int diff = 0; diff < 3; diff++) {
+			for (int i = 0; i < 5; i++) {
+				SDLU_SetIniProperty(&ini, IntToString(diff+1), IntToString(i), IntToString(scores[diff][i]));
+			}
 		}
 
 		SDLU_SaveIni(ini, scoresIni.c_str());
@@ -60,17 +65,22 @@ Highscores::~Highscores()
 }
 
 int
-Highscores::addScore(int score)
+Highscores::addScore(int diff, int score)
 {
 	int index = -1;
+	
+	diff--;
+	if (diff < 0 || diff >= 3)
+		return -1;
+
 	for (int i = 0; i < 5; i++) {
-		if (score > scores[i]) {
+		if (score > scores[diff][i]) {
 			/* shift scores */
 			for (int j = 4; j >= i; j--)
-				scores[j] = scores[j - 1];
+				scores[diff][j] = scores[diff][j - 1];
 
 			index = i;
-			scores[index] = score;
+			scores[diff][index] = score;
 
 			break;
 		}
@@ -80,27 +90,28 @@ Highscores::addScore(int score)
 }
 
 void
-Highscores::openMenu(int current)
+Highscores::openMenu(int currentdiff, int currentindex)
 {
 	SDLU_Button *again_button, *back_button;
 	SDL_Event event;
-	int ypos;
+	int ypos, xpos;
 
 	RenderData* data = parent->getRenderData();
 	again_button = SDLU_CreateButton(data->getWindow(), "I can beat it", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(again_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(again_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonGeometry(again_button, 140, 470, 200, 40);
+	SDLU_SetButtonGeometry(again_button, 140, 480, 200, 40);
 
 	back_button = SDLU_CreateButton(data->getWindow(), "Back To Menu", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(back_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(back_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonGeometry(back_button, 140, 530, 200, 40);
+	SDLU_SetButtonGeometry(back_button, 140, 540, 200, 40);
 	
 	enum {
 		PlayAgain, BackToMenu, Quit, None
 	} action = None;
 
+	SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
 	while (action == None) {
 		if (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT)
@@ -122,29 +133,40 @@ Highscores::openMenu(int current)
 		SDLU_RenderButton(back_button);
 
 		SDL_SetRenderDrawColor(data->getRenderer(), 0xff, 0xff, 0xff, 0xff);
-		SDLU_SetFontSize(SDLU_TEXT_SIZE_LARGE);
-		SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 30, "HIGH SCORES");
-		SDL_RenderDrawLine(data->getRenderer(), 140, 100, 340, 100);
+		SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 20, "HIGH SCORES");
+		SDL_RenderDrawLine(data->getRenderer(), 140, 60, 340, 60);
 
-		SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
-		ypos = 130;
-		for (int i = 0; i < 5; i++) {
-			if (current == i) {
-				SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xff, 0x00, 0xff);
+		SDLU_RenderText(data->getRenderer(), 80, 110, "Easy");
+		SDLU_RenderText(data->getRenderer(), 200, 110, "Medium");
+		SDLU_RenderText(data->getRenderer(), 350, 110, "Hard");
+
+		xpos = 95;
+		for (int diff = 0; diff < 3; diff++) {
+
+			ypos = 170;
+			for (int i = 0; i < 5; i++) {
+				if (currentdiff == diff && currentindex == i) {
+					SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xff, 0x00, 0xff);
+				}
+				else if (i == 0) {
+					SDL_SetRenderDrawColor(data->getRenderer(), 0xcc, 0xcc, 0xcc, 0xff);
+				}
+				else {
+					SDL_SetRenderDrawColor(data->getRenderer(), 0x88, 0x88, 0x88, 0xff);
+				}
+
+				//SDLU_RenderText(data->getRenderer(), 30, ypos, "%d.", i+1);
+				SDLU_RenderText(data->getRenderer(), xpos, ypos, "%d", scores[diff][i]);
+
+				ypos += 60;
 			}
-			else {
-				SDL_SetRenderDrawColor(data->getRenderer(), 0xcc, 0xcc, 0xcc, 0xff);
-			}
 
-			//SDLU_RenderText(data->getRenderer(), 30, ypos, "%d.", i+1);
-			SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, ypos, "%d", scores[i]);
-
-			ypos += 60;
+			xpos += 130;
 		}
 
 		SDL_RenderPresent(data->getRenderer());
 
-		SDL_Delay(10);
+		//SDL_Delay(10);
 	}
 
 	SDLU_DestroyButton(again_button);
@@ -161,10 +183,11 @@ Highscores::openMenu(int current)
 }
 
 int
-Highscores::getScore(int index)
+Highscores::getScore(int diff, int index)
 {
-	if (index < 0 || index >= 5)
+	diff--;
+	if (index < 0 || index >= 5 || diff < 0 || diff >= 3)
 		return -1;
 
-	return scores[index];
+	return scores[diff][index];
 }

@@ -38,7 +38,7 @@ Game::~Game()
 
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Game Ended", msg.c_str(), NULL);
     
-	int i = parent->getHighscores()->addScore(score);
+	parent->getHighscores()->addScore(parent->getSettings()->difficulty, score);
 }
 
 
@@ -88,7 +88,7 @@ Game::render()
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xaa);
     SDLU_RenderText(data->getRenderer(), 0, 5,  "Score: %d", getScore());
-	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 5, "High Score: %d", h->getScore(0));
+	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 5, "High Score: %d", h->getScore(parent->getSettings()->difficulty, 0));
 
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0xaf, 0xaf, 0xaf, 0xaf);
@@ -255,7 +255,7 @@ Game::pauseMenu()
 			SDL_RenderPresent(data->getRenderer());
 		}
 
-		SDL_Delay(10);
+		//SDL_Delay(10);
 	}
 
 	SDLU_DestroyButton(resume_button);
