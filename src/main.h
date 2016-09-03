@@ -33,7 +33,7 @@ class SettingsMenu;
 class Highscores;
 
 /* Shape headers */
-#include "random.h"
+#include "util.h"
 #include "difficulty.h"
 #include "settings.h"
 #include "shape.h"

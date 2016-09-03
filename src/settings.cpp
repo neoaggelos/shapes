@@ -1,25 +1,5 @@
 #include "main.h"
 
-static int StringToInt(string s)
-{
-	int j = 0;
-	for (unsigned int i = 0; i < s.length(); i++) {
-		j = 10 * j + s[i] - '0';
-	}
-
-	return j;
-}
-
-static char* IntToString(int i)
-{
-	string ret;
-	do {
-		ret = static_cast<char>(i % 10 + '0') + ret;
-	} while (i /= 10);
-
-	return SDL_strdup(ret.c_str());
-}
-
 bool
 Settings::isOK(SDLU_IniHandler* h)
 {
