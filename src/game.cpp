@@ -2,6 +2,19 @@
 
 typedef list<Shape*>::iterator ShapeIter;
 
+static const char *
+getDescription(GameMode mode)
+{
+	switch (mode)
+	{
+	case Fast: return "Shapes are falling faster!";
+	case Fake: return "Which one is it really?";
+	case Reverse: return "Left is right, right is left!";
+	default: return "";
+	}
+
+}
+
 Game::Game(Super *super)
 {
 	parent = super;
@@ -10,9 +23,14 @@ Game::Game(Super *super)
     playerShape = new Shape();
 
     playing = true;
+	pauseTime = 0;
 
     lastAddTime = SDL_GetTicks();
     addShape(lastAddTime);
+
+	lastModeChangeTime = SDL_GetTicks();
+	mode = Normal;
+
 }
 
 Game::~Game()
@@ -37,6 +55,7 @@ Game::addShape(Uint32 newTime)
 {
 	Difficulty d(parent->getSettings()->difficulty);
     lastAddTime = newTime;
+
     Shape * newShape = new Shape(d.shapeSpeed(), d.numShapes());
 
     shapes.push_back(newShape);
@@ -67,29 +86,44 @@ Game::render()
 
     if (!shapes.empty()) {
         for (ShapeIter it = shapes.begin(); it != shapes.end(); it++) {
-            (*it)->render(data);
+			int oldType = (*it)->getType();
+			bool shouldChange = mode == Fake && (*it)->getHeight() <= 300;
+			if(shouldChange) {
+				(*it)->setType(random(1, d.numShapes()));
+			}
+
+			(*it)->render(data);
+
+			if (shouldChange) {
+				(*it)->setType(oldType);
+			}
         }
     }
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0xff, 0xff, 0xff, 0xff);
     SDL_RenderDrawLine(data->getRenderer(), 0, 540, 640, 540);
 
-    playerShape->render(data);
+	SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
+	double time = d.changeModeTime() /1000.0 - (pauseTime ? pauseTime - lastModeChangeTime : (SDL_GetTicks() - lastModeChangeTime)) / 1000.0;
+	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "%.1lf", time);
+
+	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 30, "%s", getDescription(mode));
+	playerShape->render(data);
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xaa);
     SDLU_RenderText(data->getRenderer(), 0, 5,  "Score: %d", getScore());
 	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 5, "High Score: %d", h->getScore(parent->getSettings()->difficulty, 0));
 
-    SDL_SetRenderDrawColor(data->getRenderer(), 0xaf, 0xaf, 0xaf, 0xaf);
-    SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "FPS: %d", SDLU_FPS_GetRealFramerate());
+    //SDL_SetRenderDrawColor(data->getRenderer(), 0xaf, 0xaf, 0xaf, 0xaf);
+    //SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "FPS: %d", SDLU_FPS_GetRealFramerate());
 	
     for (int i = 0; i < d.numShapes(); i++) {
 		SDL_Rect src = { 80 * i, 0, 80, 80 };
-        SDL_Rect dest = { 480 - 25, 520 - i * 20, 20, 20 };
+        SDL_Rect dest = { 480 - 35, 510 - i * 30, 30, 30 };
 
         SDL_RenderCopy(data->getRenderer(), data->getTexture(), &src, &dest);
         if (playerShape->getType() == i) {
-			SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xff, 0x00, 0xff);
+			SDL_SetRenderDrawColor(data->getRenderer(), random(0,255), random(0,255), random(0,255), 0xff);
             SDL_RenderDrawRect(data->getRenderer(), &dest);
         }
     }
@@ -108,20 +142,28 @@ Game::handleEvents(SDL_Event event)
 	Settings *settings = parent->getSettings();
 	Difficulty d(settings->difficulty);
 
+	SDL_Scancode rightKey = settings->moveRightKey;
+	SDL_Scancode leftKey = settings->moveLeftKey;
+
+	if (mode == Reverse) {
+		rightKey = settings->moveLeftKey;
+		leftKey = settings->moveRightKey;
+	}
+
     switch (event.type) {
     case SDL_KEYDOWN:
 		if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
 			lastAction = None;
 			pauseMenu();
 		}
-        else if ((lastAction != MovedRight) && (event.key.keysym.scancode == settings->moveRightKey)) {
+        else if ((lastAction != MovedRight) && (event.key.keysym.scancode == rightKey)) {
             int lane = playerShape->getLane();
             lane++;
             if (lane > 3) lane = 1;
             playerShape->setLane(lane);
             lastAction = MovedRight;
         }
-        else if ((lastAction != MovedLeft) && (event.key.keysym.scancode == settings->moveLeftKey)) {
+        else if ((lastAction != MovedLeft) && (event.key.keysym.scancode == leftKey)) {
             int lane = playerShape->getLane();
             lane--;
             if (lane < 1) lane = 3;
@@ -156,7 +198,10 @@ Game::handleEvents(SDL_Event event)
                 }
             }
             else {
-                (*i)->move();
+				double var = 1.0;
+				if (mode != Normal) var = 1.5;
+				if (mode == Fast) var = 2.0;
+                (*i)->move(var);
             }
         }
     }
@@ -165,6 +210,11 @@ Game::handleEvents(SDL_Event event)
     if (newTime - lastAddTime >= d.respawnTime()) {
         addShape(newTime);
     }
+
+	if (newTime - lastModeChangeTime >= d.changeModeTime()) {
+		mode = mode == Normal ? static_cast<GameMode>(random(2, 4)) : Normal;
+		lastModeChangeTime = newTime;
+	}
 }
 
 void
@@ -192,7 +242,7 @@ Game::run()
 void
 Game::pauseMenu()
 {
-	int pauseTime = SDL_GetTicks();
+	pauseTime = SDL_GetTicks();
 
 	SDL_Event event;
 	SDLU_Button *resume_button, *exit_button;
@@ -262,6 +312,8 @@ Game::pauseMenu()
 		}
 
 		lastAddTime += SDL_GetTicks() - pauseTime;
+		lastModeChangeTime += SDL_GetTicks() - pauseTime;
+		pauseTime = 0;
 	}
 	else if (action == Exit) {
 		parent->finish();

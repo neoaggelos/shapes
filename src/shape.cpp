@@ -20,9 +20,9 @@ Shape::Shape(double spd, int range)
 }
 
 void
-Shape::move()
+Shape::move(double var)
 {
-	height += speed;
+	height += speed * var;
 }
 
 void
@@ -85,3 +85,10 @@ Shape::operator==(const Shape & other) const
 {
     return (lane == other.getLane()) && (type == other.getType());
 }
+
+double
+Shape::getHeight()
+{
+	return height;
+}
+

@@ -3,6 +3,13 @@
 
 #include "main.h"
 
+enum GameMode {
+	Normal=1,
+	Fast=2,
+	Reverse=3,
+	Fake=4
+};
+
 class Game {
 private:
 
@@ -10,12 +17,14 @@ private:
 	int score;
 
 	list <Shape*> shapes;
-
     Shape* playerShape;
 
     bool playing;
-
     int lastAddTime;
+	int pauseTime;
+
+	GameMode mode;
+	int lastModeChangeTime;
 
     void addShape(Uint32 newTime);
 

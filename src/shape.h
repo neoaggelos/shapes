@@ -17,10 +17,11 @@ public:
     
 	~Shape() {}
 
-	void move();
+	void move(double var=1);
 	void render(RenderData *data);
 
 	bool isFalling();
+	double getHeight();
 
     void setType(int newType);
     int getType() const;

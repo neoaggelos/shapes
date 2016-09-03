@@ -4,9 +4,9 @@ double
 Difficulty::shapeSpeed()
 {
     switch (level) {
-    case Easy: return 1.5;
-	case Medium: return 2;
-	case Hard: return 2 * random(1,1);
+    case Easy: return 1;
+	case Medium: return 1.5;
+	case Hard: return 2;
     }
 
     return 1;
@@ -15,14 +15,13 @@ Difficulty::shapeSpeed()
 Uint32
 Difficulty::respawnTime()
 {
-    switch (level)
-    {
-    case Easy: return 3000;
-    case Medium: return 1800;
-    case Hard: return random(2000, 2500);
-    }
+	return 3000;
+}
 
-    return 4000;
+Uint32
+Difficulty::changeModeTime()
+{
+	return 15000;
 }
 
 int
