@@ -3,8 +3,8 @@
 bool
 Settings::isOK(SDLU_IniHandler* h)
 {
-	const int num = 5;
-	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeUpKey", "changeShapeDownKey" };
+	const int num = 4;
+	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeKey" };
 	bool OK = true;
 
 	for (int i = 0; (i < num) && OK; i++) {
@@ -29,8 +29,7 @@ Settings::Settings()
 	else {
 		moveRightKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "moveRightKey")));
 		moveLeftKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "moveLeftKey")));
-		changeShapeUpKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeUpKey")));
-		changeShapeDownKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeDownKey")));
+		changeShapeKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeKey")));
 		difficulty = static_cast<DifficultyLevel>(StringToInt(SDLU_GetIniProperty(settings, NULL, "difficulty")));
 	}
 }
@@ -41,8 +40,7 @@ Settings::~Settings()
 		SDLU_IniHandler *h = SDLU_CreateIni();
 		SDLU_SetIniProperty(&h, NULL, "moveRightKey", IntToString(moveRightKey));
 		SDLU_SetIniProperty(&h, NULL, "moveLeftKey", IntToString(moveLeftKey));
-		SDLU_SetIniProperty(&h, NULL, "changeShapeUpKey", IntToString(changeShapeUpKey));
-		SDLU_SetIniProperty(&h, NULL, "changeShapeDownKey", IntToString(changeShapeDownKey));
+		SDLU_SetIniProperty(&h, NULL, "changeShapeKey", IntToString(changeShapeKey));
 		SDLU_SetIniProperty(&h, NULL, "difficulty", IntToString(difficulty));
 
 		SDLU_SaveIni(h, settingsIni.c_str());
@@ -54,7 +52,6 @@ Settings::reset()
 {
 	moveRightKey = SDL_SCANCODE_RIGHT;
 	moveLeftKey = SDL_SCANCODE_LEFT;
-	changeShapeUpKey = SDL_SCANCODE_UP;
-	changeShapeDownKey = SDL_SCANCODE_DOWN;
+	changeShapeKey = SDL_SCANCODE_SPACE;
 	difficulty = DifficultyLevel::Medium;
 }

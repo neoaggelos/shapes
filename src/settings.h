@@ -17,8 +17,7 @@ public:
 	DifficultyLevel difficulty;
 	SDL_Scancode moveRightKey;
 	SDL_Scancode moveLeftKey;
-	SDL_Scancode changeShapeUpKey;
-	SDL_Scancode changeShapeDownKey;
+	SDL_Scancode changeShapeKey;
 
 	void reset();
 };

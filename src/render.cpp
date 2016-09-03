@@ -38,7 +38,7 @@ RenderData::RenderData()
     //something that is worth to be noted though
 
 #if defined( ASSETSDIR )
-	assetsDir = ASSETSDIR;
+	assetsDir = "..\\assets\\";
 #elif defined( __APPLE__ )
 	assetsDir = SDL_GetBasePath();
 #else

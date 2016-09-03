@@ -87,26 +87,27 @@ Super::mainMenu()
     SDLU_SetButtonGeometry(exit_button, 140, 510, 200, 40);
 
     while (action == None) {
-        SDL_PollEvent(&event);
-
-        if (event.type == SDL_QUIT) {
-            action = Exit;
-        }
-        if (event.type == SDLU_BUTTON_PRESS) {
-			Uint32 button_id = static_cast<Uint32>(event.user.code);
-			if (button_id == start_button->id) {
-                action = StartNewGame;
+		SDL_PumpEvents();
+        if (SDL_PollEvent(&event)) {
+			if (event.type == SDL_QUIT) {
+				action = Exit;
 			}
-			else if (button_id == settings_button->id) {
-				action = OpenSettings;
+			if (event.type == SDLU_BUTTON_PRESS) {
+				Uint32 button_id = static_cast<Uint32>(event.user.code);
+				if (button_id == start_button->id) {
+					action = StartNewGame;
+				}
+				else if (button_id == settings_button->id) {
+					action = OpenSettings;
+				}
+				else if (button_id == scores_button->id) {
+					action = OpenHighScores;
+				}
+				else if (button_id == exit_button->id) {
+					action = Exit;
+				}
 			}
-			else if (button_id == scores_button->id) {
-				action = OpenHighScores;
-			}
-            else if (button_id == exit_button->id) {
-                action = Exit;
-            }
-        }
+		}
 
 		SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
         SDL_RenderClear(data->getRenderer());

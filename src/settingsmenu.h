@@ -7,7 +7,7 @@ class SettingsMenu {
 private:
 	Super *parent;
 
-	SDLU_Button *upButton, *downButton, *rightButton, *leftButton;
+	SDLU_Button *shapeButton, *rightButton, *leftButton;
 	SDLU_Button *resetButton, *backButton;
 	SDLU_ComboBox *diffBox;
 

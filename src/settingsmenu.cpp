@@ -29,8 +29,7 @@ SettingsMenu::SettingsMenu(Super *super)
 	rightButton = new_button(data, "Change", 350, 120, 85, 35);
 	leftButton = new_button(data, "Change", 350, 170, 85, 35);
 
-	upButton = new_button(data, "Change", 350, 220, 85, 35);
-	downButton = new_button(data, "Change", 350, 270, 85, 35);
+	shapeButton = new_button(data, "Change", 350, 220, 85, 35);
 	
 	resetButton = new_button(data, "Reset to defaults", 140, 480, 200, 35);
 	backButton = new_button(data, "Back to Menu", 140, 530, 200, 35);
@@ -47,8 +46,7 @@ SettingsMenu::SettingsMenu(Super *super)
 
 SettingsMenu::~SettingsMenu()
 {
-	SDLU_DestroyButton(upButton);
-	SDLU_DestroyButton(downButton);
+	SDLU_DestroyButton(shapeButton);
 	SDLU_DestroyButton(rightButton);
 	SDLU_DestroyButton(leftButton);
 	SDLU_DestroyButton(backButton);
@@ -87,10 +85,8 @@ SettingsMenu::handleEvent(SDL_Event event)
 			}
 
 			if (newKey != SDL_SCANCODE_ESCAPE) {
-				if (button_id == upButton->id)
-					parent->getSettings()->changeShapeUpKey = newKey;
-				else if (button_id == downButton->id)
-					parent->getSettings()->changeShapeDownKey = newKey;
+				if (button_id == shapeButton->id)
+					parent->getSettings()->changeShapeKey = newKey;
 				else if (button_id == leftButton->id)
 					parent->getSettings()->moveLeftKey = newKey;
 				else if (button_id == rightButton->id)
@@ -131,15 +127,12 @@ SettingsMenu::render()
 	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 130, "%s", SDL_GetScancodeName(s->moveRightKey));
 	SDLU_RenderText(target, 15, 180, "Move Left");
 	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 180, "%s", SDL_GetScancodeName(s->moveLeftKey));
-	SDLU_RenderText(target, 15, 230, "Change Shape Up");
-	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 230, "%s", SDL_GetScancodeName(s->changeShapeUpKey));
-	SDLU_RenderText(target, 15, 280, "Change Shape Down");
-	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 280, "%s", SDL_GetScancodeName(s->changeShapeDownKey));
+	SDLU_RenderText(target, 15, 230, "Change Shape");
+	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 230, "%s", SDL_GetScancodeName(s->changeShapeKey));
 	SDLU_RenderText(target, 15, 390, "Choose Difficulty");
 	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 390, "%s", diffBox->current);
 
-	SDLU_RenderButton(upButton);
-	SDLU_RenderButton(downButton);
+	SDLU_RenderButton(shapeButton);
 	SDLU_RenderButton(leftButton);
 	SDLU_RenderButton(rightButton);
 	SDLU_RenderButton(backButton);

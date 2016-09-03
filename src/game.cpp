@@ -90,7 +90,6 @@ Game::render()
     SDLU_RenderText(data->getRenderer(), 0, 5,  "Score: %d", getScore());
 	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 5, "High Score: %d", h->getScore(parent->getSettings()->difficulty, 0));
 
-
     SDL_SetRenderDrawColor(data->getRenderer(), 0xaf, 0xaf, 0xaf, 0xaf);
     SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "FPS: %d", SDLU_FPS_GetRealFramerate());
 	
@@ -112,8 +111,7 @@ Game::handleEvents(SDL_Event event)
         None,
         MovedRight,
         MovedLeft,
-        ChangedShapeUp,
-        ChangedShapeDown
+        ChangedShape
     } lastAction = None;
 
 	Settings *settings = parent->getSettings();
@@ -122,6 +120,7 @@ Game::handleEvents(SDL_Event event)
     switch (event.type) {
     case SDL_KEYDOWN:
 		if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+			lastAction = None;
 			pauseMenu();
 		}
         else if ((lastAction != MovedRight) && (event.key.keysym.scancode == settings->moveRightKey)) {
@@ -138,17 +137,11 @@ Game::handleEvents(SDL_Event event)
             playerShape->setLane(lane);
             lastAction = MovedLeft;
         }
-        else if ((lastAction != ChangedShapeUp) && (event.key.keysym.scancode == settings->changeShapeUpKey)) {
+        else if ((lastAction != ChangedShape) && (event.key.keysym.scancode == settings->changeShapeKey)) {
             int type = playerShape->getType();
             type = (type == d.numShapes() - 1) ? 0 : type + 1;
             playerShape->setType(type);
-            lastAction = ChangedShapeUp;
-        }
-        else if ((lastAction != ChangedShapeDown) && (event.key.keysym.scancode == settings->changeShapeDownKey)) {
-            int type = playerShape->getType();
-            type = (type == 0) ? d.numShapes() - 1 : type - 1;
-            playerShape->setType(type);
-            lastAction = ChangedShapeDown;
+            lastAction = ChangedShape;
         }
         break;
     case SDL_KEYUP:
