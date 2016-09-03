@@ -6,6 +6,7 @@ static SDLU_Button* new_button(RenderData *data, const char *title, int x, int y
 	SDLU_SetButtonAction(ret, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(ret, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 
+	((SDLU_Styles*)ret->content)->font_size = 18;
 	SDLU_SetButtonGeometry(ret, x, y, w, h);
 
 	return ret;
@@ -16,6 +17,7 @@ static SDLU_ComboBox* new_cbox(RenderData *data, int x, int y, int w = -1, int h
 	SDLU_ComboBox* ret = SDLU_CreateComboBox(data->getWindow());
 
 	SDLU_SetComboBoxGeometry(ret, x, y, w, h);
+	ret->styles->font_size = 18;
 
 	return ret;
 }
@@ -44,12 +46,13 @@ SettingsMenu::SettingsMenu(Super *super)
 		std::string name = string(info->filename).substr(0, SDL_strlen(info->filename) - 4);
 		SDLU_AddComboBoxItem(&themeBox, SDL_strdup(name.c_str()));
 	}
+	SDLU_SetComboBoxActiveItem(themeBox, parent->getSettings()->theme.c_str());
 
 	diffBox = new_cbox(data, 350, 495, 85, 35);
 	SDLU_AddComboBoxItem(&diffBox, "Easy");
 	SDLU_AddComboBoxItem(&diffBox, "Medium");
 	SDLU_AddComboBoxItem(&diffBox, "Hard");
-	SDLU_SetComboBoxActiveItem(diffBox, parent->getSettings()->difficulty);
+	SDLU_SetComboBoxActiveIndex(diffBox, parent->getSettings()->difficulty);
 
 	mustClose = false;
 }
@@ -77,7 +80,8 @@ SettingsMenu::handleEvent(SDL_Event event)
 			mustClose = true;
 		else if (button_id == resetButton->id) {
 			parent->getSettings()->reset();
-			SDLU_SetComboBoxActiveItem(diffBox, parent->getSettings()->difficulty);
+			SDLU_SetComboBoxActiveIndex(diffBox, parent->getSettings()->difficulty);
+			SDLU_SetComboBoxActiveItem(themeBox, parent->getSettings()->theme.c_str());
 		}
 		else {
 			event.type = SDL_LASTEVENT;
@@ -128,12 +132,12 @@ SettingsMenu::render()
 
 	SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
 	SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
-	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 5, "SETTINGS");
+	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 15, "SETTINGS");
 	SDLU_RenderText(target, 5, 70, "Controls");
-	SDLU_RenderText(target, 5, 330, "Difficulty");
-	SDLU_RenderText(target, 5, 440, "Theme");
+	SDLU_RenderText(target, 5, 330, "Theme");
+	SDLU_RenderText(target, 5, 440, "Difficulty");
 
-	SDL_RenderDrawLine(target, 180, 40, 300, 40);
+	SDL_RenderDrawLine(target, 180, 50, 300, 50);
 	SDL_RenderDrawLine(target, 5, 105, 475, 105);
 	SDL_RenderDrawLine(target, 5, 365, 475, 365);
 	SDL_RenderDrawLine(target, 5, 475, 475, 475);
