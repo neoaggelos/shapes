@@ -2,16 +2,6 @@
 
 typedef list<Shape*>::iterator ShapeIter;
 
-static char* IntToString(int i)
-{
-	string ret;
-	do {
-		ret = static_cast<char>(i % 10 + '0') + ret;
-	} while (i /= 10);
-
-	return SDL_strdup(ret.c_str());
-}
-
 Game::Game(Super *super)
 {
 	parent = super;
@@ -94,9 +84,10 @@ Game::render()
     SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "FPS: %d", SDLU_FPS_GetRealFramerate());
 	
     for (int i = 0; i < d.numShapes(); i++) {
+		SDL_Rect src = { 80 * i, 0, 80, 80 };
         SDL_Rect dest = { 480 - 25, 520 - i * 20, 20, 20 };
 
-        SDL_RenderCopy(data->getRenderer(), data->getTexture(i), NULL, &dest);
+        SDL_RenderCopy(data->getRenderer(), data->getTexture(), &src, &dest);
         if (playerShape->getType() == i) {
 			SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xff, 0x00, 0xff);
             SDL_RenderDrawRect(data->getRenderer(), &dest);

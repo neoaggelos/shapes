@@ -26,19 +26,29 @@ SettingsMenu::SettingsMenu(Super *super)
 
 	RenderData* data = parent->getRenderData();
 	
-	rightButton = new_button(data, "Change", 350, 120, 85, 35);
-	leftButton = new_button(data, "Change", 350, 170, 85, 35);
+	rightButton = new_button(data, "Change", 350, 125, 85, 35);
+	leftButton = new_button(data, "Change", 350, 175, 85, 35);
 
-	shapeButton = new_button(data, "Change", 350, 220, 85, 35);
+	shapeButton = new_button(data, "Change", 350, 225, 85, 35);
 	
-	resetButton = new_button(data, "Reset to defaults", 140, 480, 200, 35);
-	backButton = new_button(data, "Back to Menu", 140, 530, 200, 35);
+	resetButton = new_button(data, "Reset to defaults", 40, 560, 180, 35);
+	backButton = new_button(data, "Back to Menu", 260, 560, 180, 35);
 
-	diffBox = new_cbox(data, 350, 380, 85, 35);
+	themeBox = new_cbox(data, 350, 385, 85, 35);
+
+	SDLU_Directory *dir = SDLU_OpenDirectory(getAssetsDir().c_str(), SDL_TRUE);
+	SDLU_FileInfo *info;
+
+	while ((info = SDLU_NextFileWithExtension(dir, "bmp")))
+	{
+		std::string name = string(info->filename).substr(0, SDL_strlen(info->filename) - 4);
+		SDLU_AddComboBoxItem(&themeBox, SDL_strdup(name.c_str()));
+	}
+
+	diffBox = new_cbox(data, 350, 495, 85, 35);
 	SDLU_AddComboBoxItem(&diffBox, "Easy");
 	SDLU_AddComboBoxItem(&diffBox, "Medium");
 	SDLU_AddComboBoxItem(&diffBox, "Hard");
-
 	SDLU_SetComboBoxActiveItem(diffBox, parent->getSettings()->difficulty);
 
 	mustClose = false;
@@ -53,6 +63,7 @@ SettingsMenu::~SettingsMenu()
 	SDLU_DestroyButton(resetButton);
 
 	SDLU_DestroyComboBox(diffBox);
+	SDLU_DestroyComboBox(themeBox);
 }
 
 void
@@ -100,6 +111,10 @@ SettingsMenu::handleEvent(SDL_Event event)
 			DifficultyLevel new_diff = static_cast<DifficultyLevel>(diffBox->current_index);
 			parent->getSettings()->difficulty = new_diff;
 		}
+		else if (cbox_id == themeBox->id) {
+			parent->getSettings()->theme = SDL_strdup(themeBox->current);
+			parent->getRenderData()->reloadTexture(parent);
+		}
 	}
 }
 
@@ -116,27 +131,37 @@ SettingsMenu::render()
 	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 5, "SETTINGS");
 	SDLU_RenderText(target, 5, 70, "Controls");
 	SDLU_RenderText(target, 5, 330, "Difficulty");
+	SDLU_RenderText(target, 5, 440, "Theme");
 
 	SDL_RenderDrawLine(target, 180, 40, 300, 40);
 	SDL_RenderDrawLine(target, 5, 105, 475, 105);
 	SDL_RenderDrawLine(target, 5, 365, 475, 365);
+	SDL_RenderDrawLine(target, 5, 475, 475, 475);
 
 	SDLU_SetFontSize(18);
 	SDL_SetRenderDrawColor(target, 0xaa, 0xaa, 0xaa, 0xff);
+	
 	SDLU_RenderText(target, 15, 130, "Move Right");
 	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 130, "%s", SDL_GetScancodeName(s->moveRightKey));
 	SDLU_RenderText(target, 15, 180, "Move Left");
 	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 180, "%s", SDL_GetScancodeName(s->moveLeftKey));
 	SDLU_RenderText(target, 15, 230, "Change Shape");
 	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 230, "%s", SDL_GetScancodeName(s->changeShapeKey));
-	SDLU_RenderText(target, 15, 390, "Choose Difficulty");
-	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 390, "%s", diffBox->current);
+	SDLU_RenderText(target, 15, 280, "Pause Game");
+	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 280, "Escape");
+	
+	SDLU_RenderText(target, 15, 390, "Choose Theme");
+	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 390, "%s", parent->getSettings()->theme.c_str());
+
+	SDLU_RenderText(target, 15, 500, "Choose Difficulty");
+	SDLU_RenderText(target, SDLU_ALIGN_CENTER, 500, "%s", diffBox->current);
 
 	SDLU_RenderButton(shapeButton);
 	SDLU_RenderButton(leftButton);
 	SDLU_RenderButton(rightButton);
 	SDLU_RenderButton(backButton);
 	SDLU_RenderButton(resetButton);
+	SDLU_RenderComboBox(themeBox);
 	SDLU_RenderComboBox(diffBox);
 
 	SDL_RenderPresent(target);

@@ -31,3 +31,17 @@ char* IntToString(int i)
 
 	return SDL_strdup(ret.c_str());
 }
+
+
+string getAssetsDir()
+{
+#if defined( ASSETSDIR )
+	return ASSETSDIR;
+#elif defined( __APPLE__ )
+	return SDL_GetBasePath();
+#else
+	return "assets/";
+	#warning Assets directory may not be correct
+#endif
+
+}

@@ -2,3 +2,5 @@ VS/
 .vscode
 **.exe
 **.o
+build
+.vs

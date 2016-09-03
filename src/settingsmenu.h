@@ -9,7 +9,7 @@ private:
 
 	SDLU_Button *shapeButton, *rightButton, *leftButton;
 	SDLU_Button *resetButton, *backButton;
-	SDLU_ComboBox *diffBox;
+	SDLU_ComboBox *diffBox, *themeBox;
 
 	bool mustClose;
 public:

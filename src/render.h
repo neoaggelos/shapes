@@ -8,22 +8,20 @@ private:
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 
-	SDL_Texture* textures[NUM_SHAPES];
-
-	string assetsDir;
-
-	SDL_Texture *load_texture(const char *file);
+	SDL_Texture* texture;
 
 	void SDL_CHECK(bool check, string msg = "SDL Error");
 public:
-	RenderData();
+	RenderData(Super *s);
 
 	~RenderData();
 
 	SDL_Window *getWindow();
 	SDL_Renderer *getRenderer();
 
-	SDL_Texture *getTexture(int type);
+	SDL_Texture *getTexture();
+
+	void reloadTexture(Super *s);
 };
 
 #endif /* _render_h */

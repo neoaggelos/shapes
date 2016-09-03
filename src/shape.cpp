@@ -28,15 +28,20 @@ Shape::move()
 void
 Shape::render(RenderData *data)
 {
-	SDL_Rect pos;
+	SDL_Rect srcRect, dstRect;
 
-	pos.x = 60 + 20 + (lane - 1) * 120;
-	pos.y = static_cast<int>(height);
+	srcRect.x = 80 * type;
+	srcRect.y = 0;
+	srcRect.w = 80;
+	srcRect.h = 80;
 
-	pos.w = 80;
-	pos.h = 80;
+	dstRect.x = 60 + 20 + (lane - 1) * 120;
+	dstRect.y = static_cast<int>(height);
 
-	SDL_RenderCopy(data->getRenderer(), data->getTexture(type), NULL, &pos);
+	dstRect.w = 80;
+	dstRect.h = 80;
+
+	SDL_RenderCopy(data->getRenderer(), data->getTexture(), &srcRect, &dstRect);
 }
 
 bool

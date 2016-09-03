@@ -2,8 +2,8 @@
 
 Super::Super()
 {
-    data = new RenderData();
     settings = new Settings();
+	data = new RenderData(this);
 	highscores = new Highscores(this);
 
 	game = NULL;
@@ -20,7 +20,6 @@ Super::finish()
 {
 	if (game) delete game;
 	if (settingsMenu) delete settingsMenu;
-
 
 	delete highscores;
 	delete data;
@@ -45,6 +44,7 @@ Super::openSettings()
 {
 	settingsMenu = new SettingsMenu(this);
 	settingsMenu->run();
+	
 	delete settingsMenu;
 	settingsMenu = NULL;
 
@@ -74,12 +74,12 @@ Super::mainMenu()
 	settings_button = SDLU_CreateButton(data->getWindow(), "Settings", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(settings_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(settings_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonGeometry(settings_button, 140, 350, 200, 40);
+	SDLU_SetButtonGeometry(settings_button, 140, 430, 200, 40);
 
 	scores_button = SDLU_CreateButton(data->getWindow(), "High Scores", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(scores_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(scores_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonGeometry(scores_button, 140, 430, 200, 40);
+	SDLU_SetButtonGeometry(scores_button, 140, 350, 200, 40);
 
     exit_button = SDLU_CreateButton(data->getWindow(), "Exit", SDLU_BUTTON_TEXT);
     SDLU_SetButtonAction(exit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
