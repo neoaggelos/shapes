@@ -7,7 +7,8 @@ enum GameMode {
 	Normal=1,
 	Fast=2,
 	Reverse=3,
-	Fake=4
+	Fake=4,
+	Lots=5
 };
 
 class Game {

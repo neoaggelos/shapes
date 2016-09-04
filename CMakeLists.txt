@@ -6,8 +6,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/FindSDLU.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/FindSDL2.cmake")
 
-option(PORTABLE "TODO Save scores and settings in the same folder as the executable" OFF)
-option(MACOSX_BUNDLE "Build Shapes.app under Mac OS X" ON)
+option(PORTABLE "Save scores and settings in the same folder as the executable" OFF)
+if (APPLE)
+  option(MACOSX_BUNDLE "Build Shapes.app" ON)
+endif(APPLE)
 
 find_package(SDL2 REQUIRED)
 find_package(SDLU REQUIRED)
@@ -17,6 +19,10 @@ link_libraries(${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDLU_LIBRARY})
 file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*)
 file(GLOB TXT_FILES ${CMAKE_SOURCE_DIR}/*.txt)
 file(GLOB ASSETS ${CMAKE_SOURCE_DIR}/assets/*.bmp)
+
+if (PORTABLE)
+  add_definitions("-DPORTABLE")
+endif(PORTABLE)
 
 if (WIN32)
   add_executable(Shapes WIN32 ${SOURCES} ${TXT_FILES} ${ASSETS})

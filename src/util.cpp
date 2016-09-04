@@ -45,3 +45,12 @@ string getAssetsDir()
 #endif
 
 }
+
+const char* getSettingsDir()
+{
+#if defined (PORTABLE)
+	return SDL_GetBasePath();
+#else
+	return SDL_GetPrefPath("shapes", "shapes");
+#endif
+}

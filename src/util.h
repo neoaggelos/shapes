@@ -8,5 +8,6 @@ int random(int min, int max);
 char *IntToString(int i);
 int StringToInt(const char *s);
 string getAssetsDir();
+const char* getSettingsDir();
 
 #endif /* _util_h */

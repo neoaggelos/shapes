@@ -10,6 +10,7 @@ getDescription(GameMode mode)
 	case Fast: return "Shapes are falling faster!";
 	case Fake: return "Which one is it really?";
 	case Reverse: return "Left is right, right is left!";
+	case Lots: return "How many are there?";
 	default: return "";
 	}
 
@@ -42,11 +43,17 @@ Game::~Game()
 	}
 
 	string res = IntToString(score);
-	string msg = "You scored " + res + " points. Congratulations!";
+	string msg = "You scored " + res + " points.";
+
+	int diff = parent->getSettings()->difficulty;
+
+	if (parent->getHighscores()->getScore(diff, 4) <= score) {
+		msg += "You set a new high score! Congratulations!";
+	}
 
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Game Ended", msg.c_str(), NULL);
     
-	parent->getHighscores()->addScore(parent->getSettings()->difficulty, score);
+	int s = parent->getHighscores()->addScore(diff, score, "new guy here");
 }
 
 
@@ -55,8 +62,10 @@ Game::addShape(Uint32 newTime)
 {
 	Difficulty d(parent->getSettings()->difficulty);
     lastAddTime = newTime;
-
-    Shape * newShape = new Shape(d.shapeSpeed(), d.numShapes());
+	
+	double shapeSpeed = d.shapeSpeed();
+	shapeSpeed += 0.5 * (SDL_GetTicks() / 60000);
+	Shape * newShape = new Shape(shapeSpeed, d.numShapes());
 
     shapes.push_back(newShape);
 }
@@ -207,12 +216,13 @@ Game::handleEvents(SDL_Event event)
     }
 
     Uint32 newTime = SDL_GetTicks();
-    if (newTime - lastAddTime >= d.respawnTime()) {
+	double respawnTime = d.respawnTime() * ((mode == Lots) ? 0.5 : 1);
+    if (newTime - lastAddTime >= respawnTime) {
         addShape(newTime);
     }
 
 	if (newTime - lastModeChangeTime >= d.changeModeTime()) {
-		mode = mode == Normal ? static_cast<GameMode>(random(2, 4)) : Normal;
+		mode = mode == Normal ? static_cast<GameMode>(random(2, 5)) : Normal;
 		lastModeChangeTime = newTime;
 	}
 }

@@ -7,6 +7,7 @@ class Highscores {
 private:
 	Super *parent;
 	int scores[3][5];
+	string names[3][5];
 	bool savingScores;
 	string scoresIni;
 
@@ -14,7 +15,7 @@ public:
 	Highscores(Super *super);
 	~Highscores();
 
-	int addScore(int diff, int score);
+	int addScore(int diff, int score, string name);
 	void openMenu(int diff = -1, int current = -1);
 
 	int getScore(int diff, int index);

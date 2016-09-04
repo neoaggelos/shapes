@@ -21,7 +21,7 @@ Settings::isOK(SDLU_IniHandler* h)
 
 Settings::Settings()
 {
-	char* settingsPath = SDL_GetPrefPath("shapes", "shapes");
+	const char* settingsPath = getSettingsDir();
 	savingSettings = settingsPath != NULL;
 
 	settingsIni = string(settingsPath) + "settings.ini";
@@ -62,7 +62,7 @@ Settings::reset()
 	moveRightKey = SDL_SCANCODE_RIGHT;
 	moveLeftKey = SDL_SCANCODE_LEFT;
 	changeShapeKey = SDL_SCANCODE_SPACE;
-	difficulty = DifficultyLevel::Medium;
+	difficulty = Medium;
 	theme = "Red";
 	settings_version = CURRENT_SETTINGS_VERSION;
 }
