@@ -31,6 +31,7 @@ class Difficulty;
 class Settings;
 class SettingsMenu;
 class Highscores;
+class EnterName;
 
 /* Shape headers */
 #include "util.h"
@@ -39,6 +40,7 @@ class Highscores;
 #include "shape.h"
 #include "render.h"
 #include "game.h"
+#include "entername.h"
 #include "highscores.h"
 #include "settingsmenu.h"
 #include "super.h"

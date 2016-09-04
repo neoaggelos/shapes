@@ -47,13 +47,19 @@ Game::~Game()
 
 	int diff = parent->getSettings()->difficulty;
 
-	if (parent->getHighscores()->getScore(diff, 4) <= score) {
-		msg += "You set a new high score! Congratulations!";
-	}
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Game Ended", msg.c_str(), NULL);
 
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Game Ended", msg.c_str(), NULL);
+	if (parent->getHighscores()->getScore(diff, 4) <= score && score > 0) {
+		msg += "You set a new high score! Congratulations!";
+		EnterName *nameDialog = new EnterName(parent, "Enter your name:");
+
+		string name = nameDialog->openDialog();
+
+		delete nameDialog;
+
+		int s = parent->getHighscores()->addScore(diff, score, name);
+	}
     
-	int s = parent->getHighscores()->addScore(diff, score, "new guy here");
 }
 
 

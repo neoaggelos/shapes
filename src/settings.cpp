@@ -39,6 +39,9 @@ Settings::Settings()
 		theme = SDLU_GetIniProperty(settings, NULL, "theme");
 		settings_version = StringToInt(SDLU_GetIniProperty(settings, NULL, "settings_version"));
 	}
+
+	if (settings)
+		SDLU_DestroyIni(settings);
 }
 
 Settings::~Settings()
@@ -53,6 +56,7 @@ Settings::~Settings()
 		SDLU_SetIniProperty(&h, NULL, "theme", theme.c_str());
 
 		SDLU_SaveIni(h, settingsIni.c_str());
+		SDLU_DestroyIni(h);
 	}
 }
 

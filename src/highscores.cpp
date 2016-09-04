@@ -35,6 +35,9 @@ Highscores::Highscores(Super *super)
 			}
 		}
 	}
+	
+	if (ini)
+		SDLU_DestroyIni(ini);
 }
 
 Highscores::~Highscores()
@@ -51,6 +54,8 @@ Highscores::~Highscores()
 		}
 
 		SDLU_SaveIni(ini, scoresIni.c_str());
+
+		SDLU_DestroyIni(ini);
 	}
 }
 
@@ -169,8 +174,12 @@ Highscores::openMenu(int currentdiff, int currentindex)
 				SDL_SetRenderDrawColor(data->getRenderer(), 0x88, 0x88, 0x88, 0xff);
 			}
 
-			SDLU_RenderText(data->getRenderer(), 100, ypos, "%d.", i+1);
-			SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, ypos, "%18s %7d", names[diff][i].c_str(), scores[diff][i]);
+			SDLU_RenderText(data->getRenderer(), 100, ypos, "%d.", i + 1);
+			SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, ypos, "%s", names[diff][i].c_str());
+			
+			int width;
+			SDLU_GetTextOutputSize(IntToString(scores[diff][i]), &width, NULL);
+			SDLU_RenderText(data->getRenderer(), 380 - width, ypos, "%d", scores[diff][i]);
 
 			ypos += 60;
 		}
