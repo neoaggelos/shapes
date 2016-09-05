@@ -1,14 +1,22 @@
 #include "main.h"
 
+static void
+ok_callback(void *_ok, void *done)
+{
+	*(static_cast<bool*>(done)) = true;
+}
+
 EnterName::EnterName(Super *super, string msg)
 {
 	parent = super;
 	message = msg;
-	
+	done = false;
+
 	SDL_Window *window = super->getRenderData()->getWindow();
 	ok = SDLU_CreateButton(window, "OK", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(ok, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(ok, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(ok, SDLU_PRESS_CALLBACK, ok_callback, &done);
 	SDLU_SetButtonGeometry(ok, 160, 400, 160, 40);
 	SDLU_SetButtonHotkey(ok, SDL_SCANCODE_RETURN);
 }
@@ -22,7 +30,6 @@ string
 EnterName::openDialog()
 {
 	Uint32 count = 0;
-	bool done = false;
 	SDL_Event event;
 
 	SDL_Renderer* renderer = parent->getRenderData()->getRenderer();
@@ -32,17 +39,14 @@ EnterName::openDialog()
 	SDLU_SetFontSize(18);
 	SDL_StartTextInput();
 	SDL_SetTextInputRect(&inputRect);
+	done = false;
 	while (!done) {
 		if (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
 				parent->finish();
 			}
-			else if (event.type == SDLU_BUTTON_PRESS) {
-				done = static_cast<Uint32>(event.user.code) == ok->id;
-			}
 			else if (event.type == SDL_TEXTINPUT) {
 				input += event.text.text;
-
 				count += 1;
 			}
 			else if (event.type == SDL_KEYDOWN) {

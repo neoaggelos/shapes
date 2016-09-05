@@ -80,6 +80,7 @@ RenderData::reloadTexture(Super *s)
 				colorkey = tmp;
 		}
 	}
+	SDLU_DestroyIni(h);
 	string fname = getAssetsDir() + s->getSettings()->theme + ".bmp";
 
 	SDL_Surface *tmp = SDL_LoadBMP(fname.c_str());

@@ -53,9 +53,7 @@ Shape::isFalling()
 void
 Shape::setType(int newType)
 {
-    /* avoid funny stuff */
-    if (type >= 0 && type < NUM_SHAPES)
-        type = newType;
+	type = newType;
 }
 
 int

@@ -255,39 +255,47 @@ Game::run()
 	}
 }
 
+enum PauseMenuAction {
+	Resume, Forfeit, Exit, None
+};
+
+static void
+resume_callback(void *_button, void *action)
+{
+	*(static_cast<PauseMenuAction*>(action)) = Resume;
+}
+
+static void
+forfeit_callback(void *_button, void *action)
+{
+	*(static_cast<PauseMenuAction*>(action)) = Forfeit;
+}
+
 void
 Game::pauseMenu()
 {
 	pauseTime = SDL_GetTicks();
 
 	SDL_Event event;
-	SDLU_Button *resume_button, *exit_button;
+	SDLU_Button *resume_button, *forfeit_button;
 	RenderData *data = parent->getRenderData();
+	PauseMenuAction action = None;
 
 	resume_button = SDLU_CreateButton(data->getWindow(), "Resume Game", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(resume_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(resume_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(resume_button, SDLU_PRESS_CALLBACK, resume_callback, &action);
 	SDLU_SetButtonGeometry(resume_button, 140, 270, 200, 45);
 
-	exit_button = SDLU_CreateButton(data->getWindow(), "Exit Game", SDLU_BUTTON_TEXT);
-	SDLU_SetButtonAction(exit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-	SDLU_SetButtonAction(exit_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonGeometry(exit_button, 140, 370, 200, 45);
-
-	enum {
-		Resume, BackToMenu, Exit, None
-	} action = None;
+	forfeit_button = SDLU_CreateButton(data->getWindow(), "Forfeit Game", SDLU_BUTTON_TEXT);
+	SDLU_SetButtonAction(forfeit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
+	SDLU_SetButtonAction(forfeit_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(forfeit_button, SDLU_PRESS_CALLBACK, forfeit_callback, &action);
+	SDLU_SetButtonGeometry(forfeit_button, 140, 370, 200, 45);
 
 	while (action == None) {
 		if (SDL_PollEvent(&event)) {
-			if (event.type == SDLU_BUTTON_PRESS) {
-				Uint32 button_id = static_cast<Uint32>(event.user.code);
-				if (button_id == resume_button->id)
-					action = Resume;
-				else if (button_id == exit_button->id)
-					action = BackToMenu;
-			}
-			else if (event.type == SDL_QUIT) {
+			if (event.type == SDL_QUIT) {
 				action = Exit;
 			}
 
@@ -300,7 +308,7 @@ Game::pauseMenu()
 			SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 130, "Game Paused");
 
 			SDLU_RenderButton(resume_button);
-			SDLU_RenderButton(exit_button);
+			SDLU_RenderButton(forfeit_button);
 
 			SDL_RenderPresent(data->getRenderer());
 		}
@@ -309,7 +317,7 @@ Game::pauseMenu()
 	}
 
 	SDLU_DestroyButton(resume_button);
-	SDLU_DestroyButton(exit_button);
+	SDLU_DestroyButton(forfeit_button);
 
 	if (action == Resume) {
 		for (int i = 0; i < 3; i++) {
@@ -334,7 +342,7 @@ Game::pauseMenu()
 	else if (action == Exit) {
 		parent->finish();
 	}
-	else if (action == BackToMenu) {
+	else if (action == Forfeit) {
 		playing = false;
 	}
 	else

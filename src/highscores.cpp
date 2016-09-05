@@ -87,27 +87,61 @@ Highscores::addScore(int diff, int score, string name)
 	return index;
 }
 
+enum HighscoresMenuAction {
+	PlayAgain, BackToMenu, Quit, None
+};
+
+static void
+again_callback(void *_button, void *action)
+{
+	*(static_cast<HighscoresMenuAction*>(action)) = PlayAgain;
+}
+
+static void
+back_callback(void *_button, void *action)
+{
+	*(static_cast<HighscoresMenuAction*>(action)) = BackToMenu;
+}
+
+static void
+right_callback(void *_button, void *_diff)
+{
+	int *diff = static_cast<int*>(_diff);
+	if (*diff < 2) *diff += 1;
+}
+
+static void
+left_callback(void *_button, void *_diff)
+{
+	int *diff = static_cast<int*>(_diff);
+	if (*diff > 0) *diff -= 1;
+}
+
 void
 Highscores::openMenu(int currentdiff, int currentindex)
 {
 	SDLU_Button *again_button, *back_button, *right_button, *left_button;
 	SDL_Event event;
+	HighscoresMenuAction action = None;
 	int diff = 1;
 
 	RenderData* data = parent->getRenderData();
 	again_button = SDLU_CreateButton(data->getWindow(), "I can beat it", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(again_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(again_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(again_button, SDLU_PRESS_CALLBACK, again_callback, &action);
 	SDLU_SetButtonGeometry(again_button, 140, 480, 200, 40);
 
 	back_button = SDLU_CreateButton(data->getWindow(), "Back To Menu", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(back_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(back_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(back_button, SDLU_PRESS_CALLBACK, back_callback, &action);
 	SDLU_SetButtonGeometry(back_button, 140, 540, 200, 40);
 	
 	right_button = SDLU_CreateButton(data->getWindow(), ">", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(right_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(right_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(right_button, SDLU_PRESS_CALLBACK, right_callback, &diff);
 	SDLU_SetButtonGeometry(right_button, 350, 100, 30, 30);
 	SDLU_SetButtonHotkey(right_button, SDL_SCANCODE_RIGHT);
 	((SDLU_Styles*)right_button->content)->fill_color = SDLU_CreateRGB(SDLU_BLACK_RGB);
@@ -115,31 +149,16 @@ Highscores::openMenu(int currentdiff, int currentindex)
 	left_button = SDLU_CreateButton(data->getWindow(), "<", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(left_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(left_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(left_button, SDLU_PRESS_CALLBACK, left_callback, &diff);
 	SDLU_SetButtonGeometry(left_button, 100, 100, 30, 30);
 	SDLU_SetButtonHotkey(left_button, SDL_SCANCODE_LEFT);
 	((SDLU_Styles*)left_button->content)->fill_color = SDLU_CreateRGB(SDLU_BLACK_RGB);
-
-	enum {
-		PlayAgain, BackToMenu, Quit, None
-	} action = None;
 
 	SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
 	while (action == None) {
 		if (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT)
 				action = Quit;
-			else if (event.type == SDLU_BUTTON_PRESS) {
-				Uint32 button_id = static_cast<Uint32>(event.user.code);
-
-				if (button_id == again_button->id)
-					action = PlayAgain;
-				else if (button_id == back_button->id)
-					action = BackToMenu;
-				else if (button_id == right_button->id && diff < 2)
-					diff++;
-				else if (button_id == left_button->id && diff > 0)
-					diff--;
-			}
 		}
 
 		SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);

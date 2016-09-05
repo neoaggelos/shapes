@@ -51,39 +51,68 @@ Super::openSettings()
 	mainMenu();
 }
 
+enum MainMenuAction {
+	None,
+	StartNewGame,
+	OpenSettings,
+	OpenHighScores,
+	Exit
+};
+
+static void
+start_callback(void* _button, void *action)
+{
+	*(static_cast<MainMenuAction*>(action)) = StartNewGame;
+}
+
+static void
+settings_callback(void* _button, void *action)
+{
+	*(static_cast<MainMenuAction*>(action)) = OpenSettings;
+}
+
+static void
+scores_callback(void* _button, void *action)
+{
+	*(static_cast<MainMenuAction*>(action)) = OpenHighScores;
+}
+
+static void
+exit_callback(void* _button, void *action)
+{
+	*(static_cast<MainMenuAction*>(action)) = Exit;
+}
 
 void
 Super::mainMenu()
 {
-    enum ActionToTake {
-        None,
-        StartNewGame,
-		OpenSettings,
-		OpenHighScores,
-        Exit
-    } action = None;
-
+    
+	MainMenuAction action = None;
     SDL_Event event;
     SDLU_Button *start_button, *settings_button, *scores_button, *exit_button;
 
     start_button = SDLU_CreateButton(data->getWindow(), "New Game", SDLU_BUTTON_TEXT);
     SDLU_SetButtonAction(start_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
     SDLU_SetButtonAction(start_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(start_button, SDLU_PRESS_CALLBACK, start_callback, &action);
     SDLU_SetButtonGeometry(start_button, 140, 270, 200, 40);
 	
 	settings_button = SDLU_CreateButton(data->getWindow(), "Settings", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(settings_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(settings_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(settings_button, SDLU_PRESS_CALLBACK, settings_callback, &action);
 	SDLU_SetButtonGeometry(settings_button, 140, 430, 200, 40);
 
 	scores_button = SDLU_CreateButton(data->getWindow(), "High Scores", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(scores_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(scores_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(scores_button, SDLU_PRESS_CALLBACK, scores_callback, &action);
 	SDLU_SetButtonGeometry(scores_button, 140, 350, 200, 40);
 
     exit_button = SDLU_CreateButton(data->getWindow(), "Exit", SDLU_BUTTON_TEXT);
     SDLU_SetButtonAction(exit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
     SDLU_SetButtonAction(exit_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(exit_button, SDLU_PRESS_CALLBACK, exit_callback, &action);
     SDLU_SetButtonGeometry(exit_button, 140, 510, 200, 40);
 
     while (action == None) {

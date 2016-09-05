@@ -9,6 +9,7 @@ private:
 	Super *parent;
 	string message;
 	SDLU_Button *ok;
+	bool done;
 
 public:
 	EnterName(Super *super, string msg);
