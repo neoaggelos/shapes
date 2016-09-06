@@ -1,6 +1,6 @@
 #include "main.h"
 
-int main(int argc, char **argv)
+int SDL_main(int argc, char **argv)
 {
     Super *s = new Super;
 

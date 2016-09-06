@@ -1,0 +1,15 @@
+Requirements:
+
+* Android SDK (any version supported by SDL)
+* Android NDK (any version supported by SDL)
+* SDL source code
+* SDLU source code (http://bitbucket.org/sdlu/sdlu)
+
+Steps:
+
+1. Download SDL source code and copy to 'android-project/SDL'
+2. Download SDLU source code and copy to 'android-project/SDLU'
+3. Create 'local.properties' and add 'sdk.dir=path to android sdk'
+4. Update AndroidManifest.xml for target SDK version (default 15)
+5. Copy 'assets' folder into 'android-project/assets'
+5. Build

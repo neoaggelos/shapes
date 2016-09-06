@@ -4,3 +4,6 @@ VS/
 **.o
 build
 .vs
+android-project/local.properties
+android-project/jni/SDL
+android-project/jni/SDLU
