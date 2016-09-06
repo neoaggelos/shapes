@@ -2,12 +2,11 @@
 
 Super::Super()
 {
-    settings = new Settings();
+    settings = new Settings(this);
 	data = new RenderData(this);
 	highscores = new Highscores(this);
 
 	game = NULL;
-	settingsMenu = NULL;
 }
 
 Super::~Super()
@@ -19,7 +18,6 @@ void
 Super::finish()
 {
 	if (game) delete game;
-	if (settingsMenu) delete settingsMenu;
 
 	delete highscores;
 	delete data;
@@ -42,11 +40,7 @@ Super::playGame()
 void
 Super::openSettings()
 {
-	settingsMenu = new SettingsMenu(this);
-	settingsMenu->run();
-	
-	delete settingsMenu;
-	settingsMenu = NULL;
+	settings->openMenu();
 
 	mainMenu();
 }

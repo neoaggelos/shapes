@@ -5,13 +5,14 @@
 
 class Settings {
 private:
+	Super *parent;
 	string settingsIni;
 
     bool savingSettings;
 	bool isOK(SDLU_IniHandler *h);
 
 public:
-    Settings();
+    Settings(Super *super);
     ~Settings();
 
 	int settings_version;
@@ -24,6 +25,7 @@ public:
 	string theme;
 
 	void reset();
+	void openMenu();
 };
 
 #endif /* _settings_h */

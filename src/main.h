@@ -29,7 +29,6 @@ class RenderData;
 class Super;
 class Difficulty;
 class Settings;
-class SettingsMenu;
 class Highscores;
 class EnterName;
 
@@ -42,7 +41,6 @@ class EnterName;
 #include "game.h"
 #include "entername.h"
 #include "highscores.h"
-#include "settingsmenu.h"
 #include "super.h"
 
 #endif /* _main_h */

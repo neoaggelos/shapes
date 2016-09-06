@@ -10,7 +10,6 @@ private:
 	Highscores *highscores;
 
 	Game *game;
-	SettingsMenu* settingsMenu;
 
 public:
     Super();
