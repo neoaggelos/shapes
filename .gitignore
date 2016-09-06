@@ -6,4 +6,5 @@ build
 .vs
 android-project/local.properties
 android-project/jni/SDL
+android-project/assets
 android-project/jni/SDLU
