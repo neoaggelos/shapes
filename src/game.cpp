@@ -144,15 +144,19 @@ Game::render()
     }
 }
 
+enum GameAction {
+	None,
+	MoveRight,
+	MoveLeft,
+	ChangeShape
+};
+
+
 void
 Game::handleEvents(SDL_Event event)
 {
-    static enum LastAction {
-        None,
-        MovedRight,
-        MovedLeft,
-        ChangedShape
-    } lastAction = None;
+	static GameAction action = None;
+	static bool executedAction = false;
 
 	Settings *settings = parent->getSettings();
 	Difficulty d(settings->difficulty);
@@ -168,36 +172,51 @@ Game::handleEvents(SDL_Event event)
     switch (event.type) {
     case SDL_KEYDOWN:
 		if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-			lastAction = None;
+			action = None;
+			executedAction = true;
 			pauseMenu();
 		}
-        else if ((lastAction != MovedRight) && (event.key.keysym.scancode == rightKey)) {
-            int lane = playerShape->getLane();
-            lane++;
-            if (lane > 3) lane = 1;
-            playerShape->setLane(lane);
-            lastAction = MovedRight;
+        else if ((action != MoveRight) && (event.key.keysym.scancode == rightKey)) {
+			action = MoveRight;
+			executedAction = false;
         }
-        else if ((lastAction != MovedLeft) && (event.key.keysym.scancode == leftKey)) {
-            int lane = playerShape->getLane();
-            lane--;
-            if (lane < 1) lane = 3;
-            playerShape->setLane(lane);
-            lastAction = MovedLeft;
+        else if ((action != MoveLeft) && (event.key.keysym.scancode == leftKey)) {
+			action = MoveLeft;
+			executedAction = false;
         }
-        else if ((lastAction != ChangedShape) && (event.key.keysym.scancode == settings->changeShapeKey)) {
-            int type = playerShape->getType();
-            type = (type == d.numShapes() - 1) ? 0 : type + 1;
-            playerShape->setType(type);
-            lastAction = ChangedShape;
+        else if ((action != ChangeShape) && (event.key.keysym.scancode == settings->changeShapeKey)) {
+			action = ChangeShape;
+			executedAction = false;
         }
         break;
     case SDL_KEYUP:
-        lastAction = None;
+        action = None;
         break;
     case SDL_QUIT:
 		parent->finish();
     }
+
+	if (!executedAction) {
+		executedAction = true;
+
+		if (action == MoveRight) {
+			int lane = playerShape->getLane();
+			lane++;
+			if (lane > 3) lane = 1;
+			playerShape->setLane(lane);
+		}
+		else if (action == MoveLeft) {
+			int lane = playerShape->getLane();
+			lane--;
+			if (lane < 1) lane = 3;
+			playerShape->setLane(lane);
+		}
+		else if (action == ChangeShape) {
+			int type = playerShape->getType();
+			type = (type == d.numShapes() - 1) ? 0 : type + 1;
+			playerShape->setType(type);
+		}
+	}
 
     if (!shapes.empty()) {
         for (ShapeIter i = shapes.begin(); i != shapes.end(); i++) {
@@ -256,7 +275,7 @@ Game::run()
 }
 
 enum PauseMenuAction {
-	Resume, Forfeit, Exit, None
+	Resume, Forfeit, Exit, Idle
 };
 
 static void
@@ -279,7 +298,7 @@ Game::pauseMenu()
 	SDL_Event event;
 	SDLU_Button *resume_button, *forfeit_button;
 	RenderData *data = parent->getRenderData();
-	PauseMenuAction action = None;
+	PauseMenuAction action = Idle;
 
 	resume_button = SDLU_CreateButton(data->getWindow(), "Resume Game", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(resume_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
@@ -293,7 +312,7 @@ Game::pauseMenu()
 	SDLU_SetButtonCallback(forfeit_button, SDLU_PRESS_CALLBACK, forfeit_callback, &action);
 	SDLU_SetButtonGeometry(forfeit_button, 140, 370, 200, 45);
 
-	while (action == None) {
+	while (action == Idle) {
 		if (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
 				action = Exit;
