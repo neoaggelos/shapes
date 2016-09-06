@@ -15,7 +15,7 @@ Difficulty::shapeSpeed()
 Uint32
 Difficulty::respawnTime()
 {
-	return 3000;
+	return 3000 - 200 * (SDL_GetTicks() / 60000);
 }
 
 Uint32

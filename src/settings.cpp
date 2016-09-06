@@ -1,12 +1,12 @@
 #include "main.h"
 
-const int CURRENT_SETTINGS_VERSION = 3;
+const int CURRENT_SETTINGS_VERSION = 4;
 
 bool
 Settings::isOK(SDLU_IniHandler* h)
 {
 	const int num = 6;
-	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeKey", "theme", "settings_version" };
+	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeUpKey", "changeShapeDownKey", "theme", "settings_version" };
 	bool OK = true;
 
 	for (int i = 0; (i < num) && OK; i++) {
@@ -36,7 +36,8 @@ Settings::Settings(Super *super)
 	else {
 		moveRightKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "moveRightKey")));
 		moveLeftKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "moveLeftKey")));
-		changeShapeKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeKey")));
+		changeShapeUpKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeUpKey")));
+		changeShapeDownKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeDownKey")));
 		difficulty = static_cast<DifficultyLevel>(StringToInt(SDLU_GetIniProperty(settings, NULL, "difficulty")));
 		theme = SDLU_GetIniProperty(settings, NULL, "theme");
 		settings_version = StringToInt(SDLU_GetIniProperty(settings, NULL, "settings_version"));
@@ -53,7 +54,8 @@ Settings::~Settings()
 		SDLU_SetIniProperty(&h, NULL, "settings_version", IntToString(settings_version));
 		SDLU_SetIniProperty(&h, NULL, "moveRightKey", IntToString(moveRightKey));
 		SDLU_SetIniProperty(&h, NULL, "moveLeftKey", IntToString(moveLeftKey));
-		SDLU_SetIniProperty(&h, NULL, "changeShapeKey", IntToString(changeShapeKey));
+		SDLU_SetIniProperty(&h, NULL, "changeShapeUpKey", IntToString(changeShapeUpKey));
+		SDLU_SetIniProperty(&h, NULL, "changeShapeDownKey", IntToString(changeShapeDownKey));
 		SDLU_SetIniProperty(&h, NULL, "difficulty", IntToString(difficulty));
 		SDLU_SetIniProperty(&h, NULL, "theme", theme.c_str());
 
@@ -67,7 +69,8 @@ Settings::reset()
 {
 	moveRightKey = SDL_SCANCODE_RIGHT;
 	moveLeftKey = SDL_SCANCODE_LEFT;
-	changeShapeKey = SDL_SCANCODE_SPACE;
+	changeShapeUpKey = SDL_SCANCODE_UP;
+	changeShapeDownKey = SDL_SCANCODE_DOWN;
 	difficulty = Medium;
 	theme = "Red";
 	settings_version = CURRENT_SETTINGS_VERSION;
@@ -99,8 +102,9 @@ enum SettingsMenuAction {
 	ReadKeysStart = 0,
 	ReadRightKey = 1,
 	ReadLeftKey = 2,
-	ReadShapeKey = 3,
-	ReadKeysEnd = 4,
+	ReadShapeUpKey = 3,
+	ReadShapeDownKey = 4,
+	ReadKeysEnd = 5,
 	Reset,
 	BackToMenu,
 	Quit,
@@ -120,9 +124,15 @@ left_callback(void *_this, void *action)
 }
 
 static void
-shape_callback(void *_this, void *action)
+shapeup_callback(void *_this, void *action)
 {
-	*static_cast<SettingsMenuAction*>(action) = ReadShapeKey;
+	*static_cast<SettingsMenuAction*>(action) = ReadShapeUpKey;
+}
+
+static void
+shapedown_callback(void *_this, void *action)
+{
+	*static_cast<SettingsMenuAction*>(action) = ReadShapeDownKey;
 }
 
 static void
@@ -140,7 +150,7 @@ back_callback(void *_this, void *action)
 void
 Settings::openMenu()
 {
-	SDLU_Button *shapeButton, *rightButton, *leftButton, *resetButton, *backButton;
+	SDLU_Button *shapeUpButton, *shapeDownButton, *rightButton, *leftButton, *resetButton, *backButton;
 	SDLU_ComboBox *diffBox, *themeBox;
 	RenderData* data = parent->getRenderData();
 	SettingsMenuAction action;
@@ -151,8 +161,11 @@ Settings::openMenu()
 	leftButton = new_button(data, "Change", 350, 175, 85, 35);
 	SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, left_callback, &action);
 
-	shapeButton = new_button(data, "Change", 350, 225, 85, 35);
-	SDLU_SetButtonCallback(shapeButton, SDLU_PRESS_CALLBACK, shape_callback, &action);
+	shapeUpButton = new_button(data, "Change", 350, 225, 85, 35);
+	SDLU_SetButtonCallback(shapeUpButton, SDLU_PRESS_CALLBACK, shapeup_callback, &action);
+
+	shapeDownButton = new_button(data, "Change", 350, 275, 85, 35);
+	SDLU_SetButtonCallback(shapeDownButton, SDLU_PRESS_CALLBACK, shapedown_callback, &action);
 
 	resetButton = new_button(data, "Reset To Default", 40, 560, 180, 35);
 	SDLU_SetButtonCallback(resetButton, SDLU_PRESS_CALLBACK, reset_callback, &action);
@@ -221,8 +234,10 @@ Settings::openMenu()
 						parent->getSettings()->moveRightKey = newKey;
 					else if (action == ReadLeftKey)
 						parent->getSettings()->moveLeftKey = newKey;
-					else if (action == ReadShapeKey)
-						parent->getSettings()->changeShapeKey = newKey;
+					else if (action == ReadShapeUpKey)
+						parent->getSettings()->changeShapeUpKey = newKey;
+					else if (action == ReadShapeDownKey)
+						parent->getSettings()->changeShapeDownKey = newKey;
 				}
 			}
 			else if (action == Reset) {
@@ -256,10 +271,10 @@ Settings::openMenu()
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 130, "%s", SDL_GetScancodeName(s->moveRightKey));
 		SDLU_RenderText(target, 15, 180, "Move Left");
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 180, "%s", SDL_GetScancodeName(s->moveLeftKey));
-		SDLU_RenderText(target, 15, 230, "Change Shape");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 230, "%s", SDL_GetScancodeName(s->changeShapeKey));
-		SDLU_RenderText(target, 15, 280, "Pause Game");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 280, "Escape");
+		SDLU_RenderText(target, 15, 230, "Change Shape Up");
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 230, "%s", SDL_GetScancodeName(s->changeShapeUpKey));
+		SDLU_RenderText(target, 15, 280, "Change Shape Down");
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 280, "%s", SDL_GetScancodeName(s->changeShapeDownKey));
 
 		SDLU_RenderText(target, 15, 390, "Choose Theme");
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 390, "%s", parent->getSettings()->theme.c_str());
@@ -267,7 +282,8 @@ Settings::openMenu()
 		SDLU_RenderText(target, 15, 500, "Choose Difficulty");
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 500, "%s", diffBox->current);
 
-		SDLU_RenderButton(shapeButton);
+		SDLU_RenderButton(shapeUpButton);
+		SDLU_RenderButton(shapeDownButton);
 		SDLU_RenderButton(leftButton);
 		SDLU_RenderButton(rightButton);
 		SDLU_RenderButton(backButton);
@@ -280,7 +296,8 @@ Settings::openMenu()
 		SDL_Delay(10);
 	}
 
-	SDLU_DestroyButton(shapeButton);
+	SDLU_DestroyButton(shapeUpButton);
+	SDLU_DestroyButton(shapeDownButton);
 	SDLU_DestroyButton(rightButton);
 	SDLU_DestroyButton(leftButton);
 	SDLU_DestroyButton(backButton);

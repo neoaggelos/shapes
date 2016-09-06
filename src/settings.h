@@ -20,7 +20,8 @@ public:
 	DifficultyLevel difficulty;
 	SDL_Scancode moveRightKey;
 	SDL_Scancode moveLeftKey;
-	SDL_Scancode changeShapeKey;
+	SDL_Scancode changeShapeUpKey;
+	SDL_Scancode changeShapeDownKey;
 
 	string theme;
 

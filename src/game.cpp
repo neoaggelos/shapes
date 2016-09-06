@@ -128,9 +128,6 @@ Game::render()
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xaa);
     SDLU_RenderText(data->getRenderer(), 0, 5,  "Score: %d", getScore());
 	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 5, "High Score: %d", h->getScore(parent->getSettings()->difficulty, 0));
-
-    //SDL_SetRenderDrawColor(data->getRenderer(), 0xaf, 0xaf, 0xaf, 0xaf);
-    //SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "FPS: %d", SDLU_FPS_GetRealFramerate());
 	
     for (int i = 0; i < d.numShapes(); i++) {
 		SDL_Rect src = { 80 * i, 0, 80, 80 };
@@ -148,7 +145,8 @@ enum GameAction {
 	None,
 	MoveRight,
 	MoveLeft,
-	ChangeShape
+	ChangeShapeUp,
+	ChangeShapeDown
 };
 
 
@@ -157,20 +155,27 @@ Game::handleEvents(SDL_Event event)
 {
 	static GameAction action = None;
 	static bool executedAction = false;
+	static bool handledMotionEvent = false;
 
 	Settings *settings = parent->getSettings();
 	Difficulty d(settings->difficulty);
 
 	SDL_Scancode rightKey = settings->moveRightKey;
 	SDL_Scancode leftKey = settings->moveLeftKey;
+	SDL_Scancode upKey = settings->changeShapeUpKey;
+	SDL_Scancode downKey = settings->changeShapeDownKey;
 
 	if (mode == Reverse) {
 		rightKey = settings->moveLeftKey;
 		leftKey = settings->moveRightKey;
+
+		upKey = settings->changeShapeDownKey;
+		downKey = settings->changeShapeUpKey;
 	}
 
     switch (event.type) {
     case SDL_KEYDOWN:
+		handledMotionEvent = false;
 		if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
 			action = None;
 			executedAction = true;
@@ -184,16 +189,56 @@ Game::handleEvents(SDL_Event event)
 			action = MoveLeft;
 			executedAction = false;
         }
-        else if ((action != ChangeShape) && (event.key.keysym.scancode == settings->changeShapeKey)) {
-			action = ChangeShape;
+        else if ((action != ChangeShapeUp) && (event.key.keysym.scancode == upKey)) {
+			action = ChangeShapeUp;
 			executedAction = false;
         }
+		else if ((action != ChangeShapeDown) && (event.key.keysym.scancode == downKey)) {
+			action = ChangeShapeDown;
+			executedAction = false;
+		}
         break;
     case SDL_KEYUP:
         action = None;
+		handledMotionEvent = false;
         break;
+	case SDL_MOUSEMOTION:
+		int xrel, yrel;
+		xrel = event.motion.xrel;
+		yrel = event.motion.yrel;
+
+		if (event.motion.state != SDL_BUTTON(SDL_BUTTON_LEFT) || handledMotionEvent) {
+			break;
+		}
+
+		if (SDL_abs(xrel) < 10 && yrel < -30) {
+			action = ChangeShapeUp;
+			executedAction = false;
+			handledMotionEvent = true;
+		}
+		else if (SDL_abs(xrel) < 10 && yrel > 30) {
+			action = ChangeShapeDown;
+			executedAction = false;
+			handledMotionEvent = true;
+		}
+		else if (SDL_abs(yrel) < 10 && xrel > 30) {
+			action = MoveRight;
+			executedAction = false;
+			handledMotionEvent = true;
+		}
+		else if (SDL_abs(yrel) < 10 && xrel < -30) {
+			action = MoveLeft;
+			executedAction = false;
+			handledMotionEvent = true;
+		}
+		else {
+			handledMotionEvent = false;
+		}
+		break;
     case SDL_QUIT:
 		parent->finish();
+	default:
+		handledMotionEvent = false;
     }
 
 	if (!executedAction) {
@@ -211,9 +256,14 @@ Game::handleEvents(SDL_Event event)
 			if (lane < 1) lane = 3;
 			playerShape->setLane(lane);
 		}
-		else if (action == ChangeShape) {
+		else if (action == ChangeShapeUp) {
 			int type = playerShape->getType();
 			type = (type == d.numShapes() - 1) ? 0 : type + 1;
+			playerShape->setType(type);
+		}
+		else if (action == ChangeShapeDown) {
+			int type = playerShape->getType();
+			type = (type == 0) ? d.numShapes() - 1 : type - 1;
 			playerShape->setType(type);
 		}
 	}
