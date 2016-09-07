@@ -5,14 +5,13 @@
 
 class Settings {
 private:
-	Super *parent;
 	string settingsIni;
 
     bool savingSettings;
 	bool isOK(SDLU_IniHandler *h);
 
 public:
-    Settings(Super *super);
+    Settings();
     ~Settings();
 
 	int settings_version;

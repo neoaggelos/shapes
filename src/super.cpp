@@ -2,9 +2,9 @@
 
 Super::Super()
 {
-    settings = new Settings(this);
-	data = new RenderData(this);
-	highscores = new Highscores(this);
+    settings = new Settings();
+	data = new RenderData(settings->theme);
+	highscores = new Highscores();
 
 	game = NULL;
 }
@@ -28,7 +28,7 @@ Super::finish()
 void
 Super::playGame()
 {
-    game = new Game(this);
+    game = new Game();
 
 	game->run();
     delete game;

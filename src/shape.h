@@ -18,7 +18,7 @@ public:
 	~Shape() {}
 
 	void move(double var=1);
-	void render(RenderData *data);
+	void render();
 
 	bool isFalling();
 	double getHeight();

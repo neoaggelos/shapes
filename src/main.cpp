@@ -1,12 +1,14 @@
 #include "main.h"
 
+Super *gSuper;
+
 int SDL_main(int argc, char **argv)
 {
-    Super *s = new Super;
+    gSuper = new Super;
 
-    s->mainMenu();
+    gSuper->mainMenu();
 
-    delete s;
+    delete gSuper;
 
     return 0;
 }

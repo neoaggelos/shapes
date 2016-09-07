@@ -12,7 +12,7 @@ private:
 
 	void SDL_CHECK(bool check, string msg = "SDL Error");
 public:
-	RenderData(Super *s);
+	RenderData(string theme);
 
 	~RenderData();
 
@@ -21,7 +21,7 @@ public:
 
 	SDL_Texture *getTexture();
 
-	void reloadTexture(Super *s);
+	void reloadTexture(string theme);
 };
 
 #endif /* _render_h */

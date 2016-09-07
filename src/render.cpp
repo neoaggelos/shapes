@@ -20,7 +20,7 @@ void RenderData::SDL_CHECK(bool check, string msg)
 	}
 }
 
-RenderData::RenderData(Super *s)
+RenderData::RenderData(string theme)
 {
     //TODO with this, we can't create two RenderData objects. Not a bad thing,
     //something that is worth to be noted though
@@ -36,7 +36,7 @@ RenderData::RenderData(Super *s)
 
   SDL_RenderSetLogicalSize(renderer, 480, 640);
 
-  reloadTexture(s);
+  reloadTexture(theme);
 }
 
 RenderData::~RenderData()
@@ -67,13 +67,13 @@ RenderData::getTexture()
 }
 
 void
-RenderData::reloadTexture(Super *s)
+RenderData::reloadTexture(string theme)
 {
 	string themesIni = getAssetsDir() + "themes.ini";
 	SDLU_IniHandler *h = SDLU_LoadIni(themesIni.c_str());
 	int colorkey = 1;
 	if (h) {
-		const char* prop = SDLU_GetIniProperty(h, s->getSettings()->theme.c_str(), "colorkey");
+		const char* prop = SDLU_GetIniProperty(h,theme.c_str(), "colorkey");
 		if (prop != NULL) {
 			int tmp = StringToInt(prop);
 			if (tmp == 0 || tmp == 1)
@@ -81,7 +81,7 @@ RenderData::reloadTexture(Super *s)
 		}
 	}
 	SDLU_DestroyIni(h);
-	string fname = getAssetsDir() + s->getSettings()->theme + ".bmp";
+	string fname = getAssetsDir() + theme + ".bmp";
 
 	SDL_Surface *tmp = SDL_LoadBMP(fname.c_str());
 	SDL_CHECK(tmp != NULL, "Could not load BMP file");

@@ -6,13 +6,12 @@ ok_callback(void *_ok, void *done)
 	*(static_cast<bool*>(done)) = true;
 }
 
-EnterName::EnterName(Super *super, string msg)
+EnterName::EnterName(string msg)
 {
-	parent = super;
 	message = msg;
 	done = false;
 
-	SDL_Window *window = super->getRenderData()->getWindow();
+	SDL_Window *window = gSuper->getRenderData()->getWindow();
 	ok = SDLU_CreateButton(window, "OK", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(ok, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(ok, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
@@ -32,7 +31,7 @@ EnterName::openDialog()
 	Uint32 count = 0;
 	SDL_Event event;
 
-	SDL_Renderer* renderer = parent->getRenderData()->getRenderer();
+	SDL_Renderer* renderer = gSuper->getRenderData()->getRenderer();
 	string input = "";
 
 	SDL_Rect inputRect = SDLU_CreateRect(100, 300, 280, 50);
@@ -43,7 +42,7 @@ EnterName::openDialog()
 	while (!done) {
 		if (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
-				parent->finish();
+				gSuper->finish();
 			}
 			else if (event.type == SDL_TEXTINPUT) {
 				input += event.text.text;
@@ -88,6 +87,7 @@ EnterName::openDialog()
 
 		SDL_Delay(10);
 	}
+	SDL_StopTextInput();
 
 	return input;
 }

@@ -13,8 +13,6 @@ enum GameMode {
 
 class Game {
 private:
-
-	Super *parent;
 	int score;
 
 	list <Shape*> shapes;
@@ -31,7 +29,7 @@ private:
 
 public:
 
-	Game(Super *super);
+	Game();
 
 	~Game();
 

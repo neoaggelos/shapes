@@ -16,9 +16,8 @@ getDescription(GameMode mode)
 
 }
 
-Game::Game(Super *super)
+Game::Game()
 {
-	parent = super;
     score = 0;
 
     playerShape = new Shape();
@@ -45,19 +44,19 @@ Game::~Game()
 	string res = IntToString(score);
 	string msg = "You scored " + res + " points.";
 
-	int diff = parent->getSettings()->difficulty;
+	int diff = gSuper->getSettings()->difficulty;
 
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Game Ended", msg.c_str(), NULL);
 
-	if (parent->getHighscores()->getScore(diff, 4) <= score && score > 0) {
+	if (gSuper->getHighscores()->getScore(diff, 4) <= score && score > 0) {
 		msg += "You set a new high score! Congratulations!";
-		EnterName *nameDialog = new EnterName(parent, "Enter your name:");
+		EnterName *nameDialog = new EnterName("Enter your name:");
 
 		string name = nameDialog->openDialog();
 
 		delete nameDialog;
 
-		int s = parent->getHighscores()->addScore(diff, score, name);
+		int s = gSuper->getHighscores()->addScore(diff, score, name);
 	}
     
 }
@@ -66,7 +65,7 @@ Game::~Game()
 void
 Game::addShape(Uint32 newTime)
 {
-	Difficulty d(parent->getSettings()->difficulty);
+	Difficulty d(gSuper->getSettings()->difficulty);
     lastAddTime = newTime;
 	
 	double shapeSpeed = d.shapeSpeed();
@@ -91,9 +90,9 @@ Game::getScore()
 void
 Game::render()
 {
-	Difficulty d(parent->getSettings()->difficulty);
-	RenderData *data = parent->getRenderData();
-	Highscores *h = parent->getHighscores();
+	Difficulty d(gSuper->getSettings()->difficulty);
+	RenderData *data = gSuper->getRenderData();
+	Highscores *h = gSuper->getHighscores();
 
 	SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
 	SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
@@ -107,7 +106,7 @@ Game::render()
 				(*it)->setType(random(1, d.numShapes()));
 			}
 
-			(*it)->render(data);
+			(*it)->render();
 
 			if (shouldChange) {
 				(*it)->setType(oldType);
@@ -123,11 +122,11 @@ Game::render()
 	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, 5, "%.1lf", time);
 
 	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 30, "%s", getDescription(mode));
-	playerShape->render(data);
+	playerShape->render();
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xaa);
     SDLU_RenderText(data->getRenderer(), 0, 5,  "Score: %d", getScore());
-	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 5, "High Score: %d", h->getScore(parent->getSettings()->difficulty, 0));
+	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 5, "High Score: %d", h->getScore(gSuper->getSettings()->difficulty, 0));
 	
     for (int i = 0; i < d.numShapes(); i++) {
 		SDL_Rect src = { 80 * i, 0, 80, 80 };
@@ -146,18 +145,60 @@ enum GameAction {
 	MoveRight,
 	MoveLeft,
 	ChangeShapeUp,
-	ChangeShapeDown
+	ChangeShapeDown,
+	Quit
 };
 
+static void
+right_callback(void *_this, void *_player)
+{
+	Shape *player = static_cast<Shape*>(_player);
+	Difficulty d(gSuper->getSettings()->difficulty);
+	
+	int lane = player->getLane();
+	lane++;
+	if (lane > 3) lane = 1;
+	player->setLane(lane);
+}
+static void
+left_callback(void *_this, void *_player)
+{
+	Shape *player = static_cast<Shape*>(_player);
+	Difficulty d(gSuper->getSettings()->difficulty);
+
+	int lane = player ->getLane();
+	lane--;
+	if (lane < 1) lane = 3;
+	player->setLane(lane);
+}
+static void
+up_callback(void *_this, void *_player)
+{
+	Shape *player = static_cast<Shape*>(_player);
+	Difficulty d(gSuper->getSettings()->difficulty);
+
+	int type = player->getType();
+	type = (type == d.numShapes() - 1) ? 0 : type + 1;
+	player->setType(type);
+}
+static void
+down_callback(void *_this, void *_player)
+{
+	Shape *player = static_cast<Shape*>(_player);
+	Difficulty d(gSuper->getSettings()->difficulty);
+
+	int type = player->getType();
+	type = (type == 0) ? d.numShapes() - 1 : type - 1;
+	player->setType(type);
+}
 
 void
 Game::handleEvents(SDL_Event event)
 {
 	static GameAction action = None;
 	static bool executedAction = false;
-	static bool handledMotionEvent = false;
 
-	Settings *settings = parent->getSettings();
+	Settings *settings = gSuper->getSettings();
 	Difficulty d(settings->difficulty);
 
 	SDL_Scancode rightKey = settings->moveRightKey;
@@ -175,7 +216,6 @@ Game::handleEvents(SDL_Event event)
 
     switch (event.type) {
     case SDL_KEYDOWN:
-		handledMotionEvent = false;
 		if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
 			action = None;
 			executedAction = true;
@@ -200,71 +240,26 @@ Game::handleEvents(SDL_Event event)
         break;
     case SDL_KEYUP:
         action = None;
-		handledMotionEvent = false;
         break;
-	case SDL_MOUSEMOTION:
-		int xrel, yrel;
-		xrel = event.motion.xrel;
-		yrel = event.motion.yrel;
-
-		if (event.motion.state != SDL_BUTTON(SDL_BUTTON_LEFT) || handledMotionEvent) {
-			break;
-		}
-
-		if (SDL_abs(xrel) < 10 && yrel < -30) {
-			action = ChangeShapeUp;
-			executedAction = false;
-			handledMotionEvent = true;
-		}
-		else if (SDL_abs(xrel) < 10 && yrel > 30) {
-			action = ChangeShapeDown;
-			executedAction = false;
-			handledMotionEvent = true;
-		}
-		else if (SDL_abs(yrel) < 10 && xrel > 30) {
-			action = MoveRight;
-			executedAction = false;
-			handledMotionEvent = true;
-		}
-		else if (SDL_abs(yrel) < 10 && xrel < -30) {
-			action = MoveLeft;
-			executedAction = false;
-			handledMotionEvent = true;
-		}
-		else {
-			handledMotionEvent = false;
-		}
-		break;
     case SDL_QUIT:
-		parent->finish();
-	default:
-		handledMotionEvent = false;
+		gSuper->finish();
+		break;
     }
 
 	if (!executedAction) {
 		executedAction = true;
 
 		if (action == MoveRight) {
-			int lane = playerShape->getLane();
-			lane++;
-			if (lane > 3) lane = 1;
-			playerShape->setLane(lane);
+			right_callback(NULL, playerShape);
 		}
 		else if (action == MoveLeft) {
-			int lane = playerShape->getLane();
-			lane--;
-			if (lane < 1) lane = 3;
-			playerShape->setLane(lane);
+			left_callback(NULL, playerShape);
 		}
 		else if (action == ChangeShapeUp) {
-			int type = playerShape->getType();
-			type = (type == d.numShapes() - 1) ? 0 : type + 1;
-			playerShape->setType(type);
+			up_callback(NULL, playerShape);
 		}
 		else if (action == ChangeShapeDown) {
-			int type = playerShape->getType();
-			type = (type == 0) ? d.numShapes() - 1 : type - 1;
-			playerShape->setType(type);
+			down_callback(NULL, playerShape);
 		}
 	}
 
@@ -306,7 +301,7 @@ void
 Game::run()
 {
 	SDL_Event event;
-	RenderData *data = parent->getRenderData();
+	RenderData *data = gSuper->getRenderData();
 	
 	SDLU_FPS_Init(30);
 	while (isPlaying()) {
@@ -347,7 +342,7 @@ Game::pauseMenu()
 
 	SDL_Event event;
 	SDLU_Button *resume_button, *forfeit_button;
-	RenderData *data = parent->getRenderData();
+	RenderData *data = gSuper->getRenderData();
 	PauseMenuAction action = Idle;
 
 	resume_button = SDLU_CreateButton(data->getWindow(), "Resume Game", SDLU_BUTTON_TEXT);
@@ -409,7 +404,7 @@ Game::pauseMenu()
 		pauseTime = 0;
 	}
 	else if (action == Exit) {
-		parent->finish();
+		gSuper->finish();
 	}
 	else if (action == Forfeit) {
 		playing = false;

@@ -1,9 +1,7 @@
 #include "main.h"
 
-Highscores::Highscores(Super *super)
+Highscores::Highscores()
 {
-	parent = super;
-
 	SDLU_IniHandler *ini;
 	const char *scoresPath = getSettingsDir();
 	savingScores = scoresPath != NULL;
@@ -125,7 +123,7 @@ Highscores::openMenu(int currentdiff, int currentindex)
 	HighscoresMenuAction action = None;
 	int diff = 1;
 
-	RenderData* data = parent->getRenderData();
+	RenderData* data = gSuper->getRenderData();
 	again_button = SDLU_CreateButton(data->getWindow(), "I can beat it", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(again_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(again_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
@@ -212,12 +210,12 @@ Highscores::openMenu(int currentdiff, int currentindex)
 	SDLU_DestroyButton(back_button);
 
 	if (action == Quit)
-		parent->finish();
+		gSuper->finish();
 	else if (action == PlayAgain) {
-		parent->playGame();
+		gSuper->playGame();
 	}
 	else if (action == BackToMenu) {
-		parent->mainMenu();
+		gSuper->mainMenu();
 	}
 }
 

@@ -43,4 +43,6 @@ class EnterName;
 #include "highscores.h"
 #include "super.h"
 
+extern Super *gSuper;
+
 #endif /* _main_h */

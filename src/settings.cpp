@@ -19,10 +19,8 @@ Settings::isOK(SDLU_IniHandler* h)
 	return OK;
 }
 
-Settings::Settings(Super *super)
+Settings::Settings()
 {
-	parent = super;
-
 	const char* settingsPath = getSettingsDir();
 	savingSettings = settingsPath != NULL;
 
@@ -152,7 +150,7 @@ Settings::openMenu()
 {
 	SDLU_Button *shapeUpButton, *shapeDownButton, *rightButton, *leftButton, *resetButton, *backButton;
 	SDLU_ComboBox *diffBox, *themeBox;
-	RenderData* data = parent->getRenderData();
+	RenderData* data = gSuper->getRenderData();
 	SettingsMenuAction action;
 
 	rightButton = new_button(data, "Change", 350, 125, 85, 35);
@@ -183,14 +181,14 @@ Settings::openMenu()
 		std::string name = string(info->filename).substr(0, SDL_strlen(info->filename) - 4);
 		SDLU_AddComboBoxItem(&themeBox, SDL_strdup(name.c_str()));
 	}
-	SDLU_SetComboBoxActiveItem(themeBox, parent->getSettings()->theme.c_str());
+	SDLU_SetComboBoxActiveItem(themeBox, gSuper->getSettings()->theme.c_str());
 	SDLU_CloseDirectory(dir);
 
 	diffBox = new_cbox(data, 350, 495, 85, 35);
 	SDLU_AddComboBoxItem(&diffBox, "Easy");
 	SDLU_AddComboBoxItem(&diffBox, "Medium");
 	SDLU_AddComboBoxItem(&diffBox, "Hard");
-	SDLU_SetComboBoxActiveIndex(diffBox, parent->getSettings()->difficulty);
+	SDLU_SetComboBoxActiveIndex(diffBox, gSuper->getSettings()->difficulty);
 
 	SDL_Event event;
 	action = None;
@@ -198,17 +196,17 @@ Settings::openMenu()
 		action = None;
 		if (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
-				parent->finish();
+				gSuper->finish();
 			}
 			else if (event.type == SDLU_COMBOBOX_TEXTCHANGED) {
 				Uint32 cbox_id = static_cast<Uint32>(event.user.code);
 				if (cbox_id == diffBox->id) {
 					DifficultyLevel new_diff = static_cast<DifficultyLevel>(diffBox->current_index);
-					parent->getSettings()->difficulty = new_diff;
+					gSuper->getSettings()->difficulty = new_diff;
 				}
 				else if (cbox_id == themeBox->id) {
-					parent->getSettings()->theme = SDL_strdup(themeBox->current);
-					parent->getRenderData()->reloadTexture(parent);
+					gSuper->getSettings()->theme = SDL_strdup(themeBox->current);
+					gSuper->getRenderData()->reloadTexture(gSuper->getSettings()->theme);
 				}
 			}
 			
@@ -231,24 +229,24 @@ Settings::openMenu()
 
 				if (newKey != SDL_SCANCODE_ESCAPE) {
 					if (action == ReadRightKey)
-						parent->getSettings()->moveRightKey = newKey;
+						gSuper->getSettings()->moveRightKey = newKey;
 					else if (action == ReadLeftKey)
-						parent->getSettings()->moveLeftKey = newKey;
+						gSuper->getSettings()->moveLeftKey = newKey;
 					else if (action == ReadShapeUpKey)
-						parent->getSettings()->changeShapeUpKey = newKey;
+						gSuper->getSettings()->changeShapeUpKey = newKey;
 					else if (action == ReadShapeDownKey)
-						parent->getSettings()->changeShapeDownKey = newKey;
+						gSuper->getSettings()->changeShapeDownKey = newKey;
 				}
 			}
 			else if (action == Reset) {
-				parent->getSettings()->reset();
-				SDLU_SetComboBoxActiveIndex(diffBox, parent->getSettings()->difficulty);
-				SDLU_SetComboBoxActiveItem(themeBox, parent->getSettings()->theme.c_str());
+				gSuper->getSettings()->reset();
+				SDLU_SetComboBoxActiveIndex(diffBox, gSuper->getSettings()->difficulty);
+				SDLU_SetComboBoxActiveItem(themeBox, gSuper->getSettings()->theme.c_str());
 			}
 		}
 
-		Settings *s = parent->getSettings();
-		SDL_Renderer *target = parent->getRenderData()->getRenderer();
+		Settings *s = gSuper->getSettings();
+		SDL_Renderer *target = gSuper->getRenderData()->getRenderer();
 		SDL_SetRenderDrawColor(target, 0, 0, 0, 0);
 		SDL_RenderClear(target);
 
@@ -277,7 +275,7 @@ Settings::openMenu()
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 280, "%s", SDL_GetScancodeName(s->changeShapeDownKey));
 
 		SDLU_RenderText(target, 15, 390, "Choose Theme");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 390, "%s", parent->getSettings()->theme.c_str());
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 390, "%s", themeBox->current);
 
 		SDLU_RenderText(target, 15, 500, "Choose Difficulty");
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 500, "%s", diffBox->current);
@@ -307,6 +305,6 @@ Settings::openMenu()
 	SDLU_DestroyComboBox(diffBox);
 
 	if (action == Quit) {
-		parent->finish();
+		gSuper->finish();
 	}
 }

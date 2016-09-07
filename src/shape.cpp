@@ -26,8 +26,9 @@ Shape::move(double var)
 }
 
 void
-Shape::render(RenderData *data)
+Shape::render()
 {
+	RenderData *data = gSuper->getRenderData();
 	SDL_Rect srcRect, dstRect;
 
 	srcRect.x = 80 * type;

@@ -5,14 +5,13 @@
 
 class Highscores {
 private:
-	Super *parent;
 	int scores[3][5];
 	string names[3][5];
 	bool savingScores;
 	string scoresIni;
 
 public:
-	Highscores(Super *super);
+	Highscores();
 	~Highscores();
 
 	int addScore(int diff, int score, string name);
