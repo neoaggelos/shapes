@@ -200,8 +200,56 @@ Game::run()
 	Settings *settings = gSuper->getSettings();
 	Difficulty d(settings->difficulty);
 	GameAction action = None;
-	SDL_Scancode rightKey, leftKey, upKey, downKey;
-	bool executedAction = false;
+
+	SDLU_Button *upButton, *downButton, *rightButton, *leftButton;
+
+	upButton = SDLU_CreateButton(data->getWindow(), "Up", SDLU_BUTTON_TEXT);
+	SDLU_SetButtonAction(upButton, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
+	SDLU_SetButtonAction(upButton, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(upButton, SDLU_PRESS_CALLBACK, up_callback, playerShape);
+	SDLU_SetButtonHotkey(upButton, settings->changeShapeUpKey);
+	SDLU_SetButtonGeometry(upButton, 240, 500, 60, 30);
+	((SDLU_Styles*)upButton->content)->font_size = 15;
+	((SDLU_Styles*)upButton->content)->blendmode = SDL_BLENDMODE_BLEND;
+	((SDLU_Styles*)upButton->content)->box_color.a = 80;
+	((SDLU_Styles*)upButton->content)->fill_color.a = 80;
+	((SDLU_Styles*)upButton->content)->text_color.a = 80;
+
+	downButton = SDLU_CreateButton(data->getWindow(), "Down", SDLU_BUTTON_TEXT);
+	SDLU_SetButtonAction(downButton, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
+	SDLU_SetButtonAction(downButton, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(downButton, SDLU_PRESS_CALLBACK, down_callback, playerShape);
+	SDLU_SetButtonHotkey(downButton, settings->changeShapeDownKey);
+	SDLU_SetButtonGeometry(downButton, 160, 500, 60, 30);
+	((SDLU_Styles*)downButton->content)->font_size = 15;
+	((SDLU_Styles*)downButton->content)->blendmode = SDL_BLENDMODE_BLEND;
+	((SDLU_Styles*)downButton->content)->box_color.a = 80;
+	((SDLU_Styles*)downButton->content)->fill_color.a = 80;
+	((SDLU_Styles*)downButton->content)->text_color.a = 80;
+
+	rightButton = SDLU_CreateButton(data->getWindow(), "Right", SDLU_BUTTON_TEXT);
+	SDLU_SetButtonAction(rightButton, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
+	SDLU_SetButtonAction(rightButton, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(rightButton, SDLU_PRESS_CALLBACK, right_callback, playerShape);
+	SDLU_SetButtonHotkey(rightButton, settings->moveRightKey);
+	SDLU_SetButtonGeometry(rightButton, 320, 500, 60, 30);
+	((SDLU_Styles*)rightButton->content)->font_size = 15;
+	((SDLU_Styles*)rightButton->content)->blendmode = SDL_BLENDMODE_BLEND;
+	((SDLU_Styles*)rightButton->content)->box_color.a = 80;
+	((SDLU_Styles*)rightButton->content)->fill_color.a = 80;
+	((SDLU_Styles*)rightButton->content)->text_color.a = 80;
+
+	leftButton = SDLU_CreateButton(data->getWindow(), "Left", SDLU_BUTTON_TEXT);
+	SDLU_SetButtonAction(leftButton, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
+	SDLU_SetButtonAction(leftButton, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, left_callback, playerShape);
+	SDLU_SetButtonHotkey(leftButton, settings->moveLeftKey);
+	SDLU_SetButtonGeometry(leftButton, 80, 500, 60, 30);
+	((SDLU_Styles*)leftButton->content)->font_size = 15;
+	((SDLU_Styles*)leftButton->content)->blendmode = SDL_BLENDMODE_BLEND;
+	((SDLU_Styles*)leftButton->content)->box_color.a = 80;
+	((SDLU_Styles*)leftButton->content)->fill_color.a = 80;
+	((SDLU_Styles*)leftButton->content)->text_color.a = 80;
 
 	SDLU_FPS_Init(30);
 	while (isPlaying()) {
@@ -209,76 +257,37 @@ Game::run()
 		
 		SDL_PollEvent(&event);
 
-		rightKey = settings->moveRightKey;
-		leftKey = settings->moveLeftKey;
-		upKey = settings->changeShapeUpKey;
-		 downKey = settings->changeShapeDownKey;
+		SDLU_SetButtonCallback(upButton, SDLU_PRESS_CALLBACK, up_callback, playerShape);
+		SDLU_SetButtonCallback(downButton, SDLU_PRESS_CALLBACK, down_callback, playerShape);
+		SDLU_SetButtonCallback(rightButton, SDLU_PRESS_CALLBACK, right_callback, playerShape);
+		SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, left_callback, playerShape);
 
 		if (mode == Reverse) {
-			rightKey = settings->moveLeftKey;
-			leftKey = settings->moveRightKey;
-
-			upKey = settings->changeShapeDownKey;
-			downKey = settings->changeShapeUpKey;
+			SDLU_SetButtonCallback(upButton, SDLU_PRESS_CALLBACK, down_callback, playerShape);
+			SDLU_SetButtonCallback(downButton, SDLU_PRESS_CALLBACK, up_callback, playerShape);
+			SDLU_SetButtonCallback(rightButton, SDLU_PRESS_CALLBACK, left_callback, playerShape);
+			SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, right_callback, playerShape);
 		}
 
-		int i = 0;
 		switch (event.type) {
-
 		case SDL_WINDOWEVENT:
 			if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
 				action = None;
-				executedAction = true;
 				pauseMenu();
 			}
 			break;
 		case SDL_KEYDOWN:
 			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
 				action = None;
-				executedAction = true;
 				pauseMenu();
-			}
-			else if ((action != MoveRight) && (event.key.keysym.scancode == rightKey)) {
-				action = MoveRight;
-				executedAction = false;
-			}
-			else if ((action != MoveLeft) && (event.key.keysym.scancode == leftKey)) {
-				action = MoveLeft;
-				executedAction = false;
-			}
-			else if ((action != ChangeShapeUp) && (event.key.keysym.scancode == upKey)) {
-				action = ChangeShapeUp;
-				executedAction = false;
-			}
-			else if ((action != ChangeShapeDown) && (event.key.keysym.scancode == downKey)) {
-				action = ChangeShapeDown;
-				executedAction = false;
 			}
 			break;
 		case SDL_KEYUP:
 			action = None;
 			break;
 		case SDL_QUIT:
-
 			gSuper->finish();
 			break;
-		}
-
-		if (!executedAction) {
-			executedAction = true;
-
-			if (action == MoveRight) {
-				right_callback(NULL, playerShape);
-			}
-			else if (action == MoveLeft) {
-				left_callback(NULL, playerShape);
-			}
-			else if (action == ChangeShapeUp) {
-				up_callback(NULL, playerShape);
-			}
-			else if (action == ChangeShapeDown) {
-				down_callback(NULL, playerShape);
-			}
 		}
 
 		if (!shapes.empty()) {
@@ -316,6 +325,12 @@ Game::run()
 		SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
 		SDL_RenderClear(data->getRenderer());
 		render();
+
+		SDLU_RenderButton(upButton);
+		SDLU_RenderButton(downButton);
+		SDLU_RenderButton(rightButton);
+		SDLU_RenderButton(leftButton);
+
 		SDL_RenderPresent(data->getRenderer());
 
 		SDLU_FPS_Cap();

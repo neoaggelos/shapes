@@ -34,7 +34,7 @@ RenderData::RenderData(string theme)
 	renderer = SDL_CreateRenderer(window, rnddriver, rndflags);
 	SDL_CHECK(renderer != NULL, "Could not create renderer");
 
-  SDL_RenderSetLogicalSize(renderer, 480, 640);
+  //SDL_RenderSetLogicalSize(renderer, 480, 640);
 
   reloadTexture(theme);
 }

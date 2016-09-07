@@ -172,10 +172,9 @@ Settings::openMenu()
 	SDLU_SetButtonCallback(backButton, SDLU_PRESS_CALLBACK, back_callback, &action);
 
 	themeBox = new_cbox(data, 350, 385, 85, 35);
-	list<std::string> themes = { "Red", "Cats", "Blue" };
-	for (list<std::string>::iterator it = themes.begin(); it != themes.end(); it++) {
-		SDLU_AddComboBoxItem(&themeBox, (*it).c_str());
-	}
+	SDLU_AddComboBoxItem(&themeBox, "Red");
+	SDLU_AddComboBoxItem(&themeBox, "Cats");
+	SDLU_AddComboBoxItem(&themeBox, "Blue");
 	SDLU_SetComboBoxActiveItem(themeBox, theme.c_str());
 
 	diffBox = new_cbox(data, 350, 495, 85, 35);
