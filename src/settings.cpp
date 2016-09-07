@@ -172,17 +172,11 @@ Settings::openMenu()
 	SDLU_SetButtonCallback(backButton, SDLU_PRESS_CALLBACK, back_callback, &action);
 
 	themeBox = new_cbox(data, 350, 385, 85, 35);
-
-	SDLU_Directory *dir = SDLU_OpenDirectory(getAssetsDir().c_str(), SDL_TRUE);
-	SDLU_FileInfo *info;
-
-	while ((info = SDLU_NextFileWithExtension(dir, "bmp")))
-	{
-		std::string name = string(info->filename).substr(0, SDL_strlen(info->filename) - 4);
-		SDLU_AddComboBoxItem(&themeBox, SDL_strdup(name.c_str()));
+	list<std::string> themes = { "Red", "Cats", "Blue" };
+	for (list<std::string>::iterator it = themes.begin(); it != themes.end(); it++) {
+		SDLU_AddComboBoxItem(&themeBox, (*it).c_str());
 	}
-	SDLU_SetComboBoxActiveItem(themeBox, gSuper->getSettings()->theme.c_str());
-	SDLU_CloseDirectory(dir);
+	SDLU_SetComboBoxActiveItem(themeBox, theme.c_str());
 
 	diffBox = new_cbox(data, 350, 495, 85, 35);
 	SDLU_AddComboBoxItem(&diffBox, "Easy");

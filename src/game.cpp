@@ -7,9 +7,8 @@ getDescription(GameMode mode)
 {
 	switch (mode)
 	{
-	case Fast: return "Shapes are falling faster!";
 	case Fake: return "Which one is it really?";
-	case Reverse: return "Left is right, right is left!";
+	case Reverse: return "Some might say, it's the reverse!";
 	case Lots: return "How many are there?";
 	default: return "";
 	}
@@ -24,6 +23,7 @@ Game::Game()
 
     playing = true;
 	pauseTime = 0;
+	startTime = SDL_GetTicks();
 
     lastAddTime = SDL_GetTicks();
     addShape(lastAddTime);
@@ -69,7 +69,7 @@ Game::addShape(Uint32 newTime)
     lastAddTime = newTime;
 	
 	double shapeSpeed = d.shapeSpeed();
-	shapeSpeed += 0.5 * (SDL_GetTicks() / 60000);
+	shapeSpeed += 0.2 * ((SDL_GetTicks() - startTime) / 60000);
 	Shape * newShape = new Shape(shapeSpeed, d.numShapes());
 
     shapes.push_back(newShape);
@@ -193,122 +193,125 @@ down_callback(void *_this, void *_player)
 }
 
 void
-Game::handleEvents(SDL_Event event)
-{
-	static GameAction action = None;
-	static bool executedAction = false;
-
-	Settings *settings = gSuper->getSettings();
-	Difficulty d(settings->difficulty);
-
-	SDL_Scancode rightKey = settings->moveRightKey;
-	SDL_Scancode leftKey = settings->moveLeftKey;
-	SDL_Scancode upKey = settings->changeShapeUpKey;
-	SDL_Scancode downKey = settings->changeShapeDownKey;
-
-	if (mode == Reverse) {
-		rightKey = settings->moveLeftKey;
-		leftKey = settings->moveRightKey;
-
-		upKey = settings->changeShapeDownKey;
-		downKey = settings->changeShapeUpKey;
-	}
-
-    switch (event.type) {
-    case SDL_KEYDOWN:
-		if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-			action = None;
-			executedAction = true;
-			pauseMenu();
-		}
-        else if ((action != MoveRight) && (event.key.keysym.scancode == rightKey)) {
-			action = MoveRight;
-			executedAction = false;
-        }
-        else if ((action != MoveLeft) && (event.key.keysym.scancode == leftKey)) {
-			action = MoveLeft;
-			executedAction = false;
-        }
-        else if ((action != ChangeShapeUp) && (event.key.keysym.scancode == upKey)) {
-			action = ChangeShapeUp;
-			executedAction = false;
-        }
-		else if ((action != ChangeShapeDown) && (event.key.keysym.scancode == downKey)) {
-			action = ChangeShapeDown;
-			executedAction = false;
-		}
-        break;
-    case SDL_KEYUP:
-        action = None;
-        break;
-    case SDL_QUIT:
-		gSuper->finish();
-		break;
-    }
-
-	if (!executedAction) {
-		executedAction = true;
-
-		if (action == MoveRight) {
-			right_callback(NULL, playerShape);
-		}
-		else if (action == MoveLeft) {
-			left_callback(NULL, playerShape);
-		}
-		else if (action == ChangeShapeUp) {
-			up_callback(NULL, playerShape);
-		}
-		else if (action == ChangeShapeDown) {
-			down_callback(NULL, playerShape);
-		}
-	}
-
-    if (!shapes.empty()) {
-        for (ShapeIter i = shapes.begin(); i != shapes.end(); i++) {
-            if (!(*i)->isFalling()) {
-                if (*playerShape == **i) {
-					delete *i;
-                    shapes.erase(i);
-                    score += d.score();
-                    break;
-                }
-                else {
-                    playing = false;
-                }
-            }
-            else {
-				double var = 1.0;
-				if (mode != Normal) var = 1.5;
-				if (mode == Fast) var = 2.0;
-                (*i)->move(var);
-            }
-        }
-    }
-
-    Uint32 newTime = SDL_GetTicks();
-	double respawnTime = d.respawnTime() * ((mode == Lots) ? 0.5 : 1);
-    if (newTime - lastAddTime >= respawnTime) {
-        addShape(newTime);
-    }
-
-	if (newTime - lastModeChangeTime >= d.changeModeTime()) {
-		mode = mode == Normal ? static_cast<GameMode>(random(2, 5)) : Normal;
-		lastModeChangeTime = newTime;
-	}
-}
-
-void
 Game::run()
 {
 	SDL_Event event;
 	RenderData *data = gSuper->getRenderData();
-	
+	Settings *settings = gSuper->getSettings();
+	Difficulty d(settings->difficulty);
+	GameAction action = None;
+	SDL_Scancode rightKey, leftKey, upKey, downKey;
+	bool executedAction = false;
+
 	SDLU_FPS_Init(30);
 	while (isPlaying()) {
 		SDLU_FPS_Start();
 		
 		SDL_PollEvent(&event);
-		handleEvents(event);
+
+		rightKey = settings->moveRightKey;
+		leftKey = settings->moveLeftKey;
+		upKey = settings->changeShapeUpKey;
+		 downKey = settings->changeShapeDownKey;
+
+		if (mode == Reverse) {
+			rightKey = settings->moveLeftKey;
+			leftKey = settings->moveRightKey;
+
+			upKey = settings->changeShapeDownKey;
+			downKey = settings->changeShapeUpKey;
+		}
+
+		int i = 0;
+		switch (event.type) {
+
+		case SDL_WINDOWEVENT:
+			if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+				action = None;
+				executedAction = true;
+				pauseMenu();
+			}
+			break;
+		case SDL_KEYDOWN:
+			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+				action = None;
+				executedAction = true;
+				pauseMenu();
+			}
+			else if ((action != MoveRight) && (event.key.keysym.scancode == rightKey)) {
+				action = MoveRight;
+				executedAction = false;
+			}
+			else if ((action != MoveLeft) && (event.key.keysym.scancode == leftKey)) {
+				action = MoveLeft;
+				executedAction = false;
+			}
+			else if ((action != ChangeShapeUp) && (event.key.keysym.scancode == upKey)) {
+				action = ChangeShapeUp;
+				executedAction = false;
+			}
+			else if ((action != ChangeShapeDown) && (event.key.keysym.scancode == downKey)) {
+				action = ChangeShapeDown;
+				executedAction = false;
+			}
+			break;
+		case SDL_KEYUP:
+			action = None;
+			break;
+		case SDL_QUIT:
+
+			gSuper->finish();
+			break;
+		}
+
+		if (!executedAction) {
+			executedAction = true;
+
+			if (action == MoveRight) {
+				right_callback(NULL, playerShape);
+			}
+			else if (action == MoveLeft) {
+				left_callback(NULL, playerShape);
+			}
+			else if (action == ChangeShapeUp) {
+				up_callback(NULL, playerShape);
+			}
+			else if (action == ChangeShapeDown) {
+				down_callback(NULL, playerShape);
+			}
+		}
+
+		if (!shapes.empty()) {
+			for (ShapeIter i = shapes.begin(); i != shapes.end(); i++) {
+				if (!(*i)->isFalling()) {
+					if (*playerShape == **i) {
+						delete *i;
+						shapes.erase(i);
+						score += d.score();
+						break;
+					}
+					else {
+						playing = false;
+					}
+				}
+				else {
+					double var = mode == Normal ? 1 : 1.5;
+					(*i)->move(var);
+				}
+			}
+		}
+
+		Uint32 newTime = SDL_GetTicks();
+		double respawnTime = d.respawnTime();
+		respawnTime *= ((mode == Lots) ? 0.5 : 1);
+		if (newTime - lastAddTime >= respawnTime) {
+			addShape(newTime);
+		}
+
+		if (newTime - lastModeChangeTime >= d.changeModeTime()) {
+			mode = mode == Normal ? static_cast<GameMode>(random(1, 3)) : Normal;
+			lastModeChangeTime = newTime;
+		}
 		
 		SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
 		SDL_RenderClear(data->getRenderer());
@@ -401,6 +404,7 @@ Game::pauseMenu()
 
 		lastAddTime += SDL_GetTicks() - pauseTime;
 		lastModeChangeTime += SDL_GetTicks() - pauseTime;
+		startTime += SDL_GetTicks() - pauseTime;
 		pauseTime = 0;
 	}
 	else if (action == Exit) {

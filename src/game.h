@@ -4,11 +4,10 @@
 #include "main.h"
 
 enum GameMode {
-	Normal=1,
-	Fast=2,
-	Reverse=3,
-	Fake=4,
-	Lots=5
+	Normal,
+	Reverse,
+	Fake,
+	Lots
 };
 
 class Game {
@@ -21,6 +20,7 @@ private:
     bool playing;
     int lastAddTime;
 	int pauseTime;
+	int startTime;
 
 	GameMode mode;
 	int lastModeChangeTime;
@@ -33,7 +33,6 @@ public:
 
 	~Game();
 
-	void handleEvents(SDL_Event event);
 	bool isPlaying();
 
 	void render();
