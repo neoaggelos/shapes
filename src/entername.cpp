@@ -28,9 +28,7 @@ EnterName::~EnterName()
 string
 EnterName::openDialog()
 {
-	Uint32 count = 0;
 	SDL_Event event;
-
 	SDL_Renderer* renderer = gSuper->getRenderData()->getRenderer();
 	string input = "";
 
@@ -46,14 +44,15 @@ EnterName::openDialog()
 			}
 			else if (event.type == SDL_TEXTINPUT) {
 				input += event.text.text;
-				count += 1;
 			}
 			else if (event.type == SDL_KEYDOWN) {
 				SDL_Scancode key = event.key.keysym.scancode;
 
-				if (key == SDL_SCANCODE_BACKSPACE && count > 0) {
-					input = input.substr(0, count);
-					count--;
+				if (key == SDL_SCANCODE_BACKSPACE && input.length()) {
+					if (input.length() == 1)
+						input = "";
+					else
+						input = input.substr(0, input.length() - 1);
 				}
 				else if (key == SDL_SCANCODE_RETURN) {
 					done = true;
@@ -73,12 +72,7 @@ EnterName::openDialog()
 		SDL_SetRenderDrawColor(renderer, color, color, color, 0xff);
 
 		int width, height;
-		if (count > 0) {
-			SDLU_GetTextOutputSize(input.c_str(), &width, &height);
-		}
-		else {
-			width = 0;
-		}
+		SDLU_GetTextOutputSize(input.c_str(), &width, &height);
 		SDL_RenderDrawLine(renderer, 111 + width, 310, 111 + width, 335);
 
 		SDLU_RenderButton(ok);
