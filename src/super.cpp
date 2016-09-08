@@ -142,7 +142,7 @@ Super::mainMenu()
 
 		SDL_SetRenderDrawColor(data->getRenderer(), 0xff, 0xff, 0xff, 0xff);
 		SDLU_SetFontSize(SDLU_TEXT_SIZE_SMALL);
-		SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_RIGHT, SDLU_ALIGN_BOTTOM, "Shapes v0.1");
+		SDLU_RenderText(data->getRenderer(), 400, 620, "Shapes v0.1");
 		SDLU_SetFontSize(SDLU_TEXT_SIZE_LARGE);
 		SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 100, "SHAPES");
 

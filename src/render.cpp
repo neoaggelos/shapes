@@ -20,6 +20,25 @@ void RenderData::SDL_CHECK(bool check, string msg)
 	}
 }
 
+int fix_mouse_coordinates(void *_viewport, SDL_Event *event)
+{
+	SDL_Rect viewport = *static_cast<SDL_Rect*>(_viewport);
+	if (event->type == SDL_MOUSEBUTTONDOWN) {
+		event->button.x -= viewport.x;
+		event->button.y -= viewport.y;
+	}
+	else if (event->type == SDL_MOUSEBUTTONUP) {
+		event->button.x -= viewport.x;
+		event->button.y -= viewport.y;
+	}
+	else if (event->type == SDL_MOUSEMOTION) {
+		event->motion.x -= viewport.x;
+		event->motion.y -= viewport.y;
+	}
+
+	return 0;
+}
+
 RenderData::RenderData(string theme)
 {
     //TODO with this, we can't create two RenderData objects. Not a bad thing,
@@ -34,9 +53,23 @@ RenderData::RenderData(string theme)
 	renderer = SDL_CreateRenderer(window, rnddriver, rndflags);
 	SDL_CHECK(renderer != NULL, "Could not create renderer");
 
-  //SDL_RenderSetLogicalSize(renderer, 480, 640);
+	int width, height;
+	SDL_GetWindowSize(window, &width, &height);
+	if (width != WIDTH && height != HEIGHT) {
 
-  reloadTexture(theme);
+		SDL_Rect* viewport = new SDL_Rect;
+		viewport->x = (width - WIDTH) / 2;
+		viewport->y = (height - HEIGHT) / 2;
+		viewport->w = WIDTH;
+		viewport->h = HEIGHT;
+
+		SDL_RenderSetViewport(renderer, viewport);
+#ifndef __ANDROID__
+		SDL_AddEventWatch(fix_mouse_coordinates, viewport);
+#endif /* __ANDROID__ */
+	}
+
+	reloadTexture(theme);
 }
 
 RenderData::~RenderData()
