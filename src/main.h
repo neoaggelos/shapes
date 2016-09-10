@@ -3,8 +3,8 @@
 
 #define NUM_SHAPES 7
 
-#define WIDTH 480
-#define HEIGHT 640
+#define WIDTH 480.0
+#define HEIGHT 640.0
 
 /* definitely not version */
 #define VERSION "0.1"

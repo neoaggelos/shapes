@@ -190,7 +190,7 @@ Game::run()
 	Settings *settings = gSuper->getSettings();
 	Difficulty d(settings->difficulty);
 
-	SDLU_FPS_Init(30);
+	SDLU_FPS_Init(60);
 	while (isPlaying()) {
 		SDLU_FPS_Start();
 
