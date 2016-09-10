@@ -20,25 +20,25 @@ void RenderData::SDL_CHECK(bool check, string msg)
 	}
 }
 
-int fix_mouse_coordinates(void *_viewport, SDL_Event *event)
+struct Scale {
+	float x;
+	float y;
+};
+
+int fix_mouse_coordinates(void *_scale, SDL_Event *event)
 {
-	SDL_Rect *viewport = static_cast<SDL_Rect*>(_viewport);
+	Scale *scale = static_cast<Scale*>(_scale);
 	if (event->type == SDL_MOUSEBUTTONDOWN) {
-		event->button.x -= viewport->x;
-		event->button.y -= viewport->y;
+		event->button.x /= scale->x;
+		event->button.y /= scale->y;
 	}
 	else if (event->type == SDL_MOUSEBUTTONUP) {
-		event->button.x -= viewport->x;
-		event->button.y -= viewport->y;
+		event->button.x /= scale->x;
+		event->button.y /= scale->y;
 	}
 	else if (event->type == SDL_MOUSEMOTION) {
-		event->motion.x -= viewport->x;
-		event->motion.y -= viewport->y;
-	}
-	else if (event->type == SDL_APP_DIDENTERFOREGROUND) {
-		SDL_RenderSetViewport(gSuper->getRenderData()->getRenderer(), viewport);
-		SDL_Log("THIS IS IT\n\n\n\n\n");
-		return 0;
+		event->motion.x /= scale->x;
+		event->motion.y /= scale->y;
 	}
 
 	return 1;
@@ -59,17 +59,18 @@ RenderData::RenderData(string theme)
 	SDL_CHECK(renderer != NULL, "Could not create renderer");
 
 	SDL_GetWindowSize(window, &gWidth, &gHeight);
-	if (gWidth != WIDTH && gHeight != HEIGHT) {
-		SDL_Rect* viewport = new SDL_Rect;
-		viewport->x = (gWidth - WIDTH) / 2;
-		viewport->y = (gHeight - HEIGHT) / 2;
-		viewport->w = WIDTH;
-		viewport->h = HEIGHT;
+	std::cout << gWidth << " " << gHeight << std::endl;
+	if (gWidth != WIDTH || gHeight != HEIGHT) {
+		Scale * scale = new Scale;
 
-		SDL_RenderSetViewport(renderer, viewport);
+		scale->x = (double)gWidth / (double)WIDTH;
+		scale->y = (double)gHeight / (double)HEIGHT;
+
+		SDL_RenderSetScale(renderer, scale->x, scale->y);
+
 #ifndef __ANDROID__
-		SDL_SetEventFilter(fix_mouse_coordinates, viewport);
-#endif /* __ANDROID__ */
+		SDL_SetEventFilter(fix_mouse_coordinates, scale);
+#endif /* ! __ANDROID__ */
 	}
 
 
