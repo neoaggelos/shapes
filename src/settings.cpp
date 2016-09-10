@@ -1,12 +1,16 @@
 #include "main.h"
 
-const int CURRENT_SETTINGS_VERSION = 4;
+/*
+add 1 every time something breaking happens in settings code.
+protects from crashes when newer game versions load older version settings
+*/
+const int CURRENT_SETTINGS_VERSION = 5;
 
 bool
 Settings::isOK(SDLU_IniHandler* h)
 {
 	const int num = 6;
-	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeUpKey", "changeShapeDownKey", "theme", "settings_version" };
+	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeUpKey", "changeShapeDownKey", "theme", "lastName", "settings_version" };
 	bool OK = true;
 
 	for (int i = 0; (i < num) && OK; i++) {
@@ -38,6 +42,7 @@ Settings::Settings()
 		changeShapeDownKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeDownKey")));
 		difficulty = static_cast<DifficultyLevel>(StringToInt(SDLU_GetIniProperty(settings, NULL, "difficulty")));
 		theme = SDLU_GetIniProperty(settings, NULL, "theme");
+		lastName = SDLU_GetIniProperty(settings, NULL, "lastName");
 		settings_version = StringToInt(SDLU_GetIniProperty(settings, NULL, "settings_version"));
 	}
 
@@ -56,6 +61,7 @@ Settings::~Settings()
 		SDLU_SetIniProperty(&h, NULL, "changeShapeDownKey", IntToString(changeShapeDownKey));
 		SDLU_SetIniProperty(&h, NULL, "difficulty", IntToString(difficulty));
 		SDLU_SetIniProperty(&h, NULL, "theme", theme.c_str());
+		SDLU_SetIniProperty(&h, NULL, "lastName", lastName.c_str());
 
 		SDLU_SaveIni(h, settingsIni.c_str());
 		SDLU_DestroyIni(h);
@@ -71,6 +77,7 @@ Settings::reset()
 	changeShapeDownKey = SDL_SCANCODE_DOWN;
 	difficulty = Medium;
 	theme = "Red";
+	lastName = "";
 	settings_version = CURRENT_SETTINGS_VERSION;
 }
 

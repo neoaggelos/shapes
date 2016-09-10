@@ -67,7 +67,7 @@ Highscores::addScore(int diff, int score, string name)
 		return -1;
 
 	for (int i = 0; i < 5; i++) {
-		if (score > scores[diff][i]) {
+		if (score >= scores[diff][i]) {
 			/* shift scores */
 			for (int j = 4; j >= i; j--) {
 				scores[diff][j] = scores[diff][j - 1];

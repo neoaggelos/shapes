@@ -23,6 +23,7 @@ public:
 	SDL_Scancode changeShapeDownKey;
 
 	string theme;
+	string lastName;
 
 	void reset();
 	void openMenu();

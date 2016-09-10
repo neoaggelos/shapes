@@ -30,7 +30,7 @@ EnterName::openDialog()
 {
 	SDL_Event event;
 	SDL_Renderer* renderer = gSuper->getRenderData()->getRenderer();
-	string input = "";
+	string input = gSuper->getSettings()->lastName;
 
 	SDL_Rect inputRect = SDLU_CreateRect(100, 300, 280, 50);
 	SDLU_SetFontSize(18);
@@ -83,5 +83,6 @@ EnterName::openDialog()
 	}
 	SDL_StopTextInput();
 
+	gSuper->getSettings()->lastName = input;
 	return input;
 }
