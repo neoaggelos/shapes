@@ -129,7 +129,7 @@ RenderData::RenderData(string theme)
 	int r = SDL_Init(SDL_INIT_VIDEO);
 	SDL_CHECK(r != -1, "Could not initialize SDL");
 
-	window = SDL_CreateWindow(wintitle, winx, winy, WIDTH, HEIGHT*1.5, winflags);
+	window = SDL_CreateWindow(wintitle, winx, winy, WIDTH, HEIGHT, winflags);
 	SDL_CHECK(window != NULL, "Could not create window");
 
 	renderer = SDL_CreateRenderer(window, rnddriver, rndflags);
