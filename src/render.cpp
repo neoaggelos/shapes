@@ -164,9 +164,7 @@ RenderData::RenderData(string theme)
 		SDL_RenderSetViewport(renderer, &(t->vp));
 		SDL_RenderSetScale(renderer, t->sc, t->sc);
 
-//#ifndef __ANDROID__
 		SDL_SetEventFilter(fix_mouse_coordinates, t);
-//#endif /* ! __ANDROID__ */
 	}
 
 
@@ -203,7 +201,7 @@ RenderData::getTexture()
 void
 RenderData::reloadTexture(string theme)
 {
-	string themesIni = getAssetsDir() + "themes.ini";
+	string themesIni = getAssetsDir("themes") + "themes.ini";
 	SDLU_IniHandler *h = SDLU_LoadIni(themesIni.c_str());
 	int colorkey = 1;
 	if (h) {
@@ -215,7 +213,7 @@ RenderData::reloadTexture(string theme)
 		}
 	}
 	SDLU_DestroyIni(h);
-	string fname = getAssetsDir() + theme + ".bmp";
+	string fname = getAssetsDir("themes") + theme + ".bmp";
 
 	SDL_Surface *tmp = SDL_LoadBMP(fname.c_str());
 	SDL_CHECK(tmp != NULL, "Could not load BMP file");

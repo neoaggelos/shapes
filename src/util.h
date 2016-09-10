@@ -7,7 +7,7 @@ using namespace std;
 int random(int min, int max);
 char *IntToString(int i);
 int StringToInt(const char *s);
-string getAssetsDir();
+string getAssetsDir(string subfolder = "");
 const char* getSettingsDir();
 
 #endif /* _util_h */

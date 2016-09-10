@@ -1,5 +1,11 @@
 #include "main.h"
 
+#if defined(__WIN32__) || defined(__WINRT__)
+const std::string PATHSEP = "\\";
+#else
+const std::string PATHSEP = "/";
+#endif
+
 int random(int min, int max)
 {
 	static bool hasRun = false;
@@ -9,7 +15,7 @@ int random(int min, int max)
 		hasRun = true;
 	}
 
-	return rand() % (max-min+1) + min;
+	return rand() % (max - min + 1) + min;
 }
 
 int StringToInt(const char* str)
@@ -32,19 +38,19 @@ char* IntToString(int i)
 	return SDL_strdup(ret.c_str());
 }
 
-string getAssetsDir()
+string getAssetsDir(string subfolder)
 {
 #if defined( ASSETSDIR )
-	return ASSETSDIR;
+	std::string base = ASSETSDIR;
 #elif defined( __APPLE__ )
-	return SDL_GetBasePath();
+	std::string base = SDL_GetBasePath();
 #elif defined( __ANDROID__ )
-	return "";
+	std::string base = "";
 #else
-	return "assets/";
-	#warning Assets directory may not be correct
+	std::string base = "assets/";
 #endif
 
+	return subfolder != "" ? base + subfolder + PATHSEP : base;
 }
 
 const char* getSettingsDir()
