@@ -44,5 +44,6 @@ class EnterName;
 #include "super.h"
 
 extern Super *gSuper;
+extern int gWidth, gHeight;
 
 #endif /* _main_h */

@@ -140,19 +140,9 @@ Game::render()
     }
 }
 
-enum GameAction {
-	None,
-	MoveRight,
-	MoveLeft,
-	ChangeShapeUp,
-	ChangeShapeDown,
-	Quit
-};
-
 static void
-right_callback(void *_this, void *_player)
+moveRight(Shape *player)
 {
-	Shape *player = static_cast<Shape*>(_player);
 	Difficulty d(gSuper->getSettings()->difficulty);
 	
 	int lane = player->getLane();
@@ -160,10 +150,10 @@ right_callback(void *_this, void *_player)
 	if (lane > 3) lane = 1;
 	player->setLane(lane);
 }
+
 static void
-left_callback(void *_this, void *_player)
+moveLeft(Shape *player)
 {
-	Shape *player = static_cast<Shape*>(_player);
 	Difficulty d(gSuper->getSettings()->difficulty);
 
 	int lane = player ->getLane();
@@ -171,20 +161,20 @@ left_callback(void *_this, void *_player)
 	if (lane < 1) lane = 3;
 	player->setLane(lane);
 }
+
 static void
-up_callback(void *_this, void *_player)
+changeUp(Shape *player)
 {
-	Shape *player = static_cast<Shape*>(_player);
 	Difficulty d(gSuper->getSettings()->difficulty);
 
 	int type = player->getType();
 	type = (type == d.numShapes() - 1) ? 0 : type + 1;
 	player->setType(type);
 }
+
 static void
-down_callback(void *_this, void *_player)
+changeDown(Shape *player)
 {
-	Shape *player = static_cast<Shape*>(_player);
 	Difficulty d(gSuper->getSettings()->difficulty);
 
 	int type = player->getType();
@@ -199,96 +189,48 @@ Game::run()
 	RenderData *data = gSuper->getRenderData();
 	Settings *settings = gSuper->getSettings();
 	Difficulty d(settings->difficulty);
-	GameAction action = None;
-
-	SDLU_Button *upButton, *downButton, *rightButton, *leftButton;
-
-	upButton = SDLU_CreateButton(data->getWindow(), "Up", SDLU_BUTTON_TEXT);
-	SDLU_SetButtonAction(upButton, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-	SDLU_SetButtonAction(upButton, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(upButton, SDLU_PRESS_CALLBACK, up_callback, playerShape);
-	SDLU_SetButtonHotkey(upButton, settings->changeShapeUpKey);
-	SDLU_SetButtonGeometry(upButton, 240, 500, 60, 30);
-	((SDLU_Styles*)upButton->content)->font_size = 15;
-	((SDLU_Styles*)upButton->content)->blendmode = SDL_BLENDMODE_BLEND;
-	((SDLU_Styles*)upButton->content)->box_color.a = 80;
-	((SDLU_Styles*)upButton->content)->fill_color.a = 80;
-	((SDLU_Styles*)upButton->content)->text_color.a = 80;
-
-	downButton = SDLU_CreateButton(data->getWindow(), "Down", SDLU_BUTTON_TEXT);
-	SDLU_SetButtonAction(downButton, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-	SDLU_SetButtonAction(downButton, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(downButton, SDLU_PRESS_CALLBACK, down_callback, playerShape);
-	SDLU_SetButtonHotkey(downButton, settings->changeShapeDownKey);
-	SDLU_SetButtonGeometry(downButton, 160, 500, 60, 30);
-	((SDLU_Styles*)downButton->content)->font_size = 15;
-	((SDLU_Styles*)downButton->content)->blendmode = SDL_BLENDMODE_BLEND;
-	((SDLU_Styles*)downButton->content)->box_color.a = 80;
-	((SDLU_Styles*)downButton->content)->fill_color.a = 80;
-	((SDLU_Styles*)downButton->content)->text_color.a = 80;
-
-	rightButton = SDLU_CreateButton(data->getWindow(), "Right", SDLU_BUTTON_TEXT);
-	SDLU_SetButtonAction(rightButton, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-	SDLU_SetButtonAction(rightButton, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(rightButton, SDLU_PRESS_CALLBACK, right_callback, playerShape);
-	SDLU_SetButtonHotkey(rightButton, settings->moveRightKey);
-	SDLU_SetButtonGeometry(rightButton, 320, 500, 60, 30);
-	((SDLU_Styles*)rightButton->content)->font_size = 15;
-	((SDLU_Styles*)rightButton->content)->blendmode = SDL_BLENDMODE_BLEND;
-	((SDLU_Styles*)rightButton->content)->box_color.a = 80;
-	((SDLU_Styles*)rightButton->content)->fill_color.a = 80;
-	((SDLU_Styles*)rightButton->content)->text_color.a = 80;
-
-	leftButton = SDLU_CreateButton(data->getWindow(), "Left", SDLU_BUTTON_TEXT);
-	SDLU_SetButtonAction(leftButton, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-	SDLU_SetButtonAction(leftButton, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, left_callback, playerShape);
-	SDLU_SetButtonHotkey(leftButton, settings->moveLeftKey);
-	SDLU_SetButtonGeometry(leftButton, 80, 500, 60, 30);
-	((SDLU_Styles*)leftButton->content)->font_size = 15;
-	((SDLU_Styles*)leftButton->content)->blendmode = SDL_BLENDMODE_BLEND;
-	((SDLU_Styles*)leftButton->content)->box_color.a = 80;
-	((SDLU_Styles*)leftButton->content)->fill_color.a = 80;
-	((SDLU_Styles*)leftButton->content)->text_color.a = 80;
 
 	SDLU_FPS_Init(30);
 	while (isPlaying()) {
 		SDLU_FPS_Start();
-		
-		SDL_PollEvent(&event);
 
-		SDLU_SetButtonCallback(upButton, SDLU_PRESS_CALLBACK, up_callback, playerShape);
-		SDLU_SetButtonCallback(downButton, SDLU_PRESS_CALLBACK, down_callback, playerShape);
-		SDLU_SetButtonCallback(rightButton, SDLU_PRESS_CALLBACK, right_callback, playerShape);
-		SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, left_callback, playerShape);
-
-		if (mode == Reverse) {
-			SDLU_SetButtonCallback(upButton, SDLU_PRESS_CALLBACK, down_callback, playerShape);
-			SDLU_SetButtonCallback(downButton, SDLU_PRESS_CALLBACK, up_callback, playerShape);
-			SDLU_SetButtonCallback(rightButton, SDLU_PRESS_CALLBACK, left_callback, playerShape);
-			SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, right_callback, playerShape);
+		if (SDL_PollEvent(&event)) {
+			
+			
+			switch (event.type) {
+			case SDL_WINDOWEVENT:
+				if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+					pauseMenu();
+				}
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				if (event.button.x > gWidth * 0.75)
+					mode != Reverse ? moveRight(playerShape) : moveLeft(playerShape);
+				else if (event.button.x < gWidth * 0.25)
+					mode != Reverse ? moveLeft(playerShape) : moveRight(playerShape);
+				else if (event.button.y > gHeight * 0.5)
+					mode != Reverse ? changeDown(playerShape) : changeUp(playerShape);
+				else
+					mode != Reverse ? changeUp(playerShape) : changeDown(playerShape);
+				break;
+			case SDL_KEYDOWN:
+				if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE || event.key.keysym.scancode == SDL_SCANCODE_AC_BACK)
+					pauseMenu();
+				else if (event.key.keysym.scancode == settings->moveRightKey)
+					mode != Reverse ? moveRight(playerShape) : moveLeft(playerShape);
+				else if (event.key.keysym.scancode == settings->moveLeftKey)
+					mode != Reverse ? moveLeft(playerShape) : moveRight(playerShape);
+				else if (event.key.keysym.scancode == settings->changeShapeDownKey)
+					mode != Reverse ? changeDown(playerShape) : changeUp(playerShape);
+				else if (event.key.keysym.scancode == settings->changeShapeUpKey)
+					mode != Reverse ? changeUp(playerShape) : changeDown(playerShape);
+				break;
+			case SDL_QUIT:
+				gSuper->finish();
+				break;
+			}
 		}
 
-		switch (event.type) {
-		case SDL_WINDOWEVENT:
-			if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
-				action = None;
-				pauseMenu();
-			}
-			break;
-		case SDL_KEYDOWN:
-			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-				action = None;
-				pauseMenu();
-			}
-			break;
-		case SDL_KEYUP:
-			action = None;
-			break;
-		case SDL_QUIT:
-			gSuper->finish();
-			break;
-		}
 
 		if (!shapes.empty()) {
 			for (ShapeIter i = shapes.begin(); i != shapes.end(); i++) {
@@ -325,12 +267,6 @@ Game::run()
 		SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
 		SDL_RenderClear(data->getRenderer());
 		render();
-
-		SDLU_RenderButton(upButton);
-		SDLU_RenderButton(downButton);
-		SDLU_RenderButton(rightButton);
-		SDLU_RenderButton(leftButton);
-
 		SDL_RenderPresent(data->getRenderer());
 
 		SDLU_FPS_Cap();

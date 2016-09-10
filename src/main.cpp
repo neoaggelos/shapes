@@ -1,6 +1,7 @@
 #include "main.h"
 
 Super *gSuper;
+int gWidth, gHeight;
 
 int SDL_main(int argc, char **argv)
 {

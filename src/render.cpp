@@ -22,21 +22,26 @@ void RenderData::SDL_CHECK(bool check, string msg)
 
 int fix_mouse_coordinates(void *_viewport, SDL_Event *event)
 {
-	SDL_Rect viewport = *static_cast<SDL_Rect*>(_viewport);
+	SDL_Rect *viewport = static_cast<SDL_Rect*>(_viewport);
 	if (event->type == SDL_MOUSEBUTTONDOWN) {
-		event->button.x -= viewport.x;
-		event->button.y -= viewport.y;
+		event->button.x -= viewport->x;
+		event->button.y -= viewport->y;
 	}
 	else if (event->type == SDL_MOUSEBUTTONUP) {
-		event->button.x -= viewport.x;
-		event->button.y -= viewport.y;
+		event->button.x -= viewport->x;
+		event->button.y -= viewport->y;
 	}
 	else if (event->type == SDL_MOUSEMOTION) {
-		event->motion.x -= viewport.x;
-		event->motion.y -= viewport.y;
+		event->motion.x -= viewport->x;
+		event->motion.y -= viewport->y;
+	}
+	else if (event->type == SDL_APP_DIDENTERFOREGROUND) {
+		SDL_RenderSetViewport(gSuper->getRenderData()->getRenderer(), viewport);
+		SDL_Log("THIS IS IT\n\n\n\n\n");
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
 RenderData::RenderData(string theme)
@@ -53,21 +58,20 @@ RenderData::RenderData(string theme)
 	renderer = SDL_CreateRenderer(window, rnddriver, rndflags);
 	SDL_CHECK(renderer != NULL, "Could not create renderer");
 
-	int width, height;
-	SDL_GetWindowSize(window, &width, &height);
-	if (width != WIDTH && height != HEIGHT) {
-
+	SDL_GetWindowSize(window, &gWidth, &gHeight);
+	if (gWidth != WIDTH && gHeight != HEIGHT) {
 		SDL_Rect* viewport = new SDL_Rect;
-		viewport->x = (width - WIDTH) / 2;
-		viewport->y = (height - HEIGHT) / 2;
+		viewport->x = (gWidth - WIDTH) / 2;
+		viewport->y = (gHeight - HEIGHT) / 2;
 		viewport->w = WIDTH;
 		viewport->h = HEIGHT;
 
 		SDL_RenderSetViewport(renderer, viewport);
 #ifndef __ANDROID__
-		SDL_AddEventWatch(fix_mouse_coordinates, viewport);
+		SDL_SetEventFilter(fix_mouse_coordinates, viewport);
 #endif /* __ANDROID__ */
 	}
+
 
 	reloadTexture(theme);
 }
