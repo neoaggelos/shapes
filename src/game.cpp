@@ -313,6 +313,7 @@ Game::pauseMenu()
 	SDLU_SetButtonAction(resume_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(resume_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(resume_button, SDLU_PRESS_CALLBACK, resume_callback, &action);
+	SDLU_SetButtonHotkey(resume_button, SDL_SCANCODE_ESCAPE);
 	SDLU_SetButtonGeometry(resume_button, 140, 270, 200, 45);
 
 	forfeit_button = SDLU_CreateButton(data->getWindow(), "Forfeit Game", SDLU_BUTTON_TEXT);

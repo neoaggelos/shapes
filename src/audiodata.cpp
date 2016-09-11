@@ -1,5 +1,7 @@
 #include "main.h"
 
+const int CHANNELS = 8;
+
 void
 AudioData::loadWAV(string name)
 {
@@ -15,6 +17,8 @@ AudioData::AudioData()
 
 	if (hasAudio)
 		hasAudio = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) < 0;
+
+	Mix_AllocateChannels(CHANNELS);
 
 	loadWAV("bleep");
 	loadWAV("whoosh");
@@ -44,5 +48,5 @@ AudioData::play(string sound)
 	Mix_PlayChannel(channel, sounds[sound], 0);
 	Mix_Resume(channel);
 
-	channel = ++channel == MIX_DEFAULT_CHANNELS ? 0 : channel;
+	channel = ++channel == CHANNELS ? 0 : channel;
 }
