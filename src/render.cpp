@@ -167,7 +167,6 @@ RenderData::RenderData(string theme)
 		SDL_SetEventFilter(fix_mouse_coordinates, t);
 	}
 
-
 	reloadTexture(theme);
 }
 

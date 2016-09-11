@@ -4,6 +4,7 @@ project(Shapes)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/FindSDLU.cmake")
+include("${CMAKE_SOURCE_DIR}/cmake/FindSDL2_mixer.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/FindSDL2.cmake")
 
 option(PORTABLE "Save scores and settings in the same folder as the executable" OFF)
@@ -13,8 +14,9 @@ endif(APPLE)
 
 find_package(SDL2 REQUIRED)
 find_package(SDLU REQUIRED)
-include_directories(${SDL2_INCLUDE_DIR} ${SDLU_INCLUDE_DIR})
-link_libraries(${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDLU_LIBRARY})
+find_package(SDL2_mixer REQUIRED)
+include_directories(${SDL2_INCLUDE_DIR} ${SDLU_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR})
+link_libraries(${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDLU_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*)
 file(GLOB TXT_FILES ${CMAKE_SOURCE_DIR}/*.txt)

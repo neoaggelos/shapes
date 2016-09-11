@@ -242,6 +242,7 @@ Game::run()
 			for (ShapeIter i = shapes.begin(); i != shapes.end(); i++) {
 				if (!(*i)->isFalling()) {
 					if (*playerShape == **i) {
+						gSuper->getAudioData()->play("whoosh");
 						delete *i;
 						shapes.erase(i);
 						score += d.score();

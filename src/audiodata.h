@@ -1,17 +1,11 @@
 #ifndef _audiodata_h
 #define _audiodata_h
 
-struct WAV {
-	SDL_AudioSpec spec;
-	Uint8 *data;
-	Uint32 len;
-};
-
 class AudioData {
 private:
-	map<std::string, WAV*> sounds;
+	map<string, Mix_Chunk*> sounds;
+	int channel;
 	bool hasAudio;
-	string lastSound;
 
 	void loadWAV(string name);
 
