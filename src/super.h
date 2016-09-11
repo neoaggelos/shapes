@@ -5,9 +5,10 @@
 
 class Super {
 private:
-    RenderData *data;
+    RenderData *render;
     Settings *settings;
 	Highscores *highscores;
+	AudioData *audio;
 
 	Game *game;
 
@@ -20,8 +21,9 @@ public:
 	void openSettings();
 
 	Settings *getSettings() { return settings; }
-	RenderData *getRenderData() { return data; }
+	RenderData *getRenderData() { return render; }
 	Highscores* getHighscores() { return highscores; }
+	AudioData* getAudioData() { return audio; }
 
 	void finish();
 };

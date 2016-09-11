@@ -3,6 +3,7 @@
 static void
 ok_callback(void *_ok, void *done)
 {
+	gSuper->getAudioData()->play("bleep");
 	*(static_cast<bool*>(done)) = true;
 }
 

@@ -101,7 +101,7 @@ Game::render()
     if (!shapes.empty()) {
         for (ShapeIter it = shapes.begin(); it != shapes.end(); it++) {
 			int oldType = (*it)->getType();
-			bool shouldChange = mode == Fake && (*it)->getHeight() <= 300;
+			bool shouldChange = mode == Fake && (*it)->getHeight() <= 300 && pauseTime == 0;
 			if(shouldChange) {
 				(*it)->setType(random(1, d.numShapes()));
 			}
@@ -144,7 +144,8 @@ static void
 moveRight(Shape *player)
 {
 	Difficulty d(gSuper->getSettings()->difficulty);
-	
+	gSuper->getAudioData()->play("bleep");
+
 	int lane = player->getLane();
 	lane++;
 	if (lane > 3) lane = 1;
@@ -155,6 +156,7 @@ static void
 moveLeft(Shape *player)
 {
 	Difficulty d(gSuper->getSettings()->difficulty);
+	gSuper->getAudioData()->play("bleep");
 
 	int lane = player ->getLane();
 	lane--;
@@ -166,6 +168,7 @@ static void
 changeUp(Shape *player)
 {
 	Difficulty d(gSuper->getSettings()->difficulty);
+	gSuper->getAudioData()->play("bleep");
 
 	int type = player->getType();
 	type = (type == d.numShapes() - 1) ? 0 : type + 1;
@@ -176,6 +179,7 @@ static void
 changeDown(Shape *player)
 {
 	Difficulty d(gSuper->getSettings()->difficulty);
+	gSuper->getAudioData()->play("bleep");
 
 	int type = player->getType();
 	type = (type == 0) ? d.numShapes() - 1 : type - 1;
@@ -190,6 +194,8 @@ Game::run()
 	Settings *settings = gSuper->getSettings();
 	Difficulty d(settings->difficulty);
 
+	SDL_PumpEvents();
+	SDL_FlushEvents((Uint32)0, (Uint32)-1);
 	SDLU_FPS_Init(60);
 	while (isPlaying()) {
 		SDLU_FPS_Start();
@@ -281,18 +287,21 @@ static void
 resume_callback(void *_button, void *action)
 {
 	*(static_cast<PauseMenuAction*>(action)) = Resume;
+	gSuper->getAudioData()->play("bleep");
 }
 
 static void
 forfeit_callback(void *_button, void *action)
 {
 	*(static_cast<PauseMenuAction*>(action)) = Forfeit;
+	gSuper->getAudioData()->play("bleep");
 }
 
 void
 Game::pauseMenu()
 {
 	pauseTime = SDL_GetTicks();
+	gSuper->getAudioData()->play("bleep");
 
 	SDL_Event event;
 	SDLU_Button *resume_button, *forfeit_button;
@@ -357,6 +366,8 @@ Game::pauseMenu()
 		lastModeChangeTime += SDL_GetTicks() - pauseTime;
 		startTime += SDL_GetTicks() - pauseTime;
 		pauseTime = 0;
+		SDL_PumpEvents();
+		SDL_FlushEvents((Uint32)0, (Uint32)-1);
 	}
 	else if (action == Exit) {
 		gSuper->finish();

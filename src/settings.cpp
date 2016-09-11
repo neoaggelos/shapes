@@ -119,36 +119,42 @@ enum SettingsMenuAction {
 static void
 right_callback(void *_this, void *action)
 {
+	gSuper->getAudioData()->play("bleep");
 	*static_cast<SettingsMenuAction*>(action) = ReadRightKey;
 }
 
 static void
 left_callback(void *_this, void *action)
 {
+	gSuper->getAudioData()->play("bleep");
 	*static_cast<SettingsMenuAction*>(action) = ReadLeftKey;
 }
 
 static void
 shapeup_callback(void *_this, void *action)
 {
+	gSuper->getAudioData()->play("bleep");
 	*static_cast<SettingsMenuAction*>(action) = ReadShapeUpKey;
 }
 
 static void
 shapedown_callback(void *_this, void *action)
 {
+	gSuper->getAudioData()->play("bleep");
 	*static_cast<SettingsMenuAction*>(action) = ReadShapeDownKey;
 }
 
 static void
 reset_callback(void *_this, void *action)
 {
+	gSuper->getAudioData()->play("bleep");
 	*static_cast<SettingsMenuAction*>(action) = Reset;
 }
 
 static void
 back_callback(void *_this, void *action)
 {
+	gSuper->getAudioData()->play("bleep");
 	*static_cast<SettingsMenuAction*>(action) = BackToMenu;
 }
 

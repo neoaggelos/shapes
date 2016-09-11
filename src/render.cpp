@@ -126,7 +126,7 @@ RenderData::RenderData(string theme)
     //TODO with this, we can't create two RenderData objects. Not a bad thing,
     //something that is worth to be noted though
 
-	int r = SDL_Init(SDL_INIT_VIDEO);
+	int r = SDL_InitSubSystem(SDL_INIT_VIDEO);
 	SDL_CHECK(r != -1, "Could not initialize SDL");
 
 	window = SDL_CreateWindow(wintitle, winx, winy, WIDTH, HEIGHT, winflags);
@@ -176,8 +176,8 @@ RenderData::~RenderData()
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyTexture(texture);
-	
-    SDL_Quit();
+
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 SDL_Window*

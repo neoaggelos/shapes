@@ -16,8 +16,10 @@
 /* C++ headers */
 #include <iostream>
 #include <list>
+#include <map>
 using std::list;
 using std::string;
+using std::map;
 
 /* Libraries */
 #include "SDL.h"
@@ -31,6 +33,7 @@ class Difficulty;
 class Settings;
 class Highscores;
 class EnterName;
+class AudioData;
 
 /* Shape headers */
 #include "util.h"
@@ -39,6 +42,7 @@ class EnterName;
 #include "shape.h"
 #include "render.h"
 #include "game.h"
+#include "audiodata.h"
 #include "entername.h"
 #include "highscores.h"
 #include "super.h"

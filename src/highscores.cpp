@@ -92,18 +92,21 @@ enum HighscoresMenuAction {
 static void
 again_callback(void *_button, void *action)
 {
+	gSuper->getAudioData()->play("bleep");
 	*(static_cast<HighscoresMenuAction*>(action)) = PlayAgain;
 }
 
 static void
 back_callback(void *_button, void *action)
 {
+	gSuper->getAudioData()->play("bleep");
 	*(static_cast<HighscoresMenuAction*>(action)) = BackToMenu;
 }
 
 static void
 right_callback(void *_button, void *_diff)
 {
+	gSuper->getAudioData()->play("bleep");
 	int *diff = static_cast<int*>(_diff);
 	if (*diff < 2) *diff += 1;
 }
@@ -111,6 +114,7 @@ right_callback(void *_button, void *_diff)
 static void
 left_callback(void *_button, void *_diff)
 {
+	gSuper->getAudioData()->play("bleep");
 	int *diff = static_cast<int*>(_diff);
 	if (*diff > 0) *diff -= 1;
 }
