@@ -201,8 +201,6 @@ Game::run()
 		SDLU_FPS_Start();
 
 		if (SDL_PollEvent(&event)) {
-			
-			
 			switch (event.type) {
 			case SDL_WINDOWEVENT:
 				if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_MINIMIZED) {

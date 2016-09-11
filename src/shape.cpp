@@ -36,6 +36,12 @@ Shape::render()
 	srcRect.w = 80;
 	srcRect.h = 80;
 
+	/* android is weird */
+#ifdef __ANDROID__
+	srcRect.x++;
+	srcRect.w--;
+#endif /* __ANDROID__ */
+
 	dstRect.x = 60 + 20 + (lane - 1) * 120;
 	dstRect.y = static_cast<int>(height);
 
