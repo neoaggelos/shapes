@@ -17,6 +17,7 @@ EnterName::EnterName(string msg)
 	SDLU_SetButtonAction(ok, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(ok, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(ok, SDLU_PRESS_CALLBACK, ok_callback, &done);
+	SDLU_SetButtonCallback(ok, SDLU_HOVER_CALLBACK, on_hover, NULL);
 	SDLU_SetButtonGeometry(ok, 160, 400, 160, 40);
 	SDLU_SetButtonHotkey(ok, SDL_SCANCODE_RETURN);
 }

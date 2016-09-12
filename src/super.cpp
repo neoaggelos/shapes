@@ -95,25 +95,29 @@ Super::mainMenu()
     SDLU_SetButtonAction(start_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
     SDLU_SetButtonAction(start_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(start_button, SDLU_PRESS_CALLBACK, start_callback, &action);
-    SDLU_SetButtonGeometry(start_button, 140, 270, 200, 40);
+	SDLU_SetButtonCallback(start_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
+	SDLU_SetButtonGeometry(start_button, 140, 270, 200, 40);
 	
 	settings_button = SDLU_CreateButton(render->getWindow(), "Settings", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(settings_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(settings_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(settings_button, SDLU_PRESS_CALLBACK, settings_callback, &action);
+	SDLU_SetButtonCallback(settings_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
 	SDLU_SetButtonGeometry(settings_button, 140, 430, 200, 40);
 
 	scores_button = SDLU_CreateButton(render->getWindow(), "High Scores", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(scores_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(scores_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(scores_button, SDLU_PRESS_CALLBACK, scores_callback, &action);
+	SDLU_SetButtonCallback(scores_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
 	SDLU_SetButtonGeometry(scores_button, 140, 350, 200, 40);
 
     exit_button = SDLU_CreateButton(render->getWindow(), "Exit", SDLU_BUTTON_TEXT);
     SDLU_SetButtonAction(exit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
     SDLU_SetButtonAction(exit_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(exit_button, SDLU_PRESS_CALLBACK, exit_callback, &action);
-    SDLU_SetButtonGeometry(exit_button, 140, 510, 200, 40);
+	SDLU_SetButtonCallback(exit_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
+	SDLU_SetButtonGeometry(exit_button, 140, 510, 200, 40);
 
     while (action == None) {
 		SDL_PumpEvents();

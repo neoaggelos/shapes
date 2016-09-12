@@ -61,3 +61,8 @@ const char* getSettingsDir()
 	return SDL_GetPrefPath("shapes", "shapes");
 #endif
 }
+
+void on_hover(void *_button, void *data)
+{
+	gSuper->getAudioData()->play("whoosh");
+}

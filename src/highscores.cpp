@@ -132,18 +132,21 @@ Highscores::openMenu(int currentdiff, int currentindex)
 	SDLU_SetButtonAction(again_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(again_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(again_button, SDLU_PRESS_CALLBACK, again_callback, &action);
+	SDLU_SetButtonCallback(again_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
 	SDLU_SetButtonGeometry(again_button, 140, 480, 200, 40);
 
 	back_button = SDLU_CreateButton(data->getWindow(), "Back To Menu", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(back_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(back_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(back_button, SDLU_PRESS_CALLBACK, back_callback, &action);
+	SDLU_SetButtonCallback(back_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
 	SDLU_SetButtonGeometry(back_button, 140, 540, 200, 40);
 	
 	right_button = SDLU_CreateButton(data->getWindow(), ">", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(right_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(right_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(right_button, SDLU_PRESS_CALLBACK, right_callback, &diff);
+	SDLU_SetButtonCallback(right_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
 	SDLU_SetButtonGeometry(right_button, 350, 100, 30, 30);
 	SDLU_SetButtonHotkey(right_button, SDL_SCANCODE_RIGHT);
 	((SDLU_Styles*)right_button->content)->fill_color = SDLU_CreateRGB(SDLU_BLACK_RGB);
@@ -152,6 +155,7 @@ Highscores::openMenu(int currentdiff, int currentindex)
 	SDLU_SetButtonAction(left_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(left_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(left_button, SDLU_PRESS_CALLBACK, left_callback, &diff);
+	SDLU_SetButtonCallback(left_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
 	SDLU_SetButtonGeometry(left_button, 100, 100, 30, 30);
 	SDLU_SetButtonHotkey(left_button, SDL_SCANCODE_LEFT);
 	((SDLU_Styles*)left_button->content)->fill_color = SDLU_CreateRGB(SDLU_BLACK_RGB);

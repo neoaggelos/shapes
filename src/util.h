@@ -10,4 +10,6 @@ int StringToInt(const char *s);
 string getAssetsDir(string subfolder = "");
 const char* getSettingsDir();
 
+void on_hover(void *_button, void* _unused);
+
 #endif /* _util_h */

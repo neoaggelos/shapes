@@ -86,6 +86,7 @@ static SDLU_Button* new_button(RenderData *data, const char *title, int x, int y
 	SDLU_Button *ret = SDLU_CreateButton(data->getWindow(), title, SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(ret, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(ret, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+	SDLU_SetButtonCallback(ret, SDLU_HOVER_CALLBACK, on_hover, NULL);
 
 	((SDLU_Styles*)ret->content)->font_size = 18;
 	SDLU_SetButtonGeometry(ret, x, y, w, h);
@@ -204,13 +205,20 @@ Settings::openMenu()
 			if (event.type == SDL_QUIT) {
 				gSuper->finish();
 			}
-			else if (event.type == SDLU_COMBOBOX_TEXTCHANGED) {
+			else if (event.type == SDLU_COMBOBOX_OPENED) {
+//				no need to know which combo box was opened, just play the sound
+//				Uint32 cbox_id = static_cast<Uint32>(event.user.code);
+				gSuper->getAudioData()->play("bleep");
+			}
+			else if (event.type == SDLU_COMBOBOX_CHANGED) {
 				Uint32 cbox_id = static_cast<Uint32>(event.user.code);
 				if (cbox_id == diffBox->id) {
+					gSuper->getAudioData()->play("bleep");
 					DifficultyLevel new_diff = static_cast<DifficultyLevel>(diffBox->current_index);
 					gSuper->getSettings()->difficulty = new_diff;
 				}
 				else if (cbox_id == themeBox->id) {
+					gSuper->getAudioData()->play("bleep");
 					gSuper->getSettings()->theme = SDL_strdup(themeBox->current);
 					gSuper->getRenderData()->reloadTexture(gSuper->getSettings()->theme);
 				}

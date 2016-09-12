@@ -1,5 +1,9 @@
 #include "render.h"
 
+#ifdef _MSC_VER
+#pragma warning(disable: 4244)
+#endif _MSC_VER
+
 static const char* wintitle = "Shapes v" VERSION;
 static const int winx = SDL_WINDOWPOS_CENTERED;
 static const int winy = SDL_WINDOWPOS_CENTERED;
@@ -61,8 +65,6 @@ int fix_mouse_coordinates(void *_t, SDL_Event *event)
 		SDL_RenderSetViewport(gSuper->getRenderData()->getRenderer(), &(t->vp));
 		badIdea = true;
 	}
-
-
 
 #ifndef __ANDROID__
 	if (event->type == SDL_MOUSEBUTTONDOWN) {

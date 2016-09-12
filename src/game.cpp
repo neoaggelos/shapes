@@ -311,6 +311,7 @@ Game::pauseMenu()
 	SDLU_SetButtonAction(resume_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(resume_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(resume_button, SDLU_PRESS_CALLBACK, resume_callback, &action);
+	SDLU_SetButtonCallback(resume_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
 	SDLU_SetButtonHotkey(resume_button, SDL_SCANCODE_ESCAPE);
 	SDLU_SetButtonGeometry(resume_button, 140, 270, 200, 45);
 
@@ -318,6 +319,7 @@ Game::pauseMenu()
 	SDLU_SetButtonAction(forfeit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(forfeit_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(forfeit_button, SDLU_PRESS_CALLBACK, forfeit_callback, &action);
+	SDLU_SetButtonCallback(forfeit_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
 	SDLU_SetButtonGeometry(forfeit_button, 140, 370, 200, 45);
 
 	while (action == Idle) {
