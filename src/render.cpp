@@ -2,7 +2,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4244)
-#endif _MSC_VER
+#endif /* _MSC_VER */
 
 static const char* wintitle = "Shapes v" VERSION;
 static const int winx = SDL_WINDOWPOS_CENTERED;
