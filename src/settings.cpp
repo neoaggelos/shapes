@@ -167,16 +167,16 @@ Settings::openMenu()
 	RenderData* data = gSuper->getRenderData();
 	SettingsMenuAction action;
 
-	rightButton = new_button(data, "Change", 350, 125, 85, 35);
+	rightButton = new_button(data, "Change", 350, 345, 85, 35);
 	SDLU_SetButtonCallback(rightButton, SDLU_PRESS_CALLBACK, right_callback, &action);
 	
-	leftButton = new_button(data, "Change", 350, 175, 85, 35);
+	leftButton = new_button(data, "Change", 350, 395, 85, 35);
 	SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, left_callback, &action);
 
-	shapeUpButton = new_button(data, "Change", 350, 225, 85, 35);
+	shapeUpButton = new_button(data, "Change", 350, 445, 85, 35);
 	SDLU_SetButtonCallback(shapeUpButton, SDLU_PRESS_CALLBACK, shapeup_callback, &action);
 
-	shapeDownButton = new_button(data, "Change", 350, 275, 85, 35);
+	shapeDownButton = new_button(data, "Change", 350, 495, 85, 35);
 	SDLU_SetButtonCallback(shapeDownButton, SDLU_PRESS_CALLBACK, shapedown_callback, &action);
 
 	resetButton = new_button(data, "Reset To Default", 40, 560, 180, 35);
@@ -185,17 +185,17 @@ Settings::openMenu()
 	backButton = new_button(data, "Back To Menu", 260, 560, 180, 35);
 	SDLU_SetButtonCallback(backButton, SDLU_PRESS_CALLBACK, back_callback, &action);
 
-	themeBox = new_cbox(data, 350, 385, 85, 35);
-	SDLU_AddComboBoxItem(&themeBox, "Red");
-	SDLU_AddComboBoxItem(&themeBox, "Cats");
-	SDLU_AddComboBoxItem(&themeBox, "Blue");
-	SDLU_SetComboBoxActiveItem(themeBox, theme.c_str());
-
-	diffBox = new_cbox(data, 350, 495, 85, 35);
+	diffBox = new_cbox(data, 350, 125, 85, 35);
 	SDLU_AddComboBoxItem(&diffBox, "Easy");
 	SDLU_AddComboBoxItem(&diffBox, "Medium");
 	SDLU_AddComboBoxItem(&diffBox, "Hard");
 	SDLU_SetComboBoxActiveIndex(diffBox, gSuper->getSettings()->difficulty);
+
+	themeBox = new_cbox(data, 350, 235, 85, 35);
+	SDLU_AddComboBoxItem(&themeBox, "Red");
+	SDLU_AddComboBoxItem(&themeBox, "Cats");
+	SDLU_AddComboBoxItem(&themeBox, "Blue");
+	SDLU_SetComboBoxActiveItem(themeBox, theme.c_str());
 
 	SDL_Event event;
 	action = None;
@@ -267,32 +267,32 @@ Settings::openMenu()
 		SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
 		SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 15, "SETTINGS");
-		SDLU_RenderText(target, 5, 70, "Controls");
-		SDLU_RenderText(target, 5, 330, "Theme");
-		SDLU_RenderText(target, 5, 440, "Difficulty");
+		SDLU_RenderText(target, 5, 70, "Difficulty");
+		SDLU_RenderText(target, 5, 180, "Theme");
+		SDLU_RenderText(target, 5, 290, "Controls");
 
 		SDL_RenderDrawLine(target, 180, 50, 300, 50);
 		SDL_RenderDrawLine(target, 5, 105, 475, 105);
-		SDL_RenderDrawLine(target, 5, 365, 475, 365);
-		SDL_RenderDrawLine(target, 5, 475, 475, 475);
+		SDL_RenderDrawLine(target, 5, 215, 475, 215);
+		SDL_RenderDrawLine(target, 5, 325, 475, 325);
 
 		SDLU_SetFontSize(18);
 		SDL_SetRenderDrawColor(target, 0xaa, 0xaa, 0xaa, 0xff);
 
-		SDLU_RenderText(target, 15, 130, "Move Right");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 130, "%s", SDL_GetScancodeName(s->moveRightKey));
-		SDLU_RenderText(target, 15, 180, "Move Left");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 180, "%s", SDL_GetScancodeName(s->moveLeftKey));
-		SDLU_RenderText(target, 15, 230, "Change Shape Up");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 230, "%s", SDL_GetScancodeName(s->changeShapeUpKey));
-		SDLU_RenderText(target, 15, 280, "Change Shape Down");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 280, "%s", SDL_GetScancodeName(s->changeShapeDownKey));
+		SDLU_RenderText(target, 15, 130, "Choose Difficulty");
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 130, "%s", diffBox->current);
 
-		SDLU_RenderText(target, 15, 390, "Choose Theme");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 390, "%s", themeBox->current);
+		SDLU_RenderText(target, 15, 240, "Choose Theme");
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 240, "%s", themeBox->current);
 
-		SDLU_RenderText(target, 15, 500, "Choose Difficulty");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 500, "%s", diffBox->current);
+		SDLU_RenderText(target, 15, 350, "Move Right");
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 350, "%s", SDL_GetScancodeName(s->moveRightKey));
+		SDLU_RenderText(target, 15, 400, "Move Left");
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 400, "%s", SDL_GetScancodeName(s->moveLeftKey));
+		SDLU_RenderText(target, 15, 450, "Change Shape Up");
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 450, "%s", SDL_GetScancodeName(s->changeShapeUpKey));
+		SDLU_RenderText(target, 15, 500, "Change Shape Down");
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 500, "%s", SDL_GetScancodeName(s->changeShapeDownKey));
 
 		SDLU_RenderButton(shapeUpButton);
 		SDLU_RenderButton(shapeDownButton);
