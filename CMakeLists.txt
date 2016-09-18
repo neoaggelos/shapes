@@ -21,6 +21,7 @@ link_libraries(${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDLU_LIBRARY} ${SDL2_MIXER_
 
 file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*)
 file(GLOB RC ${CMAKE_SOURCE_DIR}/resource.rc)
+file(GLOB ICNS ${CMAKE_SOURCE_DIR}/assets/icon.icns)
 file(GLOB TXT_FILES ${CMAKE_SOURCE_DIR}/*.txt)
 file(GLOB BMPASSETS ${CMAKE_SOURCE_DIR}/assets/themes/*)
 file(GLOB WAVASSETS ${CMAKE_SOURCE_DIR}/assets/wav/*)
@@ -40,11 +41,15 @@ if (WIN32)
   install(TARGETS Shapes DESTINATION ${CMAKE_INSTALL_PREFIX})
   install(FILES ${ASSETS} DESTINATION ${CMAKE_INSTALL_PREFIX})
 elseif (APPLE AND MACOSX_BUNDLE)
-  add_executable(Shapes MACOSX_BUNDLE ${SOURCES} ${TXT_FILES} ${WAVASSETS} ${BMPASSETS})
+  add_executable(Shapes MACOSX_BUNDLE ${SOURCES} ${TXT_FILES} ${WAVASSETS}
+      ${BMPASSETS} ${ICNS})
   set_source_files_properties(${BMPASSETS} PROPERTIES MACOSX_PACKAGE_LOCATION
     "Resources/themes")
   set_source_files_properties(${WAVASSETS} PROPERTIES MACOSX_PACKAGE_LOCATION
     "Resources/wav")
+  set_source_files_properties(${ICNS} PROPERTIES MACOSX_PACKAGE_LOCATION
+    "Resources")
+  set(MACOSX_BUNDLE_ICON_FILE icon.icns)
   install(TARGETS Shapes DESTINATION /Applications)
 else()
   add_executable(Shapes ${SOURCES} ${TXT_FILES} ${WAVASSETS} ${BMPASSETS})
