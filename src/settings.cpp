@@ -184,6 +184,7 @@ Settings::openMenu()
 
 	backButton = new_button(data, "Back To Menu", 260, 560, 180, 35, 18);
 	SDLU_SetButtonCallback(backButton, SDLU_PRESS_CALLBACK, back_callback, &action);
+	SDLU_SetButtonHotkey(backButton, SDL_SCANCODE_AC_BACK);
 
 	themeBox = new_cbox(data, 350, 130, 85, 25);
 	SDLU_AddComboBoxItem(&themeBox, "Red");
@@ -226,6 +227,8 @@ Settings::openMenu()
 			}
 			
 			if (action >= ReadKeysStart && action <= ReadKeysEnd) {
+				/* no point in changing keys for Android */
+#ifndef __ANDROID__
 				event.type = SDL_LASTEVENT;
 				SDL_Scancode newKey = SDL_SCANCODE_UNKNOWN;
 
@@ -252,6 +255,7 @@ Settings::openMenu()
 					else if (action == ReadShapeDownKey)
 						gSuper->getSettings()->changeShapeDownKey = newKey;
 				}
+#endif /* __ANDROID__ */
 			}
 			else if (action == Reset) {
 				gSuper->getSettings()->reset();

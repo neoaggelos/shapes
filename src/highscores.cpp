@@ -141,6 +141,7 @@ Highscores::openMenu(int currentdiff, int currentindex)
 	SDLU_SetButtonCallback(back_button, SDLU_PRESS_CALLBACK, back_callback, &action);
 	SDLU_SetButtonCallback(back_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
 	SDLU_SetButtonGeometry(back_button, 140, 540, 200, 40);
+	SDLU_SetButtonHotkey(back_button, SDL_SCANCODE_AC_BACK);
 	
 	right_button = SDLU_CreateButton(data->getWindow(), ">", SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(right_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);

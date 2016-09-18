@@ -8,6 +8,7 @@ include("${CMAKE_SOURCE_DIR}/cmake/FindSDL2_mixer.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/FindSDL2.cmake")
 
 option(PORTABLE "Save scores and settings in the same folder as the executable" OFF)
+option(STANDALONE "Load assets from current directory and not source directory" ON)
 if (APPLE)
   option(MACOSX_BUNDLE "Build Shapes.app" ON)
 endif(APPLE)
@@ -19,17 +20,23 @@ include_directories(${SDL2_INCLUDE_DIR} ${SDLU_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE
 link_libraries(${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDLU_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*)
+file(GLOB RC ${CMAKE_SOURCE_DIR}/resource.rc)
 file(GLOB TXT_FILES ${CMAKE_SOURCE_DIR}/*.txt)
 file(GLOB BMPASSETS ${CMAKE_SOURCE_DIR}/assets/themes/*)
 file(GLOB WAVASSETS ${CMAKE_SOURCE_DIR}/assets/wav/*)
+
+source_group(doc FILES ${TXT_FILES})
+source_group(assets FILES ${BMPASSETS} ${WAVASSETS})
 
 if (PORTABLE)
   add_definitions("-DPORTABLE")
 endif(PORTABLE)
 
 if (WIN32)
-  add_executable(Shapes WIN32 ${SOURCES} ${TXT_FILES} ${BMPASSETS} ${WAVASSETS})
-  add_definitions("-DASSETSDIR=\"${CMAKE_SOURCE_DIR}/assets/\"")
+  add_executable(Shapes WIN32 ${SOURCES} ${RC} ${TXT_FILES} ${BMPASSETS} ${WAVASSETS})
+  if (NOT STANDALONE)
+	add_definitions("-DASSETSDIR=\"${CMAKE_SOURCE_DIR}/assets/\"")
+  endif()
   install(TARGETS Shapes DESTINATION ${CMAKE_INSTALL_PREFIX})
   install(FILES ${ASSETS} DESTINATION ${CMAKE_INSTALL_PREFIX})
 elseif (APPLE AND MACOSX_BUNDLE)
