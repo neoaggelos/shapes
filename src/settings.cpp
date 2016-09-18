@@ -81,14 +81,14 @@ Settings::reset()
 	settings_version = CURRENT_SETTINGS_VERSION;
 }
 
-static SDLU_Button* new_button(RenderData *data, const char *title, int x, int y, int w = -1, int h = -1)
+static SDLU_Button* new_button(RenderData *data, const char *title, int x, int y, int w = -1, int h = -1, int fontsize = 15)
 {
 	SDLU_Button *ret = SDLU_CreateButton(data->getWindow(), title, SDLU_BUTTON_TEXT);
 	SDLU_SetButtonAction(ret, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
 	SDLU_SetButtonAction(ret, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(ret, SDLU_HOVER_CALLBACK, on_hover, NULL);
 
-	((SDLU_Styles*)ret->content)->font_size = 18;
+	((SDLU_Styles*)ret->content)->font_size = fontsize;
 	SDLU_SetButtonGeometry(ret, x, y, w, h);
 
 	return ret;
@@ -99,7 +99,7 @@ static SDLU_ComboBox* new_cbox(RenderData *data, int x, int y, int w = -1, int h
 	SDLU_ComboBox* ret = SDLU_CreateComboBox(data->getWindow());
 
 	SDLU_SetComboBoxGeometry(ret, x, y, w, h);
-	ret->styles->font_size = 18;
+	ret->styles->font_size = 15;
 
 	return ret;
 }
@@ -167,35 +167,36 @@ Settings::openMenu()
 	RenderData* data = gSuper->getRenderData();
 	SettingsMenuAction action;
 
-	rightButton = new_button(data, "Change", 350, 345, 85, 35);
+	rightButton = new_button(data, "Change", 350, 350, 85, 25);
 	SDLU_SetButtonCallback(rightButton, SDLU_PRESS_CALLBACK, right_callback, &action);
 	
-	leftButton = new_button(data, "Change", 350, 395, 85, 35);
+	leftButton = new_button(data, "Change", 350, 400, 85, 25);
 	SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, left_callback, &action);
 
-	shapeUpButton = new_button(data, "Change", 350, 445, 85, 35);
+	shapeUpButton = new_button(data, "Change", 350, 450, 85, 25);
 	SDLU_SetButtonCallback(shapeUpButton, SDLU_PRESS_CALLBACK, shapeup_callback, &action);
 
-	shapeDownButton = new_button(data, "Change", 350, 495, 85, 35);
+	shapeDownButton = new_button(data, "Change", 350, 500, 85, 25);
 	SDLU_SetButtonCallback(shapeDownButton, SDLU_PRESS_CALLBACK, shapedown_callback, &action);
 
-	resetButton = new_button(data, "Reset To Default", 40, 560, 180, 35);
+	resetButton = new_button(data, "Reset To Default", 40, 560, 180, 35, 18);
 	SDLU_SetButtonCallback(resetButton, SDLU_PRESS_CALLBACK, reset_callback, &action);
 
-	backButton = new_button(data, "Back To Menu", 260, 560, 180, 35);
+	backButton = new_button(data, "Back To Menu", 260, 560, 180, 35, 18);
 	SDLU_SetButtonCallback(backButton, SDLU_PRESS_CALLBACK, back_callback, &action);
 
-	diffBox = new_cbox(data, 350, 125, 85, 35);
+	themeBox = new_cbox(data, 350, 130, 85, 25);
+	SDLU_AddComboBoxItem(&themeBox, "Red");
+	SDLU_AddComboBoxItem(&themeBox, "Cats");
+	SDLU_AddComboBoxItem(&themeBox, "Blue");
+	SDLU_AddComboBoxItem(&themeBox, "Old");
+	SDLU_SetComboBoxActiveItem(themeBox, theme.c_str());
+
+	diffBox = new_cbox(data, 350, 240, 85, 25);
 	SDLU_AddComboBoxItem(&diffBox, "Easy");
 	SDLU_AddComboBoxItem(&diffBox, "Medium");
 	SDLU_AddComboBoxItem(&diffBox, "Hard");
 	SDLU_SetComboBoxActiveIndex(diffBox, gSuper->getSettings()->difficulty);
-
-	themeBox = new_cbox(data, 350, 235, 85, 35);
-	SDLU_AddComboBoxItem(&themeBox, "Red");
-	SDLU_AddComboBoxItem(&themeBox, "Cats");
-	SDLU_AddComboBoxItem(&themeBox, "Blue");
-	SDLU_SetComboBoxActiveItem(themeBox, theme.c_str());
 
 	SDL_Event event;
 	action = None;
@@ -267,8 +268,8 @@ Settings::openMenu()
 		SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
 		SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 15, "SETTINGS");
-		SDLU_RenderText(target, 5, 70, "Difficulty");
-		SDLU_RenderText(target, 5, 180, "Theme");
+		SDLU_RenderText(target, 5, 180, "Difficulty");
+		SDLU_RenderText(target, 5, 70, "Theme");
 		SDLU_RenderText(target, 5, 290, "Controls");
 
 		SDL_RenderDrawLine(target, 180, 50, 300, 50);
@@ -279,11 +280,11 @@ Settings::openMenu()
 		SDLU_SetFontSize(18);
 		SDL_SetRenderDrawColor(target, 0xaa, 0xaa, 0xaa, 0xff);
 
-		SDLU_RenderText(target, 15, 130, "Choose Difficulty");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 130, "%s", diffBox->current);
+		SDLU_RenderText(target, 15, 130, "Choose Theme");
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 130, "%s", themeBox->current);
 
-		SDLU_RenderText(target, 15, 240, "Choose Theme");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 240, "%s", themeBox->current);
+		SDLU_RenderText(target, 15, 240, "Choose Difficulty");
+		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 240, "%s", diffBox->current);
 
 		SDLU_RenderText(target, 15, 350, "Move Right");
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 350, "%s", SDL_GetScancodeName(s->moveRightKey));

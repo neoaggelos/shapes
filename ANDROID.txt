@@ -1,17 +1,17 @@
 Requirements:
 
-* Android SDK (any version supported by SDL)
-* Android NDK (any version supported by SDL)
-* SDL source code
+* Android SDK (any version supported by SDL2)
+* Android NDK (any version supported by SDL2)
+* SDL2 source code
 * SDLU source code (http://bitbucket.org/sdlu/sdlu)
 * SDL2_mixer source code (https://www.libsdl.org/projects/SDL_mixer/)
 
 Steps:
 
-1. Download SDL source code and copy to 'android-project/SDL'
+1. Download SDL2 source code and copy to 'android-project/SDL'
 2. Download SDLU source code and copy to 'android-project/SDLU'
 3. Download SDL2_mixer source code and copy to 'android-project/SDL2_mixer'
-4. Edit 'SDL2_mixer/Android.mk' to disable all 4 external libraries
+4. Edit 'SDL2_mixer/Android.mk' to disable all external libraries
 3. Create 'local.properties' and add 'sdk.dir=path to android sdk'
 4. Update AndroidManifest.xml for target SDK version (default 15)
 5. Copy 'assets' folder into 'android-project/assets'

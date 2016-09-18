@@ -101,7 +101,7 @@ Game::render()
     if (!shapes.empty()) {
         for (ShapeIter it = shapes.begin(); it != shapes.end(); it++) {
 			int oldType = (*it)->getType();
-			bool shouldChange = mode == Fake && (*it)->getHeight() <= 300 && pauseTime == 0;
+			bool shouldChange = mode == Fake && (*it)->getHeight() <= 300/* && pauseTime == 0*/;
 			if(shouldChange) {
 				(*it)->setType(random(1, d.numShapes()));
 			}
@@ -327,21 +327,20 @@ Game::pauseMenu()
 			if (event.type == SDL_QUIT) {
 				action = Exit;
 			}
-
-			SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
-			SDL_RenderClear(data->getRenderer());
-			this->render();
-
-			SDLU_SetFontSize(SDLU_TEXT_SIZE_LARGE);
-			SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
-			SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 130, "Game Paused");
-
-			SDLU_RenderButton(resume_button);
-			SDLU_RenderButton(forfeit_button);
-
-			SDL_RenderPresent(data->getRenderer());
 		}
 
+		SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
+		SDL_RenderClear(data->getRenderer());
+		this->render();
+
+		SDLU_SetFontSize(SDLU_TEXT_SIZE_LARGE);
+		SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
+		SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 130, "Game Paused");
+
+		SDLU_RenderButton(resume_button);
+		SDLU_RenderButton(forfeit_button);
+
+		SDL_RenderPresent(data->getRenderer());
 		//SDL_Delay(10);
 	}
 
