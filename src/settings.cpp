@@ -117,6 +117,7 @@ enum SettingsMenuAction {
 	None
 };
 
+#ifndef __ANDROID__
 static void
 right_callback(void *_this, void *action)
 {
@@ -144,6 +145,7 @@ shapedown_callback(void *_this, void *action)
 	gSuper->getAudioData()->play("bleep");
 	*static_cast<SettingsMenuAction*>(action) = ReadShapeDownKey;
 }
+#endif /* __ANDROID__ */
 
 static void
 reset_callback(void *_this, void *action)
@@ -162,14 +164,18 @@ back_callback(void *_this, void *action)
 void
 Settings::openMenu()
 {
-	SDLU_Button *shapeUpButton, *shapeDownButton, *rightButton, *leftButton, *resetButton, *backButton;
+#ifndef __ANDROID__
+	SDLU_Button *shapeUpButton, *shapeDownButton, *rightButton, *leftButton;
+#endif /* __ANDROID__ */
+	SDLU_Button *resetButton, *backButton;
 	SDLU_ComboBox *diffBox, *themeBox;
 	RenderData* data = gSuper->getRenderData();
 	SettingsMenuAction action;
 
+#ifndef __ANDROID__
 	rightButton = new_button(data, "Change", 350, 350, 85, 25);
 	SDLU_SetButtonCallback(rightButton, SDLU_PRESS_CALLBACK, right_callback, &action);
-	
+
 	leftButton = new_button(data, "Change", 350, 400, 85, 25);
 	SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, left_callback, &action);
 
@@ -178,6 +184,7 @@ Settings::openMenu()
 
 	shapeDownButton = new_button(data, "Change", 350, 500, 85, 25);
 	SDLU_SetButtonCallback(shapeDownButton, SDLU_PRESS_CALLBACK, shapedown_callback, &action);
+#endif /* __ANDROID__ */
 
 	resetButton = new_button(data, "Reset To Default", 40, 560, 180, 35, 18);
 	SDLU_SetButtonCallback(resetButton, SDLU_PRESS_CALLBACK, reset_callback, &action);
@@ -208,8 +215,8 @@ Settings::openMenu()
 				gSuper->finish();
 			}
 			else if (event.type == SDLU_COMBOBOX_OPENED) {
-//				no need to know which combo box was opened, just play the sound
-//				Uint32 cbox_id = static_cast<Uint32>(event.user.code);
+				//				no need to know which combo box was opened, just play the sound
+				//				Uint32 cbox_id = static_cast<Uint32>(event.user.code);
 				gSuper->getAudioData()->play("bleep");
 			}
 			else if (event.type == SDLU_COMBOBOX_CHANGED) {
@@ -225,10 +232,15 @@ Settings::openMenu()
 					gSuper->getRenderData()->reloadTexture(gSuper->getSettings()->theme);
 				}
 			}
-			
-			if (action >= ReadKeysStart && action <= ReadKeysEnd) {
-				/* no point in changing keys for Android */
+
+			if (action == Reset) {
+				gSuper->getSettings()->reset();
+				SDLU_SetComboBoxActiveIndex(diffBox, gSuper->getSettings()->difficulty);
+				SDLU_SetComboBoxActiveItem(themeBox, gSuper->getSettings()->theme.c_str());
+			}
 #ifndef __ANDROID__
+			else if (action >= ReadKeysStart && action <= ReadKeysEnd) {
+				/* no point in changing keys for Android */
 				event.type = SDL_LASTEVENT;
 				SDL_Scancode newKey = SDL_SCANCODE_UNKNOWN;
 
@@ -255,13 +267,8 @@ Settings::openMenu()
 					else if (action == ReadShapeDownKey)
 						gSuper->getSettings()->changeShapeDownKey = newKey;
 				}
+			}
 #endif /* __ANDROID__ */
-			}
-			else if (action == Reset) {
-				gSuper->getSettings()->reset();
-				SDLU_SetComboBoxActiveIndex(diffBox, gSuper->getSettings()->difficulty);
-				SDLU_SetComboBoxActiveItem(themeBox, gSuper->getSettings()->theme.c_str());
-			}
 		}
 
 		Settings *s = gSuper->getSettings();
@@ -289,7 +296,7 @@ Settings::openMenu()
 
 		SDLU_RenderText(target, 15, 240, "Choose Difficulty");
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 240, "%s", diffBox->current);
-
+#ifndef __ANDROID__
 		SDLU_RenderText(target, 15, 350, "Move Right");
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 350, "%s", SDL_GetScancodeName(s->moveRightKey));
 		SDLU_RenderText(target, 15, 400, "Move Left");
@@ -298,11 +305,34 @@ Settings::openMenu()
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 450, "%s", SDL_GetScancodeName(s->changeShapeUpKey));
 		SDLU_RenderText(target, 15, 500, "Change Shape Down");
 		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 500, "%s", SDL_GetScancodeName(s->changeShapeDownKey));
+#else /* if __ANDROID__ */
+		SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
 
+		const SDL_Rect screenRect = { 30, 350, 120, 160 };
+		SDL_RenderDrawRect(target, &screenRect);
+
+		SDL_SetRenderDrawColor(target, 0xaa, 0xaa, 0xaa, 0xff);
+		SDL_RenderDrawLine(target, 30 + 120 * 0.25, 350, 30 + 120 * 0.25, 350 + 160);
+		SDL_RenderDrawLine(target, 30 + 120 * 0.75, 350, 30 + 120 * 0.75, 350 + 160);
+		SDL_RenderDrawLine(target, 30 + 120 * 0.25, 350 + 160 * 0.5, 30 + 120 * 0.75, 350 + 160 * 0.5);
+
+		SDLU_RenderText(target, 40, 350 + 70, "1");
+		SDLU_RenderText(target, 130, 350 + 70, "2");
+		SDLU_RenderText(target, 85, 380, "3");
+		SDLU_RenderText(target, 85, 460, "4");
+
+		SDLU_RenderText(target, 200, 360, "1: %-20s", "Move Left");
+		SDLU_RenderText(target, 200, 400, "2: %-20s", "Move Right");
+		SDLU_RenderText(target, 200, 440, "3: %-20s", "Change Shape Up");
+		SDLU_RenderText(target, 200, 480, "4: %-20s", "Change Shape Down");
+#endif
+
+#ifndef __ANDROID__
 		SDLU_RenderButton(shapeUpButton);
 		SDLU_RenderButton(shapeDownButton);
 		SDLU_RenderButton(leftButton);
 		SDLU_RenderButton(rightButton);
+#endif /* __ANDROID__ */
 		SDLU_RenderButton(backButton);
 		SDLU_RenderButton(resetButton);
 		SDLU_RenderComboBox(themeBox);
@@ -313,10 +343,12 @@ Settings::openMenu()
 		SDL_Delay(10);
 	}
 
+#ifndef __ANDROID__
 	SDLU_DestroyButton(shapeUpButton);
 	SDLU_DestroyButton(shapeDownButton);
 	SDLU_DestroyButton(rightButton);
 	SDLU_DestroyButton(leftButton);
+#endif /* __ANDROID__ */
 	SDLU_DestroyButton(backButton);
 	SDLU_DestroyButton(resetButton);
 
