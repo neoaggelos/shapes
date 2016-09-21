@@ -2,17 +2,24 @@ Requirements:
 
 * Android SDK (any version supported by SDL2)
 * Android NDK (any version supported by SDL2)
-* SDL2 source code
+* SDL2 source code (http://www.libsdl.org/)
 * SDLU source code (http://bitbucket.org/sdlu/sdlu)
+* SDL2_ttf source code (http://www.libsdl.org/projects/SDL_ttf/)
 * SDL2_mixer source code (https://www.libsdl.org/projects/SDL_mixer/)
 
 Steps:
 
-1. Download SDL2 source code and copy to 'android-project/SDL'
-2. Download SDLU source code and copy to 'android-project/SDLU'
-3. Download SDL2_mixer source code and copy to 'android-project/SDL2_mixer'
-4. Edit 'SDL2_mixer/Android.mk' to disable all external libraries
-3. Create 'local.properties' and add 'sdk.dir=path to android sdk'
-4. Update AndroidManifest.xml for target SDK version (default 15)
-5. Copy 'assets' folder into 'android-project/assets'
-5. Build
+* Download SDL2 source code and copy to 'android-project/SDL'
+* Download SDLU source code and copy to 'android-project/SDLU'
+* Download SDL2_mixer source code and copy to 'android-project/SDL2_mixer'
+* Download SDL2_ttf source code and copy to 'android-project/SDL2_ttf'
+* Edit 'SDLU/Android.mk' and uncomment the SDL2_TTF_PATH variable
+* Edit 'SDL2_mixer/Android.mk' to disable all external libraries
+* Create 'local.properties' and add 'sdk.dir=path to android sdk'
+* Update AndroidManifest.xml for target SDK version (default 15)
+* Copy 'assets' folder into 'android-project/assets'
+* Edit 'jni/Application.mk' and select target ABIs
+* Build
+
+Alternatively, you can download a ready android-project from github
+release downloads (http://github.com/neoaggelos/shapes)

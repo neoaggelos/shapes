@@ -7,7 +7,9 @@ enum GameMode {
 	Normal,
 	Reverse,
 	Fake,
-	Lots
+	Lots,
+	Shaking,
+	NumModes  /* not actual mode, it is here to keep track of the number of modes */
 };
 
 class Game {

@@ -7,7 +7,7 @@
 #define HEIGHT 640.0
 
 /* definitely not version */
-#define VERSION "0.1"
+#define VERSION "1.0"
 
 /* C headers */
 #include <cstdlib>

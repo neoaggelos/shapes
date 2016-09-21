@@ -2,6 +2,7 @@ Requirements
 --------------
 
 * SDL2 (version 2.0.4 or newer)
+* SDL2_ttf (any version)
 * SDL2_mixer (any version)
 * SDLU (version 2.2 or newer)
 * CMake
@@ -15,8 +16,8 @@ For Android, see ANDROID.txt
 1. Open CMake GUI
 2. Set source directory to the top-level directory of shapes sources
 3. Set build directory to wherever you like
-4. Press configure and select which IDE you want to create project files for.
-   You may need to tell CMake where it can find SDL2, SDL2_mixer and SDLU
+4. Press configure and select which IDE you want to create project files for
+   You may need to tell CMake where the libraries are installed
 6. Edit any other options you want
 7. Press Generate
 8. Use the project files to build the game
@@ -27,3 +28,4 @@ Options
 
 * PORTABLE          "Load settings from local directory and not AppData"
 * MACOSX_BUNDLE     "Build Shapes.app under Mac OS X"
+* STANDLALONE       "OFF when testing stuff, ON for release builds"

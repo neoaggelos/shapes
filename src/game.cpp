@@ -8,8 +8,9 @@ getDescription(GameMode mode)
 	switch (mode)
 	{
 	case Fake: return "Which one is it really?";
-	case Reverse: return "Some might say, it's the reverse!";
+	case Reverse: return "Some would say, it's the reverse!";
 	case Lots: return "How many are there?";
+	case Shaking: return "Right or left, left or right?";
 	default: return "";
 	}
 
@@ -100,17 +101,7 @@ Game::render()
 
     if (!shapes.empty()) {
         for (ShapeIter it = shapes.begin(); it != shapes.end(); it++) {
-			int oldType = (*it)->getType();
-			bool shouldChange = mode == Fake && (*it)->getHeight() <= 300/* && pauseTime == 0*/;
-			if(shouldChange) {
-				(*it)->setType(random(1, d.numShapes()));
-			}
-
 			(*it)->render();
-
-			if (shouldChange) {
-				(*it)->setType(oldType);
-			}
         }
     }
 
@@ -134,7 +125,7 @@ Game::render()
 
         SDL_RenderCopy(data->getRenderer(), data->getTexture(), &src, &dest);
         if (playerShape->getType() == i) {
-			SDL_SetRenderDrawColor(data->getRenderer(), random(0,255), random(0,255), random(0,255), 0xff);
+			SDL_SetRenderDrawColor(data->getRenderer(), 0xff, 0xff, 0xff, 0xff);
             SDL_RenderDrawRect(data->getRenderer(), &dest);
         }
     }
@@ -253,6 +244,17 @@ Game::run()
 				else {
 					double var = mode == Normal ? 1 : 1.5;
 					(*i)->move(var);
+
+					if (mode == Fake) {
+						if (random(1, 100) < 20 && pauseTime == 0 && (*i)->getHeight() < 300) {
+							(*i)->setType(random(1, d.numShapes()));
+						}
+					}
+					else if (mode == Shaking) {
+						if (random(1, 100) < 5 && pauseTime == 0 && (*i)->getHeight() < 300) {
+							(*i)->setLane(random(1, 3));
+						}
+					}
 				}
 			}
 		}
@@ -265,7 +267,7 @@ Game::run()
 		}
 
 		if (newTime - lastModeChangeTime >= d.changeModeTime()) {
-			mode = mode == Normal ? static_cast<GameMode>(random(1, 3)) : Normal;
+			mode = mode == Normal ? static_cast<GameMode>(random(1, NumModes-1)) : Normal;
 			lastModeChangeTime = newTime;
 		}
 		

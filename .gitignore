@@ -9,3 +9,4 @@ android-project/jni/SDL
 android-project/assets
 android-project/jni/SDLU
 android-project/jni/SDL2_mixer
+android-project/jni/SDL2_ttf
