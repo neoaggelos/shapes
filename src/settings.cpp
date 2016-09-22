@@ -88,7 +88,8 @@ static SDLU_Button* new_button(RenderData *data, const char *title, int x, int y
 	SDLU_SetButtonAction(ret, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 	SDLU_SetButtonCallback(ret, SDLU_HOVER_CALLBACK, on_hover, NULL);
 
-	((SDLU_Styles*)ret->content)->font_size = fontsize;
+	SDLU_CloseFont(((SDLU_Styles*)ret->content)->font);
+	((SDLU_Styles*)ret->content)->font = SDLU_LoadFont((getAssetsDir() + "font.ttf").c_str(), fontsize, 1);
 	SDLU_SetButtonGeometry(ret, x, y, w, h);
 
 	return ret;
@@ -99,7 +100,7 @@ static SDLU_ComboBox* new_cbox(RenderData *data, int x, int y, int w = -1, int h
 	SDLU_ComboBox* ret = SDLU_CreateComboBox(data->getWindow());
 
 	SDLU_SetComboBoxGeometry(ret, x, y, w, h);
-	ret->styles->font_size = 15;
+	ret->styles->font = SDLU_LoadFont((getAssetsDir() + "font.ttf").c_str(), 15, 1);
 
 	return ret;
 }

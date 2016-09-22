@@ -126,7 +126,7 @@ Highscores::openMenu(int currentdiff, int currentindex)
 	SDLU_Button *again_button, *back_button, *right_button, *left_button;
 	SDL_Event event;
 	HighscoresMenuAction action = None;
-	int diff = 1;
+	int diff = static_cast<int>(gSuper->getSettings()->difficulty) - 1;
 
 	RenderData* data = gSuper->getRenderData();
 	again_button = SDLU_CreateButton(data->getWindow(), "I can beat it", SDLU_BUTTON_TEXT);

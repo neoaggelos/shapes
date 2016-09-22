@@ -64,7 +64,7 @@ TextRenderer::getSize(int fontsize, string text, int * w, int * h)
 }
 
 void
-TextRenderer::write(int size, string text, SDL_Rect pos, Alignment halign, Alignment valign)
+TextRenderer::write(int size, string text, SDL_Rect pos, SDLU_Alignment halign, SDLU_Alignment valign)
 {
 	SDL_Renderer* renderer = gSuper->getRenderData()->getRenderer();
 	
