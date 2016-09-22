@@ -18,6 +18,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 	$(LOCAL_PATH)/../../../src/settings.cpp \
 	$(LOCAL_PATH)/../../../src/shape.cpp \
 	$(LOCAL_PATH)/../../../src/super.cpp \
+	$(LOCAL_PATH)/../../../src/textrenderer.cpp \
 	$(LOCAL_PATH)/../../../src/audiodata.cpp \
 	$(LOCAL_PATH)/../../../src/util.cpp
 

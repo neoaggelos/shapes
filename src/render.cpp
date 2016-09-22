@@ -12,17 +12,6 @@ static const Uint32 winflags = SDL_WINDOW_SHOWN;
 static const int rnddriver = -1;
 static const int rndflags = SDL_RENDERER_PRESENTVSYNC;
 
-void RenderData::SDL_CHECK(bool check, string msg)
-{
-	if (!check) {
-		string err = "SDL Error: " + msg + ": " + SDL_GetError();
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", err.c_str(), NULL);
-		if (SDL_WasInit(SDL_INIT_VIDEO) != 0)
-			SDL_Quit();
-
-		exit(0);
-	}
-}
 
 struct Transformation {
 	float sc;
@@ -208,7 +197,7 @@ RenderData::reloadTexture(string theme)
 	if (h) {
 		const char* prop = SDLU_GetIniProperty(h,theme.c_str(), "colorkey");
 		if (prop != NULL) {
-			int tmp = StringToInt(prop);
+			int tmp = to_int(prop);
 			if (tmp == 0 || tmp == 1)
 				colorkey = tmp;
 		}

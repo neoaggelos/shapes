@@ -10,7 +10,6 @@ private:
 
 	SDL_Texture* texture;
 
-	void SDL_CHECK(bool check, string msg = "SDL Error");
 public:
 	RenderData(string theme);
 

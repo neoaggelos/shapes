@@ -34,8 +34,7 @@ EnterName::openDialog()
 	SDL_Renderer* renderer = gSuper->getRenderData()->getRenderer();
 	string input = gSuper->getSettings()->lastName;
 
-	SDL_Rect inputRect = SDLU_CreateRect(100, 300, 280, 50);
-	SDLU_SetFontSize(18);
+	SDL_Rect inputRect = SDLU_CreateRect(100, 230, 280, 50);
 	SDL_StartTextInput();
 	SDL_SetTextInputRect(&inputRect);
 	done = false;
@@ -65,17 +64,18 @@ EnterName::openDialog()
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 		SDL_RenderClear(renderer);
 		SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
-		SDLU_RenderText(renderer, SDLU_ALIGN_CENTER, 80, "%s", message.c_str());
+		gSuper->getTextRenderer()->write(18, message, { 0, 80, 480, 0 }, Center);
 
 		SDL_RenderDrawRect(renderer, &inputRect);
-		SDLU_RenderText(renderer, 110, 310, "%s", input.length() ? input.c_str() : "");
+		if (input != "")
+			gSuper->getTextRenderer()->write(18, input, { inputRect.x + 10, inputRect.y, inputRect.w, inputRect.h }, Left, Center);
 
 		Uint8 color = 0xff * (SDL_GetTicks() % 1000 < 500);
 		SDL_SetRenderDrawColor(renderer, color, color, color, 0xff);
 
 		int width, height;
-		SDLU_GetTextOutputSize(input.c_str(), &width, &height);
-		SDL_RenderDrawLine(renderer, 111 + width, 310, 111 + width, 335);
+		gSuper->getTextRenderer()->getSize(18, input, &width, &height);
+		SDL_RenderDrawLine(renderer, 111 + width, 240, 111 + width, 265);
 
 		SDLU_RenderButton(ok);
 

@@ -12,20 +12,21 @@ Highscores::Highscores()
 	bool isOK = true;
 	for (int diff = 0; diff < 3 && isOK; diff++) {
 		for (int i = 0; i < 5 && isOK; i++) {
-			char* prop = IntToString(diff * 10 + i);
+			int p = diff * 10 + i;
 
-			const char *name = SDLU_GetIniProperty(ini, "names", prop);
-			const char *score = SDLU_GetIniProperty(ini, "scores", prop);
+			const char *name = SDLU_GetIniProperty(ini, "names", to_string(p).c_str());
+			const char *score = SDLU_GetIniProperty(ini, "scores", to_string(p).c_str());
 
 			isOK = name != NULL && score != NULL;
 			if (isOK) {
-				scores[diff][i] = StringToInt(score);
+				scores[diff][i] = to_int(score);
 				names[diff][i] = SDL_strdup(name); //TODO
 			}
 		}
 	}
 
 	if (!isOK) {
+		cout << "NOT OK" << endl; //DEBUG
 		for (int diff = 0; diff < 3; diff++) {
 			for (int i = 0; i < 5; i++) {
 				scores[diff][i] = 0;
@@ -45,9 +46,9 @@ Highscores::~Highscores()
 		
 		for (int diff = 0; diff < 3; diff++) {
 			for (int i = 0; i < 5; i++) {
-				const char *prop = IntToString(diff * 10 + i);
-				SDLU_SetIniProperty(&ini, "scores", prop, IntToString(scores[diff][i]));
-				SDLU_SetIniProperty(&ini, "names", prop, names[diff][i].c_str());
+				int p = diff * 10 + i;
+				SDLU_SetIniProperty(&ini, "scores", to_string(p).c_str(), to_string(scores[diff][i]).c_str());
+				SDLU_SetIniProperty(&ini, "names", to_string(p).c_str(), names[diff][i].c_str());
 			}
 		}
 
@@ -161,7 +162,6 @@ Highscores::openMenu(int currentdiff, int currentindex)
 	SDLU_SetButtonHotkey(left_button, SDL_SCANCODE_LEFT);
 	((SDLU_Styles*)left_button->content)->fill_color = SDLU_CreateRGB(SDLU_BLACK_RGB);
 
-	SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
 	while (action == None) {
 		if (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT)
@@ -177,13 +177,13 @@ Highscores::openMenu(int currentdiff, int currentindex)
 		SDLU_RenderButton(left_button);
 
 		SDL_SetRenderDrawColor(data->getRenderer(), 0xff, 0xff, 0xff, 0xff);
-		SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 20, "HIGH SCORES");
+		gSuper->getTextRenderer()->write(20, "HIGH SCORES", { 0, 20, 480, 100 }, Center);
 		SDL_RenderDrawLine(data->getRenderer(), 140, 60, 340, 60);
 
 		string diff_string = "Easy";
 		if (diff == 1) diff_string = "Medium";
 		if (diff == 2) diff_string = "Hard";
-		SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 103, "%s", diff_string.c_str());
+		gSuper->getTextRenderer()->write(20, diff_string, { 0, 100, 480, 30 }, Center, Center);
 
 		SDL_RenderDrawLine(data->getRenderer(), 130, 100, 350, 100);
 		SDL_RenderDrawLine(data->getRenderer(), 130, 129, 350, 129);
@@ -200,12 +200,9 @@ Highscores::openMenu(int currentdiff, int currentindex)
 				SDL_SetRenderDrawColor(data->getRenderer(), 0x88, 0x88, 0x88, 0xff);
 			}
 
-			SDLU_RenderText(data->getRenderer(), 100, ypos, "%d.", i + 1);
-			SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, ypos, "%s", names[diff][i].c_str());
-			
-			int width;
-			SDLU_GetTextOutputSize(IntToString(scores[diff][i]), &width, NULL);
-			SDLU_RenderText(data->getRenderer(), 380 - width, ypos, "%d", scores[diff][i]);
+			gSuper->getTextRenderer()->write(20, to_string(i + 1), 100, ypos);
+			gSuper->getTextRenderer()->write(20, names[diff][i], { 0, ypos, 480, 100 }, Center);
+			gSuper->getTextRenderer()->write(20, to_string(scores[diff][i]), { 0, ypos, 380, 100 }, Right);
 
 			ypos += 60;
 		}

@@ -17,19 +17,20 @@
 #include <iostream>
 #include <list>
 #include <map>
-using std::list;
-using std::string;
-using std::map;
+#include <sstream>
+using namespace std;
 
 /* Libraries */
 #include "SDL.h"
 #include "SDLU.h"
 #include "SDL_mixer.h"
+#include "SDL_ttf.h"
 
 /* Forward declare all classes, so they can see each other */
 class Shape;
 class Game;
 class RenderData;
+class TextRenderer;
 class Super;
 class Difficulty;
 class Settings;
@@ -43,6 +44,7 @@ class AudioData;
 #include "settings.h"
 #include "shape.h"
 #include "render.h"
+#include "textrenderer.h"
 #include "game.h"
 #include "audiodata.h"
 #include "entername.h"

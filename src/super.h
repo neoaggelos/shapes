@@ -5,8 +5,9 @@
 
 class Super {
 private:
-    RenderData *render;
-    Settings *settings;
+	Settings *settings;
+	RenderData *render;
+	TextRenderer *textrenderer;
 	Highscores *highscores;
 	AudioData *audio;
 
@@ -22,6 +23,7 @@ public:
 
 	Settings *getSettings() { return settings; }
 	RenderData *getRenderData() { return render; }
+	TextRenderer* getTextRenderer() { return textrenderer; }
 	Highscores* getHighscores() { return highscores; }
 	AudioData* getAudioData() { return audio; }
 

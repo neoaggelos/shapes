@@ -4,6 +4,7 @@ Super::Super()
 {
     settings = new Settings();
 	render = new RenderData(settings->theme);
+	textrenderer = new TextRenderer();
 	highscores = new Highscores();
 	audio = new AudioData();
 
@@ -22,6 +23,7 @@ Super::finish()
 
 	delete highscores;
 	delete render;
+	delete textrenderer;
 	delete settings;
 	delete audio;
 	exit(0);
@@ -86,7 +88,6 @@ exit_callback(void* _button, void *action)
 void
 Super::mainMenu()
 {
-    
 	MainMenuAction action = None;
     SDL_Event event;
     SDLU_Button *start_button, *settings_button, *scores_button, *exit_button;
@@ -151,11 +152,8 @@ Super::mainMenu()
         SDLU_RenderButton(exit_button);
 
 		SDL_SetRenderDrawColor(render->getRenderer(), 0xff, 0xff, 0xff, 0xff);
-		SDLU_SetFontSize(SDLU_TEXT_SIZE_SMALL);
-		SDLU_RenderText(render->getRenderer(), 400, 620, "Shapes v0.1");
-		SDLU_SetFontSize(SDLU_TEXT_SIZE_LARGE);
-		SDLU_RenderText(render->getRenderer(), SDLU_ALIGN_CENTER, 100, "SHAPES");
-
+		textrenderer->write(14, "Shapes v" VERSION " Written by Aggelos Kolaitis", { 0, 0, 480, 640 }, Right, Bottom);
+		textrenderer->write(42, "SHAPES", { 0, 100, 480, 100 }, Center);
         SDL_RenderPresent(render->getRenderer());
 
 		//SDL_Delay(1); /* let the CPU rest */

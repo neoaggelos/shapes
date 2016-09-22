@@ -18,7 +18,7 @@ Settings::isOK(SDLU_IniHandler* h)
 	}
 
 	if (OK)
-		OK = StringToInt(SDLU_GetIniProperty(h, NULL, "settings_version")) >= CURRENT_SETTINGS_VERSION;
+		OK = to_int(SDLU_GetIniProperty(h, NULL, "settings_version")) >= CURRENT_SETTINGS_VERSION;
 
 	return OK;
 }
@@ -36,14 +36,14 @@ Settings::Settings()
 		reset();
 	}
 	else {
-		moveRightKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "moveRightKey")));
-		moveLeftKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "moveLeftKey")));
-		changeShapeUpKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeUpKey")));
-		changeShapeDownKey = static_cast<SDL_Scancode>(StringToInt(SDLU_GetIniProperty(settings, NULL, "changeShapeDownKey")));
-		difficulty = static_cast<DifficultyLevel>(StringToInt(SDLU_GetIniProperty(settings, NULL, "difficulty")));
+		moveRightKey = static_cast<SDL_Scancode>(to_int(SDLU_GetIniProperty(settings, NULL, "moveRightKey")));
+		moveLeftKey = static_cast<SDL_Scancode>(to_int(SDLU_GetIniProperty(settings, NULL, "moveLeftKey")));
+		changeShapeUpKey = static_cast<SDL_Scancode>(to_int(SDLU_GetIniProperty(settings, NULL, "changeShapeUpKey")));
+		changeShapeDownKey = static_cast<SDL_Scancode>(to_int(SDLU_GetIniProperty(settings, NULL, "changeShapeDownKey")));
+		difficulty = static_cast<DifficultyLevel>(to_int(SDLU_GetIniProperty(settings, NULL, "difficulty")));
 		theme = SDLU_GetIniProperty(settings, NULL, "theme");
 		lastName = SDLU_GetIniProperty(settings, NULL, "lastName");
-		settings_version = StringToInt(SDLU_GetIniProperty(settings, NULL, "settings_version"));
+		settings_version = to_int(SDLU_GetIniProperty(settings, NULL, "settings_version"));
 	}
 
 	if (settings)
@@ -54,12 +54,12 @@ Settings::~Settings()
 {
 	if (savingSettings) {
 		SDLU_IniHandler *h = SDLU_CreateIni();
-		SDLU_SetIniProperty(&h, NULL, "settings_version", IntToString(settings_version));
-		SDLU_SetIniProperty(&h, NULL, "moveRightKey", IntToString(moveRightKey));
-		SDLU_SetIniProperty(&h, NULL, "moveLeftKey", IntToString(moveLeftKey));
-		SDLU_SetIniProperty(&h, NULL, "changeShapeUpKey", IntToString(changeShapeUpKey));
-		SDLU_SetIniProperty(&h, NULL, "changeShapeDownKey", IntToString(changeShapeDownKey));
-		SDLU_SetIniProperty(&h, NULL, "difficulty", IntToString(difficulty));
+		SDLU_SetIniProperty(&h, NULL, "settings_version", to_string(settings_version).c_str());
+		SDLU_SetIniProperty(&h, NULL, "moveRightKey", to_string((int)moveRightKey).c_str());
+		SDLU_SetIniProperty(&h, NULL, "moveLeftKey", to_string((int)moveLeftKey).c_str());
+		SDLU_SetIniProperty(&h, NULL, "changeShapeUpKey", to_string((int)changeShapeUpKey).c_str());
+		SDLU_SetIniProperty(&h, NULL, "changeShapeDownKey", to_string((int)changeShapeDownKey).c_str());
+		SDLU_SetIniProperty(&h, NULL, "difficulty", to_string((int)difficulty).c_str());
 		SDLU_SetIniProperty(&h, NULL, "theme", theme.c_str());
 		SDLU_SetIniProperty(&h, NULL, "lastName", lastName.c_str());
 
@@ -277,54 +277,64 @@ Settings::openMenu()
 		SDL_RenderClear(target);
 
 		SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
-		SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 15, "SETTINGS");
-		SDLU_RenderText(target, 5, 180, "Difficulty");
-		SDLU_RenderText(target, 5, 70, "Theme");
-		SDLU_RenderText(target, 5, 290, "Controls");
+		gSuper->getTextRenderer()->write(20, "SETTINGS", { 0, 15, 480, 100 }, Center);
+		gSuper->getTextRenderer()->write(20, "Theme", 5, 70);
+		gSuper->getTextRenderer()->write(20, "Difficulty", 5, 180);
+		gSuper->getTextRenderer()->write(20, "Controls", 5, 290);
 
 		SDL_RenderDrawLine(target, 180, 50, 300, 50);
 		SDL_RenderDrawLine(target, 5, 105, 475, 105);
 		SDL_RenderDrawLine(target, 5, 215, 475, 215);
 		SDL_RenderDrawLine(target, 5, 325, 475, 325);
 
-		SDLU_SetFontSize(18);
 		SDL_SetRenderDrawColor(target, 0xaa, 0xaa, 0xaa, 0xff);
 
-		SDLU_RenderText(target, 15, 130, "Choose Theme");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 130, "%s", themeBox->current);
+		gSuper->getTextRenderer()->write(18, "Choose Theme", 15, 130);
+		gSuper->getTextRenderer()->write(18, themeBox->current, { 0, 130, 480, 100 }, Center);
 
-		SDLU_RenderText(target, 15, 240, "Choose Difficulty");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 240, "%s", diffBox->current);
+		gSuper->getTextRenderer()->write(18, "Choose Difficulty", 15, 240);
+		gSuper->getTextRenderer()->write(18, diffBox->current, { 0, 240, 480, 100 }, Center);
+
 #ifndef __ANDROID__
-		SDLU_RenderText(target, 15, 350, "Move Right");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 350, "%s", SDL_GetScancodeName(s->moveRightKey));
-		SDLU_RenderText(target, 15, 400, "Move Left");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 400, "%s", SDL_GetScancodeName(s->moveLeftKey));
-		SDLU_RenderText(target, 15, 450, "Change Shape Up");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 450, "%s", SDL_GetScancodeName(s->changeShapeUpKey));
-		SDLU_RenderText(target, 15, 500, "Change Shape Down");
-		SDLU_RenderText(target, SDLU_ALIGN_CENTER, 500, "%s", SDL_GetScancodeName(s->changeShapeDownKey));
+		gSuper->getTextRenderer()->write(18, "Move Right", 15, 350);
+		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->moveRightKey), { 0, 350, 480, 100 }, Center);
+		gSuper->getTextRenderer()->write(18, "Move Left", 15, 400);
+		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->moveLeftKey), { 0, 400, 480, 100 }, Center);
+		gSuper->getTextRenderer()->write(18, "Change Shape Up", 15, 450);
+		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->changeShapeUpKey), { 0, 450, 480, 100 }, Center);
+		gSuper->getTextRenderer()->write(18, "Change Shape Down", 15, 500);
+		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->changeShapeDownKey), { 0, 500, 480, 100 }, Center);
 #else /* if __ANDROID__ */
-		SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
 
 		const SDL_Rect screenRect = { 30, 350, 120, 160 };
+		const SDL_Rect leftRect = { 30, 350, 30, 160 };
+		const SDL_Rect rightRect = { 120, 350, 30, 160 };
+		const SDL_Rect upRect = { 60, 350, 60, 80 };
+		const SDL_Rect downRect = { 60, 430, 60, 80 };
+
+		SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
 		SDL_RenderDrawRect(target, &screenRect);
+		SDL_RenderDrawRect(target, &upRect);
+		SDL_RenderDrawRect(target, &downRect);
+		SDL_RenderDrawRect(target, &leftRect);
+		SDL_RenderDrawRect(target, &rightRect);
 
 		SDL_SetRenderDrawColor(target, 0xaa, 0xaa, 0xaa, 0xff);
-		SDL_RenderDrawLine(target, 30 + 120 * 0.25, 350, 30 + 120 * 0.25, 350 + 160);
-		SDL_RenderDrawLine(target, 30 + 120 * 0.75, 350, 30 + 120 * 0.75, 350 + 160);
-		SDL_RenderDrawLine(target, 30 + 120 * 0.25, 350 + 160 * 0.5, 30 + 120 * 0.75, 350 + 160 * 0.5);
 
-		SDLU_RenderText(target, 40, 350 + 70, "1");
-		SDLU_RenderText(target, 130, 350 + 70, "2");
-		SDLU_RenderText(target, 85, 380, "3");
-		SDLU_RenderText(target, 85, 460, "4");
+		gSuper->getTextRenderer()->write(18, "1", leftRect, Center, Center);
+		gSuper->getTextRenderer()->write(18, "2", rightRect, Center, Center);
+		gSuper->getTextRenderer()->write(18, "3", upRect, Center, Center);
+		gSuper->getTextRenderer()->write(18, "4", downRect, Center, Center);
 
-		SDLU_RenderText(target, 200, 360, "1: %-20s", "Move Left");
-		SDLU_RenderText(target, 200, 400, "2: %-20s", "Move Right");
-		SDLU_RenderText(target, 200, 440, "3: %-20s", "Change Shape Up");
-		SDLU_RenderText(target, 200, 480, "4: %-20s", "Change Shape Down");
+		gSuper->getTextRenderer()->write(18, "1:", 200, 360);
+		gSuper->getTextRenderer()->write(18, "2:", 200, 400);
+		gSuper->getTextRenderer()->write(18, "3:", 200, 440);
+		gSuper->getTextRenderer()->write(18, "4:", 200, 480);
+
+		gSuper->getTextRenderer()->write(18, "Move Left", { 200, 360, 250, 100 }, Center);
+		gSuper->getTextRenderer()->write(18, "Move Right", { 200, 400, 250, 100 }, Center);
+		gSuper->getTextRenderer()->write(18, "Change Shape Up", { 200, 440, 250, 100 }, Center);
+		gSuper->getTextRenderer()->write(18, "Change Shape Down", { 200, 480, 250, 100 }, Center);
 #endif
 
 #ifndef __ANDROID__

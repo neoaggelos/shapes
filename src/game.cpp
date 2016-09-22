@@ -31,7 +31,6 @@ Game::Game()
 
 	lastModeChangeTime = SDL_GetTicks();
 	mode = Normal;
-
 }
 
 Game::~Game()
@@ -42,7 +41,7 @@ Game::~Game()
 		}
 	}
 
-	string res = IntToString(score);
+	string res = to_string(score);
 	string msg = "You scored " + res + " points.";
 
 	int diff = gSuper->getSettings()->difficulty;
@@ -95,7 +94,6 @@ Game::render()
 	RenderData *data = gSuper->getRenderData();
 	Highscores *h = gSuper->getHighscores();
 
-	SDLU_SetFontSize(SDLU_TEXT_SIZE_MEDIUM);
 	SDL_SetRenderDrawColor(data->getRenderer(), 0, 0, 0, 0);
     SDL_RenderFillRect(data->getRenderer(), NULL);
 
@@ -110,15 +108,18 @@ Game::render()
 
 	SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
 	double time = d.changeModeTime() /1000.0 - (pauseTime ? pauseTime - lastModeChangeTime : (SDL_GetTicks() - lastModeChangeTime)) / 1000.0;
-	SDLU_RenderText(data->getRenderer(), 440, 5, "%.1lf", time);
-
-	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 30, "%s", getDescription(mode));
-	playerShape->render();
+	time = static_cast<int>(time * 10) / 10.0; /* keep one digit after dot */
+	gSuper->getTextRenderer()->write(20, double_to_string(time), { 0, 5, 475, 100 }, Right);
+	
+	if (mode != Normal)
+		gSuper->getTextRenderer()->write(20, getDescription(mode), { 0, 30, 480, 100 }, Center);
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xaa);
-    SDLU_RenderText(data->getRenderer(), 0, 5,  "Score: %d", getScore());
-	SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 5, "High Score: %d", h->getScore(gSuper->getSettings()->difficulty, 0));
+	gSuper->getTextRenderer()->write(20, "Score: " + to_string(getScore()), 0, 5);
+	gSuper->getTextRenderer()->write(20, "High Score: " + to_string(h->getScore(gSuper->getSettings()->difficulty, 0)), { 0, 5, 480, 100 }, Center);
 	
+	playerShape->render();
+
     for (int i = 0; i < d.numShapes(); i++) {
 		SDL_Rect src = { 80 * i, 0, 80, 80 };
         SDL_Rect dest = { 480 - 35, 510 - i * 30, 30, 30 };
@@ -247,7 +248,7 @@ Game::run()
 
 					if (mode == Fake) {
 						if (random(1, 100) < 20 && pauseTime == 0 && (*i)->getHeight() < 300) {
-							(*i)->setType(random(1, d.numShapes()));
+							(*i)->setType(random(0, d.numShapes()-1));
 						}
 					}
 					else if (mode == Shaking) {
@@ -335,9 +336,8 @@ Game::pauseMenu()
 		SDL_RenderClear(data->getRenderer());
 		this->render();
 
-		SDLU_SetFontSize(SDLU_TEXT_SIZE_LARGE);
 		SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
-		SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, 130, "Game Paused");
+		gSuper->getTextRenderer()->write(42, "Game Paused", { 0, 130, 480, 100 }, Center);
 
 		SDLU_RenderButton(resume_button);
 		SDLU_RenderButton(forfeit_button);
@@ -356,9 +356,9 @@ Game::pauseMenu()
 			
 			this->render();
 
-			SDLU_SetFontSize(SDLU_TEXT_SIZE_LARGE);
 			SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
-			SDLU_RenderText(data->getRenderer(), SDLU_ALIGN_CENTER, SDLU_ALIGN_CENTER, "Resuming in %d...", 3 - i);
+
+			gSuper->getTextRenderer()->write(42, "Resuming in " + to_string(3 - i) + "...", { 0,0,480,640 }, Center, Center);
 
 			SDL_RenderPresent(data->getRenderer());
 

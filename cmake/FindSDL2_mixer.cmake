@@ -44,7 +44,7 @@ find_package_handle_standard_args(
 )
 
 if(SDL2_MIXER_LIBRARY AND SDL2_MIXER_INCLUDE_DIR)
-    set(SDLU_FOUND "YES")
+    set(SDL2_MIXER_FOUND "YES")
 endif(SDL2_MIXER_LIBRARY AND SDL2_MIXER_INCLUDE_DIR)
 
 
