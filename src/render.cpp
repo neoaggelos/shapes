@@ -163,6 +163,7 @@ RenderData::RenderData(string theme)
 
 RenderData::~RenderData()
 {
+
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyTexture(texture);

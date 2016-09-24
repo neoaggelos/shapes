@@ -5,9 +5,9 @@
 
 class TextRenderer {
 private:
-	map<int, TTF_Font*> fonts;
+	map<int, SDLU_Font*> fonts;
 
-	void addfont(string filename, int size, int hinting = TTF_HINTING_LIGHT);
+	void addfont(string filename, int size, int hinting = 1);
 
 public:
 	TextRenderer();
@@ -17,6 +17,8 @@ public:
 	void write(int fontsize, string text, int x, int y);
 
 	void getSize(int fontsize, string text, int *w, int *h);
+
+	SDLU_Font* getFont(int fontsize);
 };
 
 #endif /* _textrenderer_h */

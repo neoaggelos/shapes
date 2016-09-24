@@ -7,7 +7,6 @@ class RenderData {
 private:
 	SDL_Window *window;
 	SDL_Renderer *renderer;
-
 	SDL_Texture* texture;
 
 public:
@@ -19,7 +18,6 @@ public:
 	SDL_Renderer *getRenderer();
 
 	SDL_Texture *getTexture();
-
 	void reloadTexture(string theme);
 };
 

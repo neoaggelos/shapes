@@ -4,13 +4,13 @@
 add 1 every time something breaking happens in settings code.
 protects from crashes when newer game versions load older version settings
 */
-const int CURRENT_SETTINGS_VERSION = 5;
+const int CURRENT_SETTINGS_VERSION = 6;
 
 bool
 Settings::isOK(SDLU_IniHandler* h)
 {
 	const int num = 6;
-	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeUpKey", "changeShapeDownKey", "theme", "lastName", "settings_version" };
+	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeUpKey", "changeShapeDownKey", "theme", "lastName", "soundEnabled", "settings_version" };
 	bool OK = true;
 
 	for (int i = 0; (i < num) && OK; i++) {
@@ -43,6 +43,7 @@ Settings::Settings()
 		difficulty = static_cast<DifficultyLevel>(to_int(SDLU_GetIniProperty(settings, NULL, "difficulty")));
 		theme = SDLU_GetIniProperty(settings, NULL, "theme");
 		lastName = SDLU_GetIniProperty(settings, NULL, "lastName");
+		soundEnabled = to_int(SDLU_GetIniProperty(settings, NULL, "soundEnabled"));
 		settings_version = to_int(SDLU_GetIniProperty(settings, NULL, "settings_version"));
 	}
 
@@ -62,6 +63,7 @@ Settings::~Settings()
 		SDLU_SetIniProperty(&h, NULL, "difficulty", to_string((int)difficulty).c_str());
 		SDLU_SetIniProperty(&h, NULL, "theme", theme.c_str());
 		SDLU_SetIniProperty(&h, NULL, "lastName", lastName.c_str());
+		SDLU_SetIniProperty(&h, NULL, "soundEnabled", to_string(static_cast<int>(soundEnabled)).c_str());
 
 		SDLU_SaveIni(h, settingsIni.c_str());
 		SDLU_DestroyIni(h);
@@ -78,6 +80,7 @@ Settings::reset()
 	difficulty = Medium;
 	theme = "Red";
 	lastName = "";
+	soundEnabled = true;
 	settings_version = CURRENT_SETTINGS_VERSION;
 }
 
@@ -89,7 +92,8 @@ static SDLU_Button* new_button(RenderData *data, const char *title, int x, int y
 	SDLU_SetButtonCallback(ret, SDLU_HOVER_CALLBACK, on_hover, NULL);
 
 	SDLU_CloseFont(((SDLU_Styles*)ret->content)->font);
-	((SDLU_Styles*)ret->content)->font = SDLU_LoadFont((getAssetsDir() + "font.ttf").c_str(), fontsize, 1);
+	((SDLU_Styles*)ret->content)->font = gSuper->getTextRenderer()->getFont(fontsize);
+	((SDLU_Styles*)ret->content)->freefont = SDL_FALSE;
 	SDLU_SetButtonGeometry(ret, x, y, w, h);
 
 	return ret;
@@ -100,7 +104,10 @@ static SDLU_ComboBox* new_cbox(RenderData *data, int x, int y, int w = -1, int h
 	SDLU_ComboBox* ret = SDLU_CreateComboBox(data->getWindow());
 
 	SDLU_SetComboBoxGeometry(ret, x, y, w, h);
-	ret->styles->font = SDLU_LoadFont((getAssetsDir() + "font.ttf").c_str(), 15, 1);
+
+	SDLU_CloseFont(ret->styles->font);
+	ret->styles->font = gSuper->getTextRenderer()->getFont(15);
+	ret->styles->freefont = SDL_FALSE;
 
 	return ret;
 }

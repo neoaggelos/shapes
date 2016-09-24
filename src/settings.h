@@ -22,6 +22,8 @@ public:
 	SDL_Scancode changeShapeUpKey;
 	SDL_Scancode changeShapeDownKey;
 
+	bool soundEnabled;
+
 	string theme;
 	string lastName;
 

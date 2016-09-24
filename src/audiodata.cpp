@@ -42,7 +42,7 @@ AudioData::~AudioData()
 void
 AudioData::play(string sound)
 {
-	if (!hasAudio)
+	if (!hasAudio || !gSuper->getSettings()->soundEnabled)
 		return;
 
 	Mix_PlayChannel(channel, sounds[sound], 0);
