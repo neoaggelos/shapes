@@ -60,8 +60,7 @@ void on_hover(void *_button, void *data)
 }
 
 
-template<typename T>
-string to_string(T var)
+string int_to_string(int var)
 {
 	stringstream s;
 	s << var;

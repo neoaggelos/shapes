@@ -9,7 +9,7 @@ void SDL_CHECK(bool check, string msg = "");
 string getAssetsDir(string subfolder = "");
 const char* getSettingsDir();
 
-template<typename T> string to_string(T var);
+string int_to_string(int var);
 string double_to_string(double var);
 int to_int(string s);
 int to_int(const char *s);

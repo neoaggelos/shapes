@@ -22,7 +22,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 	$(LOCAL_PATH)/../../../src/audiodata.cpp \
 	$(LOCAL_PATH)/../../../src/util.cpp
 
-LOCAL_SHARED_LIBRARIES := SDL2 SDL2_mixer SDLU SDL2_ttf
+LOCAL_SHARED_LIBRARIES := SDL2 SDL2_mixer SDLU
 
 LOCAL_LDLIBS := -lGLESv1_CM -lGLESv2 -llog
 

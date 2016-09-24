@@ -15,7 +15,7 @@ TextRenderer::TextRenderer()
 	SDL_CHECK(r != -1, "Could not initialize SDL2_ttf");
 
 	/* open fonts */
-	string filename = getAssetsDir() + "font.ttf";
+	string filename = getAssetsDir("fonts") + "DroidSans.ttf";
 	addfont(filename, 14);
 	addfont(filename, 15);
 	addfont(filename, 18);

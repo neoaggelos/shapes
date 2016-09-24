@@ -41,7 +41,7 @@ Game::~Game()
 		}
 	}
 
-	string res = to_string(score);
+	string res = int_to_string(score);
 	string msg = "You scored " + res + " points.";
 
 	int diff = gSuper->getSettings()->difficulty;
@@ -115,8 +115,8 @@ Game::render()
 		gSuper->getTextRenderer()->write(20, getDescription(mode), { 0, 30, 480, 100 }, Center);
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xaa);
-	gSuper->getTextRenderer()->write(20, "Score: " + to_string(getScore()), 0, 5);
-	gSuper->getTextRenderer()->write(20, "High Score: " + to_string(h->getScore(gSuper->getSettings()->difficulty, 0)), { 0, 5, 480, 100 }, Center);
+	gSuper->getTextRenderer()->write(20, "Score: " + int_to_string(getScore()), 0, 5);
+	gSuper->getTextRenderer()->write(20, "High Score: " + int_to_string(h->getScore(gSuper->getSettings()->difficulty, 0)), { 0, 5, 480, 100 }, Center);
 	
 	playerShape->render();
 
@@ -358,7 +358,7 @@ Game::pauseMenu()
 
 			SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
 
-			gSuper->getTextRenderer()->write(42, "Resuming in " + to_string(3 - i) + "...", { 0,0,480,640 }, Center, Center);
+			gSuper->getTextRenderer()->write(42, "Resuming in " + int_to_string(3 - i) + "...", { 0,0,480,640 }, Center, Center);
 
 			SDL_RenderPresent(data->getRenderer());
 

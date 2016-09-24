@@ -24,7 +24,6 @@ using namespace std;
 #include "SDL.h"
 #include "SDLU.h"
 #include "SDL_mixer.h"
-#include "SDL_ttf.h"
 
 /* Forward declare all classes, so they can see each other */
 class Shape;

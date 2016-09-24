@@ -43,7 +43,7 @@ Settings::Settings()
 		difficulty = static_cast<DifficultyLevel>(to_int(SDLU_GetIniProperty(settings, NULL, "difficulty")));
 		theme = SDLU_GetIniProperty(settings, NULL, "theme");
 		lastName = SDLU_GetIniProperty(settings, NULL, "lastName");
-		soundEnabled = to_int(SDLU_GetIniProperty(settings, NULL, "soundEnabled"));
+		soundEnabled = to_int(SDLU_GetIniProperty(settings, NULL, "soundEnabled")) == 0 ? false : true;
 		settings_version = to_int(SDLU_GetIniProperty(settings, NULL, "settings_version"));
 	}
 
@@ -55,15 +55,15 @@ Settings::~Settings()
 {
 	if (savingSettings) {
 		SDLU_IniHandler *h = SDLU_CreateIni();
-		SDLU_SetIniProperty(&h, NULL, "settings_version", to_string(settings_version).c_str());
-		SDLU_SetIniProperty(&h, NULL, "moveRightKey", to_string((int)moveRightKey).c_str());
-		SDLU_SetIniProperty(&h, NULL, "moveLeftKey", to_string((int)moveLeftKey).c_str());
-		SDLU_SetIniProperty(&h, NULL, "changeShapeUpKey", to_string((int)changeShapeUpKey).c_str());
-		SDLU_SetIniProperty(&h, NULL, "changeShapeDownKey", to_string((int)changeShapeDownKey).c_str());
-		SDLU_SetIniProperty(&h, NULL, "difficulty", to_string((int)difficulty).c_str());
+		SDLU_SetIniProperty(&h, NULL, "settings_version", int_to_string(settings_version).c_str());
+		SDLU_SetIniProperty(&h, NULL, "moveRightKey", int_to_string((int)moveRightKey).c_str());
+		SDLU_SetIniProperty(&h, NULL, "moveLeftKey", int_to_string((int)moveLeftKey).c_str());
+		SDLU_SetIniProperty(&h, NULL, "changeShapeUpKey", int_to_string((int)changeShapeUpKey).c_str());
+		SDLU_SetIniProperty(&h, NULL, "changeShapeDownKey", int_to_string((int)changeShapeDownKey).c_str());
+		SDLU_SetIniProperty(&h, NULL, "difficulty", int_to_string((int)difficulty).c_str());
 		SDLU_SetIniProperty(&h, NULL, "theme", theme.c_str());
 		SDLU_SetIniProperty(&h, NULL, "lastName", lastName.c_str());
-		SDLU_SetIniProperty(&h, NULL, "soundEnabled", to_string(static_cast<int>(soundEnabled)).c_str());
+		SDLU_SetIniProperty(&h, NULL, "soundEnabled", int_to_string(static_cast<int>(soundEnabled)).c_str());
 
 		SDLU_SaveIni(h, settingsIni.c_str());
 		SDLU_DestroyIni(h);
