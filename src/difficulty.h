@@ -22,4 +22,7 @@ public:
 
 };
 
+DifficultyLevel difficultyLevel(string level);
+const char* difficultyName(int level);
+
 #endif /* _difficulty_h */

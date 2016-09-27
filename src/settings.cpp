@@ -83,6 +83,7 @@ Settings::reset()
 	soundEnabled = true;
 	settings_version = CURRENT_SETTINGS_VERSION;
 }
+
 enum SettingsMenuAction {
 	ReadKeysStart = 0,
 	ReadRightKey = 1,
@@ -96,48 +97,49 @@ enum SettingsMenuAction {
 	None
 };
 
-#ifndef __ANDROID__
 static void
-right_callback(void *_this, void *action)
+callback(void *_this, void *action)
 {
 	gSuper->getAudioData()->play("bleep");
-	*static_cast<SettingsMenuAction*>(action) = ReadRightKey;
+	const char *name = ((SDLU_Button*)_this)->name;
+
+	if (SDL_strcmp(name, "right") == 0) {
+		*static_cast<SettingsMenuAction*>(action) = ReadRightKey;
+	}
+	else if (SDL_strcmp(name, "left") == 0) {
+		*static_cast<SettingsMenuAction*>(action) = ReadLeftKey;
+	}
+	else if (SDL_strcmp(name, "up") == 0) {
+		*static_cast<SettingsMenuAction*>(action) = ReadShapeUpKey;
+	}
+	else if (SDL_strcmp(name, "down") == 0) {
+		*static_cast<SettingsMenuAction*>(action) = ReadShapeDownKey;
+	}
+	else if (SDL_strcmp(name, "reset") == 0) {
+		*static_cast<SettingsMenuAction*>(action) = Reset;
+	}
+	else if (SDL_strcmp(name, "back") == 0) {
+		*static_cast<SettingsMenuAction*>(action) = BackToMenu;
+	}
 }
 
-static void
-left_callback(void *_this, void *action)
+void
+combo_callback(void *_button, void *_arg)
 {
+	SDLU_Button *button = (SDLU_Button*)_button;
 	gSuper->getAudioData()->play("bleep");
-	*static_cast<SettingsMenuAction*>(action) = ReadLeftKey;
-}
+	const char* name = ((SDLU_Button*)_button)->name;
 
-static void
-shapeup_callback(void *_this, void *action)
-{
-	gSuper->getAudioData()->play("bleep");
-	*static_cast<SettingsMenuAction*>(action) = ReadShapeUpKey;
-}
-
-static void
-shapedown_callback(void *_this, void *action)
-{
-	gSuper->getAudioData()->play("bleep");
-	*static_cast<SettingsMenuAction*>(action) = ReadShapeDownKey;
-}
-#endif /* __ANDROID__ */
-
-static void
-reset_callback(void *_this, void *action)
-{
-	gSuper->getAudioData()->play("bleep");
-	*static_cast<SettingsMenuAction*>(action) = Reset;
-}
-
-static void
-back_callback(void *_this, void *action)
-{
-	gSuper->getAudioData()->play("bleep");
-	*static_cast<SettingsMenuAction*>(action) = BackToMenu;
+	if (SDL_strcmp(name, "difficulty") == 0) {
+		gSuper->getSettings()->difficulty = difficultyLevel(((SDLU_Styles*)(button->content))->title);
+	}
+	else if (SDL_strcmp(name, "theme") == 0) {
+		gSuper->getSettings()->theme = ((SDLU_Styles*)(button->content))->title;
+		gSuper->getRenderData()->reloadTexture(gSuper->getSettings()->theme);
+	}
+	else if (SDL_strcmp(name, "sound") == 0) {
+		gSuper->getSettings()->soundEnabled = SDL_strcmp(((SDLU_Styles*)(button->content))->title, "On") == 0;
+	}
 }
 
 void
@@ -147,25 +149,40 @@ Settings::openMenu()
 	SDLU_Button *shapeUpButton, *shapeDownButton, *rightButton, *leftButton;
 #endif /* __ANDROID__ */
 	SDLU_Button *resetButton, *backButton;
-	SDLU_ComboBox *diffBox, *themeBox;
+	SDLU_Button *diffButtons[3], *themeButtons[4], *soundButtons[2];
 	RenderData* data = gSuper->getRenderData();
 	SettingsMenuAction action;
 
 #ifndef __ANDROID__
-	rightButton = CreateButton("Change", { 350, 350, 85, 25 }, 15, right_callback, &action);
-	leftButton = CreateButton("Change", { 350, 400, 85, 25 }, 15, left_callback, &action);
-	shapeUpButton = CreateButton("Change", { 350, 450, 85, 25 }, 15, shapeup_callback, &action);
-	shapeDownButton = CreateButton("Change", { 350, 500, 85, 25 }, 15, shapedown_callback, &action);
+	rightButton = CreateButton("right", "Change", { 350, 350, 85, 25 }, 15, callback, &action);
+	leftButton = CreateButton("left", "Change", { 350, 400, 85, 25 }, 15, callback, &action);
+	shapeUpButton = CreateButton("up", "Change", { 350, 450, 85, 25 }, 15, callback, &action);
+	shapeDownButton = CreateButton("down", "Change", { 350, 500, 85, 25 }, 15, callback, &action);
 #endif /* __ANDROID__ */
 
-	resetButton = CreateButton("Reset To Defaults", { 40, 560, 180, 35 }, 18, reset_callback, &action);
-	backButton = CreateButton("Back To Menu", { 260, 560, 180, 35 }, 18, back_callback, &action, SDL_SCANCODE_AC_BACK);
+	resetButton = CreateButton("reset", "Reset To Defaults", { 40, 560, 180, 35 }, 18, callback, &action);
+	backButton = CreateButton("back", "Back To Menu", { 260, 560, 180, 35 }, 18, callback, &action, SDL_SCANCODE_AC_BACK);
 
-	string themes[] = { "Red", "Cats", "Blue", "Old" };
-	themeBox = CreateComboBox(themes, 4, theme, 350, 130, 85, 25);
+	const char* diffs[] = { "Easy", "Medium", "Hard" };
+	for (int i = 0; i < 3; i++) {
+		int margin = 5;
+		int width = (int)((288 - 2 * margin) / 3.0);
+		diffButtons[i] = CreateButton("difficulty", diffs[i], { 150 + i * (width+5), 130, width, 25 }, 15, combo_callback, NULL);
+	}
 
-	string diffs[] = { "Easy", "Medium", "Hard" };
-	diffBox = CreateComboBox(diffs, 3, difficulty, 350, 240, 85, 25);
+	const char* themes[] = { "Red", "Blue", "Cats", "Old" };
+	for (int i = 0; i < 4; i++) {
+		int margin = 5;
+		int width = (int)((288 - 3 * margin) / 4.0);
+		themeButtons[i] = CreateButton("theme", themes[i], { 150 + i * (width + 5), 180, width, 25 }, 15, combo_callback, NULL);
+	}
+
+	const char* sound[] = { "On", "Off" };
+	for (int i = 0; i < 2; i++) {
+		int margin = 5;
+		int width = (int)((288 - 1 * margin) / 2.0);
+		soundButtons[i] = CreateButton("sound", sound[i], { 150 + i * (width + 5), 230, width, 25 }, 15, combo_callback, NULL);
+	}
 	
 	SDL_Event event;
 	action = None;
@@ -175,29 +192,9 @@ Settings::openMenu()
 			if (event.type == SDL_QUIT) {
 				gSuper->finish();
 			}
-			else if (event.type == SDLU_COMBOBOX_OPENED) {
-				//				no need to know which combo box was opened, just play the sound
-				//				Uint32 cbox_id = static_cast<Uint32>(event.user.code);
-				gSuper->getAudioData()->play("bleep");
-			}
-			else if (event.type == SDLU_COMBOBOX_CHANGED) {
-				Uint32 cbox_id = static_cast<Uint32>(event.user.code);
-				if (cbox_id == diffBox->id) {
-					gSuper->getAudioData()->play("bleep");
-					DifficultyLevel new_diff = static_cast<DifficultyLevel>(diffBox->current_index);
-					gSuper->getSettings()->difficulty = new_diff;
-				}
-				else if (cbox_id == themeBox->id) {
-					gSuper->getAudioData()->play("bleep");
-					gSuper->getSettings()->theme = SDL_strdup(themeBox->current);
-					gSuper->getRenderData()->reloadTexture(gSuper->getSettings()->theme);
-				}
-			}
 
 			if (action == Reset) {
 				gSuper->getSettings()->reset();
-				SDLU_SetComboBoxActiveIndex(diffBox, gSuper->getSettings()->difficulty);
-				SDLU_SetComboBoxActiveItem(themeBox, gSuper->getSettings()->theme.c_str());
 			}
 #ifndef __ANDROID__
 			else if (action >= ReadKeysStart && action <= ReadKeysEnd) {
@@ -239,22 +236,47 @@ Settings::openMenu()
 
 		SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
 		gSuper->getTextRenderer()->write(20, "SETTINGS", { 0, 15, 480, 100 }, Center);
-		gSuper->getTextRenderer()->write(20, "Theme", 5, 70);
-		gSuper->getTextRenderer()->write(20, "Difficulty", 5, 180);
+		gSuper->getTextRenderer()->write(20, "General", 5, 70);
 		gSuper->getTextRenderer()->write(20, "Controls", 5, 290);
 
 		SDL_RenderDrawLine(target, 180, 50, 300, 50);
 		SDL_RenderDrawLine(target, 5, 105, 475, 105);
-		SDL_RenderDrawLine(target, 5, 215, 475, 215);
 		SDL_RenderDrawLine(target, 5, 325, 475, 325);
 
 		SDL_SetRenderDrawColor(target, 0xaa, 0xaa, 0xaa, 0xff);
 
-		gSuper->getTextRenderer()->write(18, "Choose Theme", 15, 130);
-		gSuper->getTextRenderer()->write(18, themeBox->current, { 0, 130, 480, 100 }, Center);
+		gSuper->getTextRenderer()->write(18, "Difficulty", 15, 130);
+		gSuper->getTextRenderer()->write(18, "Theme", 15, 180);
+		gSuper->getTextRenderer()->write(18, "Sound", 15, 230);
 
-		gSuper->getTextRenderer()->write(18, "Choose Difficulty", 15, 240);
-		gSuper->getTextRenderer()->write(18, diffBox->current, { 0, 240, 480, 100 }, Center);
+		for (int i = 0; i < 3; i++) {
+			if (i == gSuper->getSettings()->difficulty - 1)
+				((SDLU_Styles*)diffButtons[i]->content)->fill_color = { 30, 30, 30, 0xff };
+			else
+				((SDLU_Styles*)diffButtons[i]->content)->fill_color = { 100, 100, 100, 0xff };
+
+			SDLU_RenderButton(diffButtons[i]);
+
+		}
+
+		for (int i = 0; i < 4; i++) {
+			if (themes[i] == gSuper->getSettings()->theme)
+				((SDLU_Styles*)themeButtons[i]->content)->fill_color = { 30, 30, 30, 0xff };
+			else
+				((SDLU_Styles*)themeButtons[i]->content)->fill_color = { 100, 100, 100, 0xff };
+
+			SDLU_RenderButton(themeButtons[i]);
+		}
+		
+		for (int i = 0; i < 2; i++) {
+			if (i == ! gSuper->getSettings()->soundEnabled)
+				((SDLU_Styles*)soundButtons[i]->content)->fill_color = { 30, 30, 30, 0xff };
+			else
+				((SDLU_Styles*)soundButtons[i]->content)->fill_color = { 100, 100, 100, 0xff };
+
+			SDLU_RenderButton(soundButtons[i]);
+		}
+
 
 #ifndef __ANDROID__
 		gSuper->getTextRenderer()->write(18, "Move Right", 15, 350);
@@ -306,8 +328,6 @@ Settings::openMenu()
 #endif /* __ANDROID__ */
 		SDLU_RenderButton(backButton);
 		SDLU_RenderButton(resetButton);
-		SDLU_RenderComboBox(themeBox);
-		SDLU_RenderComboBox(diffBox);
 
 		SDL_RenderPresent(target);
 
@@ -322,9 +342,6 @@ Settings::openMenu()
 #endif /* __ANDROID__ */
 	SDLU_DestroyButton(backButton);
 	SDLU_DestroyButton(resetButton);
-
-	SDLU_DestroyComboBox(themeBox);
-	SDLU_DestroyComboBox(diffBox);
 
 	if (action == Quit) {
 		gSuper->finish();

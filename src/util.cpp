@@ -90,7 +90,7 @@ int to_int(const char* str)
 }
 
 SDLU_Button*
-CreateButton(const char* title, SDL_Rect pos, int fontsize, SDLU_Callback press, void *press_arg, SDL_Scancode hotkey, SDLU_Callback hover, void* hover_arg)
+CreateButton(const char* name, const char* title, SDL_Rect pos, int fontsize, SDLU_Callback press, void *press_arg, SDL_Scancode hotkey, SDLU_Callback hover, void* hover_arg)
 {
 	SDLU_Button * ret = SDLU_CreateButton(gSuper->getRenderData()->getWindow(), title, SDLU_BUTTON_TEXT);
 
@@ -109,7 +109,15 @@ CreateButton(const char* title, SDL_Rect pos, int fontsize, SDLU_Callback press,
 	if (press) SDLU_SetButtonCallback(ret, SDLU_PRESS_CALLBACK, press, press_arg);
 	if (hover) SDLU_SetButtonCallback(ret, SDLU_HOVER_CALLBACK, hover, hover_arg);
 
+	ret->name = name;
+
 	return ret;
+}
+
+void
+DestroyButton(SDLU_Button* th)
+{
+	SDLU_DestroyButton(th);
 }
 
 SDLU_ComboBox*

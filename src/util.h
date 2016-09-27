@@ -1,7 +1,7 @@
 #ifndef _util_h
 #define _util_h
 
-#include <iostream>
+#include "main.h"
 using namespace std;
 
 int random(int min, int max);
@@ -17,7 +17,8 @@ int to_int(const char *s);
 void on_hover(void *_button, void* _unused);
 
 SDLU_Button * CreateButton(
-	const char * title, SDL_Rect pos, int fontsize = 20,
+	const char* name, const char * title,
+	SDL_Rect pos, int fontsize = 20,
 	SDLU_Callback press = NULL, void * press_arg = NULL,
 	SDL_Scancode hotkey = SDL_SCANCODE_UNKNOWN,
 	SDLU_Callback hover = on_hover, void * hover_arg = NULL);

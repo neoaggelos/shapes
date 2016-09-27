@@ -286,17 +286,17 @@ enum PauseMenuAction {
 };
 
 static void
-resume_callback(void *_button, void *action)
+callback(void *_button, void *action)
 {
-	*(static_cast<PauseMenuAction*>(action)) = Resume;
+	const char* name = ((SDLU_Button*)_button)->name;
 	gSuper->getAudioData()->play("bleep");
-}
 
-static void
-forfeit_callback(void *_button, void *action)
-{
-	*(static_cast<PauseMenuAction*>(action)) = Forfeit;
-	gSuper->getAudioData()->play("bleep");
+	if (SDL_strcmp(name, "resume") == 0) {
+		*(static_cast<PauseMenuAction*>(action)) = Resume;
+	}
+	else if (SDL_strcmp(name, "forfeit") == 0) {
+		*(static_cast<PauseMenuAction*>(action)) = Forfeit;
+	}
 }
 
 void
@@ -310,8 +310,8 @@ Game::pauseMenu()
 	RenderData *data = gSuper->getRenderData();
 	PauseMenuAction action = Idle;
 
-	resume_button = CreateButton("Resume Game", { 140, 270, 200, 45 }, 20, resume_callback, &action, SDL_SCANCODE_ESCAPE);
-	forfeit_button = CreateButton("Forfeit Game", { 140, 370, 200, 45 }, 20, forfeit_callback, &action);
+	resume_button = CreateButton("resume", "Resume Game", { 140, 270, 200, 45 }, 20, callback, &action, SDL_SCANCODE_ESCAPE);
+	forfeit_button = CreateButton("forfeit", "Forfeit Game", { 140, 370, 200, 45 }, 20, callback, &action);
 
 	while (action == Idle) {
 		if (SDL_PollEvent(&event)) {

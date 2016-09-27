@@ -58,31 +58,23 @@ enum MainMenuAction {
 };
 
 static void
-start_callback(void* _button, void *action)
+callback(void *_this, void *action)
 {
-	*(static_cast<MainMenuAction*>(action)) = StartNewGame;
 	gSuper->getAudioData()->play("bleep");
-}
+	const char *name = ((SDLU_Button*)_this)->name;
 
-static void
-settings_callback(void* _button, void *action)
-{
-	*(static_cast<MainMenuAction*>(action)) = OpenSettings;
-	gSuper->getAudioData()->play("bleep");
-}
-
-static void
-scores_callback(void* _button, void *action)
-{
-	*(static_cast<MainMenuAction*>(action)) = OpenHighScores;
-	gSuper->getAudioData()->play("bleep");
-}
-
-static void
-exit_callback(void* _button, void *action)
-{
-	gSuper->getAudioData()->play("bleep");
-	*(static_cast<MainMenuAction*>(action)) = Exit;
+	if (SDL_strcmp(name, "start") == 0) {
+		*static_cast<MainMenuAction*>(action) = StartNewGame;
+	}
+	else if (SDL_strcmp(name, "scores") == 0) {
+		*static_cast<MainMenuAction*>(action) = OpenHighScores;
+	}
+	else if (SDL_strcmp(name, "settings") == 0) {
+		*static_cast<MainMenuAction*>(action) = OpenSettings;
+	}
+	else if (SDL_strcmp(name, "exit") == 0) {
+		*static_cast<MainMenuAction*>(action) = Exit;
+	}
 }
 
 void
@@ -92,10 +84,10 @@ Super::mainMenu()
     SDL_Event event;
     SDLU_Button *start_button, *settings_button, *scores_button, *exit_button;
 
-	start_button = CreateButton("New Game", { 140, 270, 200, 40 }, 20, start_callback, &action);
-	scores_button = CreateButton("High Scores", { 140, 350, 200, 40 }, 20, scores_callback, &action);
-	settings_button = CreateButton("Settings", { 140, 430, 200, 40 }, 20, settings_callback, &action);
-	exit_button = CreateButton("Exit", { 140, 510, 200, 40 }, 20, exit_callback, &action);
+	start_button = CreateButton("start", "New Game", { 140, 270, 200, 40 }, 20, callback, &action);
+	scores_button = CreateButton("scores", "High Scores", { 140, 350, 200, 40 }, 20, callback, &action);
+	settings_button = CreateButton("settings", "Settings", { 140, 430, 200, 40 }, 20, callback, &action);
+	exit_button = CreateButton("exit", "Exit", { 140, 510, 200, 40 }, 20, callback, &action);
 
     while (action == None) {
         if (SDL_PollEvent(&event)) {
@@ -117,7 +109,7 @@ Super::mainMenu()
 		textrenderer->write(42, "SHAPES", { 0, 100, 480, 100 }, Center);
         SDL_RenderPresent(render->getRenderer());
 
-		//SDL_Delay(1); /* let the CPU rest */
+		SDL_Delay(1);
     }
 
 	SDLU_DestroyButton(start_button);

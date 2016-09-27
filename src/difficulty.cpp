@@ -35,3 +35,21 @@ Difficulty::numShapes()
 {
     return level * 2 + 1;
 }
+
+DifficultyLevel difficultyLevel(string level)
+{
+	if (level == "Easy") return Easy;
+	if (level == "Medium") return Medium;
+	if (level == "Hard") return Hard;
+
+	return Medium;
+}
+
+const char* difficultyName(int level)
+{
+	if (level == 0) return "Easy";
+	if (level == 1) return "Medium";
+	if (level == 2) return "Hard";
+
+	return "Medium";
+}

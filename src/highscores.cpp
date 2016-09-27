@@ -91,33 +91,25 @@ enum HighscoresMenuAction {
 };
 
 static void
-again_callback(void *_button, void *action)
+callback(void *_button, void *arg)
 {
 	gSuper->getAudioData()->play("bleep");
-	*(static_cast<HighscoresMenuAction*>(action)) = PlayAgain;
-}
+	const char* name = ((SDLU_Button*)_button)->name;
 
-static void
-back_callback(void *_button, void *action)
-{
-	gSuper->getAudioData()->play("bleep");
-	*(static_cast<HighscoresMenuAction*>(action)) = BackToMenu;
-}
-
-static void
-right_callback(void *_button, void *_diff)
-{
-	gSuper->getAudioData()->play("bleep");
-	int *diff = static_cast<int*>(_diff);
-	if (*diff < 2) *diff += 1;
-}
-
-static void
-left_callback(void *_button, void *_diff)
-{
-	gSuper->getAudioData()->play("bleep");
-	int *diff = static_cast<int*>(_diff);
-	if (*diff > 0) *diff -= 1;
+	if (SDL_strcmp(name, "again") == 0) {
+		*(static_cast<HighscoresMenuAction*>(arg)) = PlayAgain;
+	}
+	else if (SDL_strcmp(name, "back") == 0) {
+		*(static_cast<HighscoresMenuAction*>(arg)) = BackToMenu;
+	}
+	else if (SDL_strcmp(name, "right") == 0) {
+		int *diff = static_cast<int*>(arg);
+		if (*diff < 2) *diff += 1;
+	}
+	else if (SDL_strcmp(name, "left") == 0) {
+		int *diff = static_cast<int*>(arg);
+		if (*diff > 0) *diff -= 1;
+	}
 }
 
 void
@@ -130,10 +122,10 @@ Highscores::openMenu(int currentdiff, int currentindex)
 
 	RenderData* data = gSuper->getRenderData();
 
-	again_button = CreateButton("I can beat that", { 140, 480, 200, 40 }, 20, again_callback, &action);
-	back_button = CreateButton("Back To Menu", { 140, 540, 200, 40 }, 20, back_callback, &action, SDL_SCANCODE_AC_BACK);
-	right_button = CreateButton(">", { 350, 100, 30, 30 }, 20, right_callback, &diff, SDL_SCANCODE_RIGHT);
-	left_button = CreateButton("<", { 100, 100, 30, 30 }, 20, left_callback, &diff, SDL_SCANCODE_LEFT);
+	again_button = CreateButton("again", "I can beat that", { 140, 480, 200, 40 }, 20, callback, &action);
+	back_button = CreateButton("back", "Back To Menu", { 140, 540, 200, 40 }, 20, callback, &action, SDL_SCANCODE_AC_BACK);
+	right_button = CreateButton("right", ">", { 350, 100, 30, 30 }, 20, callback, &diff, SDL_SCANCODE_RIGHT);
+	left_button = CreateButton("left", "<", { 100, 100, 30, 30 }, 20, callback, &diff, SDL_SCANCODE_LEFT);
 	
 	((SDLU_Styles*)left_button->content)->fill_color = { 0, 0, 0, 0xff };
 	((SDLU_Styles*)right_button->content)->fill_color = { 0, 0, 0, 0xff };
@@ -156,10 +148,7 @@ Highscores::openMenu(int currentdiff, int currentindex)
 		gSuper->getTextRenderer()->write(20, "HIGH SCORES", { 0, 20, 480, 100 }, Center);
 		SDL_RenderDrawLine(data->getRenderer(), 140, 60, 340, 60);
 
-		string diff_string = "Easy";
-		if (diff == 1) diff_string = "Medium";
-		if (diff == 2) diff_string = "Hard";
-		gSuper->getTextRenderer()->write(20, diff_string, { 0, 100, 480, 30 }, Center, Center);
+		gSuper->getTextRenderer()->write(20, difficultyName(diff), { 0, 100, 480, 30 }, Center, Center);
 
 		SDL_RenderDrawLine(data->getRenderer(), 130, 100, 350, 100);
 		SDL_RenderDrawLine(data->getRenderer(), 130, 129, 350, 129);

@@ -1,7 +1,7 @@
 #include "main.h"
 
 static void
-ok_callback(void *_ok, void *done)
+callback(void *_ok, void *done)
 {
 	gSuper->getAudioData()->play("bleep");
 	*(static_cast<bool*>(done)) = true;
@@ -12,7 +12,7 @@ EnterName::EnterName(string msg)
 	message = msg;
 	done = false;
 
-	ok = CreateButton("OK", { 160, 400, 160, 40 }, 20, ok_callback, &done, SDL_SCANCODE_RETURN);
+	ok = CreateButton("ok", "OK", { 160, 400, 160, 40 }, 20, callback, &done, SDL_SCANCODE_RETURN);
 }
 
 EnterName::~EnterName()
