@@ -31,6 +31,8 @@ Game::Game()
 
 	lastModeChangeTime = SDL_GetTicks();
 	mode = Normal;
+
+	gSuper->getRenderData()->reloadTexture(gSuper->getSettings()->theme);
 }
 
 Game::~Game()
@@ -114,7 +116,7 @@ Game::render()
 	if (mode != Normal)
 		gSuper->getTextRenderer()->write(20, getDescription(mode), { 0, 30, 480, 100 }, Center);
 
-    SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xaa);
+    SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xff);
 	gSuper->getTextRenderer()->write(20, "Score: " + int_to_string(getScore()), 0, 5);
 	gSuper->getTextRenderer()->write(20, "High Score: " + int_to_string(h->getScore(gSuper->getSettings()->difficulty, 0)), { 0, 5, 480, 100 }, Center);
 	

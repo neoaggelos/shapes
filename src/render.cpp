@@ -157,8 +157,6 @@ RenderData::RenderData(string theme)
 
 		SDL_SetEventFilter(fix_mouse_coordinates, t);
 	}
-
-	reloadTexture(theme);
 }
 
 RenderData::~RenderData()
@@ -209,7 +207,12 @@ RenderData::reloadTexture(string theme)
 	SDL_CHECK(tmp != NULL, "Could not load BMP file");
 
 	SDL_SetColorKey(tmp, colorkey, SDL_MapRGB(tmp->format, 0xff, 0xff, 0xff));
+
+	if (texture != NULL) SDL_DestroyTexture(texture);
+
 	texture = SDL_CreateTextureFromSurface(renderer, tmp);
+	
+	SDL_FreeSurface(tmp);
 	
 	SDL_CHECK(texture != NULL, "Could not load texture");
 }

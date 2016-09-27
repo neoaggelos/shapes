@@ -133,9 +133,8 @@ combo_callback(void *_button, void *_arg)
 	if (SDL_strcmp(name, "difficulty") == 0) {
 		gSuper->getSettings()->difficulty = difficultyLevel(((SDLU_Styles*)(button->content))->title);
 	}
-	else if (SDL_strcmp(name, "theme") == 0) {
+	else if (SDL_strncmp(name, "theme", 5) == 0) {
 		gSuper->getSettings()->theme = ((SDLU_Styles*)(button->content))->title;
-		gSuper->getRenderData()->reloadTexture(gSuper->getSettings()->theme);
 	}
 	else if (SDL_strcmp(name, "sound") == 0) {
 		gSuper->getSettings()->soundEnabled = SDL_strcmp(((SDLU_Styles*)(button->content))->title, "On") == 0;
@@ -195,6 +194,7 @@ Settings::openMenu()
 
 			if (action == Reset) {
 				gSuper->getSettings()->reset();
+				action = None;
 			}
 #ifndef __ANDROID__
 			else if (action >= ReadKeysStart && action <= ReadKeysEnd) {
@@ -343,6 +343,15 @@ Settings::openMenu()
 	SDLU_DestroyButton(backButton);
 	SDLU_DestroyButton(resetButton);
 
+	for (int i = 0; i < 3; i++) {
+		SDLU_DestroyButton(diffButtons[i]);
+	}
+	for (int i = 0; i < 4; i++) {
+		SDLU_DestroyButton(themeButtons[i]);
+	}
+	for (int i = 0; i < 2; i++) {
+		SDLU_DestroyButton(soundButtons[i]);
+	}
 	if (action == Quit) {
 		gSuper->finish();
 	}

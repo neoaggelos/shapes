@@ -98,8 +98,11 @@ CreateButton(const char* name, const char* title, SDL_Rect pos, int fontsize, SD
 	((SDLU_Styles*)ret->content)->font = gSuper->getTextRenderer()->getFont(fontsize);
 	((SDLU_Styles*)ret->content)->freefont = SDL_FALSE;
 
+#ifdef __ANDROID__
+	SDLU_SetButtonAction(ret, SDLU_PRESS_ACTION, 0);
+	SDLU_SetButtonAction(ret, SDLU_HOVER_ACTION, 0);
+#else
 	SDLU_SetButtonAction(ret, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-#ifndef __ANDROID__
 	SDLU_SetButtonAction(ret, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
 #endif /* __ANDROID__ */
 

@@ -31,6 +31,7 @@ Shape::render()
 	RenderData *data = gSuper->getRenderData();
 	SDL_Rect srcRect, dstRect;
 
+
 	srcRect.x = 80 * type;
 	srcRect.y = 0;
 	srcRect.w = 80;
