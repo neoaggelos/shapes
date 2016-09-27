@@ -88,3 +88,67 @@ int to_int(const char* str)
 
 	return j;
 }
+
+SDLU_Button*
+CreateButton(const char* title, SDL_Rect pos, int fontsize, SDLU_Callback press, void *press_arg, SDL_Scancode hotkey, SDLU_Callback hover, void* hover_arg)
+{
+	SDLU_Button * ret = SDLU_CreateButton(gSuper->getRenderData()->getWindow(), title, SDLU_BUTTON_TEXT);
+
+	SDLU_CloseFont(((SDLU_Styles*)ret->content)->font);
+	((SDLU_Styles*)ret->content)->font = gSuper->getTextRenderer()->getFont(fontsize);
+	((SDLU_Styles*)ret->content)->freefont = SDL_FALSE;
+
+	SDLU_SetButtonAction(ret, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
+#ifndef __ANDROID__
+	SDLU_SetButtonAction(ret, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
+#endif /* __ANDROID__ */
+
+	SDLU_SetButtonGeometry(ret, pos.x, pos.y, pos.w, pos.h);
+	SDLU_SetButtonHotkey(ret, hotkey);
+
+	if (press) SDLU_SetButtonCallback(ret, SDLU_PRESS_CALLBACK, press, press_arg);
+	if (hover) SDLU_SetButtonCallback(ret, SDLU_HOVER_CALLBACK, hover, hover_arg);
+
+	return ret;
+}
+
+SDLU_ComboBox*
+CreateComboBox(string items[], int n, string active, int x, int y, int w, int h, int fontsize)
+{
+	SDLU_ComboBox* ret = SDLU_CreateComboBox(gSuper->getRenderData()->getWindow());
+
+	SDLU_SetComboBoxGeometry(ret, x, y, w, h);
+
+	SDLU_CloseFont(ret->styles->font);
+	ret->styles->font = gSuper->getTextRenderer()->getFont(fontsize);
+	ret->styles->freefont = SDL_FALSE;
+
+	for (int i = 0; i < n; i++) {
+		SDLU_AddComboBoxItem(&ret, items[i].c_str());
+	}
+
+	SDLU_SetComboBoxActiveItem(ret, active.c_str());
+
+	return ret;
+}
+
+SDLU_ComboBox*
+CreateComboBox(string items[], int n, int active, int x, int y, int w, int h, int fontsize)
+{
+	SDLU_ComboBox* ret = SDLU_CreateComboBox(gSuper->getRenderData()->getWindow());
+
+	SDLU_SetComboBoxGeometry(ret, x, y, w, h);
+
+	SDLU_CloseFont(ret->styles->font);
+	ret->styles->font = gSuper->getTextRenderer()->getFont(fontsize);
+	ret->styles->freefont = SDL_FALSE;
+
+	for (int i = 0; i < n; i++) {
+		SDLU_AddComboBoxItem(&ret, items[i].c_str());
+	}
+
+	SDLU_SetComboBoxActiveIndex(ret, active);
+
+	return ret;
+}
+

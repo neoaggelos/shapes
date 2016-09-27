@@ -16,4 +16,14 @@ int to_int(const char *s);
 
 void on_hover(void *_button, void* _unused);
 
+SDLU_Button * CreateButton(
+	const char * title, SDL_Rect pos, int fontsize = 20,
+	SDLU_Callback press = NULL, void * press_arg = NULL,
+	SDL_Scancode hotkey = SDL_SCANCODE_UNKNOWN,
+	SDLU_Callback hover = on_hover, void * hover_arg = NULL);
+
+SDLU_ComboBox * CreateComboBox(string items[], int n, string active, int x, int y, int w = -1, int h = -1, int fontsize = 15);
+SDLU_ComboBox * CreateComboBox(string items[], int n, int active, int x, int y, int w = -1, int h = -1, int fontsize = 15);
+
+
 #endif /* _util_h */

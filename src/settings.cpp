@@ -83,35 +83,6 @@ Settings::reset()
 	soundEnabled = true;
 	settings_version = CURRENT_SETTINGS_VERSION;
 }
-
-static SDLU_Button* new_button(RenderData *data, const char *title, int x, int y, int w = -1, int h = -1, int fontsize = 15)
-{
-	SDLU_Button *ret = SDLU_CreateButton(data->getWindow(), title, SDLU_BUTTON_TEXT);
-	SDLU_SetButtonAction(ret, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-	SDLU_SetButtonAction(ret, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(ret, SDLU_HOVER_CALLBACK, on_hover, NULL);
-
-	SDLU_CloseFont(((SDLU_Styles*)ret->content)->font);
-	((SDLU_Styles*)ret->content)->font = gSuper->getTextRenderer()->getFont(fontsize);
-	((SDLU_Styles*)ret->content)->freefont = SDL_FALSE;
-	SDLU_SetButtonGeometry(ret, x, y, w, h);
-
-	return ret;
-}
-
-static SDLU_ComboBox* new_cbox(RenderData *data, int x, int y, int w = -1, int h = -1)
-{
-	SDLU_ComboBox* ret = SDLU_CreateComboBox(data->getWindow());
-
-	SDLU_SetComboBoxGeometry(ret, x, y, w, h);
-
-	SDLU_CloseFont(ret->styles->font);
-	ret->styles->font = gSuper->getTextRenderer()->getFont(15);
-	ret->styles->freefont = SDL_FALSE;
-
-	return ret;
-}
-
 enum SettingsMenuAction {
 	ReadKeysStart = 0,
 	ReadRightKey = 1,
@@ -181,39 +152,21 @@ Settings::openMenu()
 	SettingsMenuAction action;
 
 #ifndef __ANDROID__
-	rightButton = new_button(data, "Change", 350, 350, 85, 25);
-	SDLU_SetButtonCallback(rightButton, SDLU_PRESS_CALLBACK, right_callback, &action);
-
-	leftButton = new_button(data, "Change", 350, 400, 85, 25);
-	SDLU_SetButtonCallback(leftButton, SDLU_PRESS_CALLBACK, left_callback, &action);
-
-	shapeUpButton = new_button(data, "Change", 350, 450, 85, 25);
-	SDLU_SetButtonCallback(shapeUpButton, SDLU_PRESS_CALLBACK, shapeup_callback, &action);
-
-	shapeDownButton = new_button(data, "Change", 350, 500, 85, 25);
-	SDLU_SetButtonCallback(shapeDownButton, SDLU_PRESS_CALLBACK, shapedown_callback, &action);
+	rightButton = CreateButton("Change", { 350, 350, 85, 25 }, 15, right_callback, &action);
+	leftButton = CreateButton("Change", { 350, 400, 85, 25 }, 15, left_callback, &action);
+	shapeUpButton = CreateButton("Change", { 350, 450, 85, 25 }, 15, shapeup_callback, &action);
+	shapeDownButton = CreateButton("Change", { 350, 500, 85, 25 }, 15, shapedown_callback, &action);
 #endif /* __ANDROID__ */
 
-	resetButton = new_button(data, "Reset To Default", 40, 560, 180, 35, 18);
-	SDLU_SetButtonCallback(resetButton, SDLU_PRESS_CALLBACK, reset_callback, &action);
+	resetButton = CreateButton("Reset To Defaults", { 40, 560, 180, 35 }, 18, reset_callback, &action);
+	backButton = CreateButton("Back To Menu", { 260, 560, 180, 35 }, 18, back_callback, &action, SDL_SCANCODE_AC_BACK);
 
-	backButton = new_button(data, "Back To Menu", 260, 560, 180, 35, 18);
-	SDLU_SetButtonCallback(backButton, SDLU_PRESS_CALLBACK, back_callback, &action);
-	SDLU_SetButtonHotkey(backButton, SDL_SCANCODE_AC_BACK);
+	string themes[] = { "Red", "Cats", "Blue", "Old" };
+	themeBox = CreateComboBox(themes, 4, theme, 350, 130, 85, 25);
 
-	themeBox = new_cbox(data, 350, 130, 85, 25);
-	SDLU_AddComboBoxItem(&themeBox, "Red");
-	SDLU_AddComboBoxItem(&themeBox, "Cats");
-	SDLU_AddComboBoxItem(&themeBox, "Blue");
-	SDLU_AddComboBoxItem(&themeBox, "Old");
-	SDLU_SetComboBoxActiveItem(themeBox, theme.c_str());
-
-	diffBox = new_cbox(data, 350, 240, 85, 25);
-	SDLU_AddComboBoxItem(&diffBox, "Easy");
-	SDLU_AddComboBoxItem(&diffBox, "Medium");
-	SDLU_AddComboBoxItem(&diffBox, "Hard");
-	SDLU_SetComboBoxActiveIndex(diffBox, gSuper->getSettings()->difficulty);
-
+	string diffs[] = { "Easy", "Medium", "Hard" };
+	diffBox = CreateComboBox(diffs, 3, difficulty, 350, 240, 85, 25);
+	
 	SDL_Event event;
 	action = None;
 	while (action != BackToMenu && action != Quit) {
@@ -262,7 +215,7 @@ Settings::openMenu()
 							newKey = event.key.keysym.scancode;
 						}
 					}
-					SDL_Delay(10);
+					SDL_Delay(1);
 				}
 
 				if (newKey != SDL_SCANCODE_ESCAPE) {
@@ -358,7 +311,7 @@ Settings::openMenu()
 
 		SDL_RenderPresent(target);
 
-		SDL_Delay(10);
+		SDL_Delay(1);
 	}
 
 #ifndef __ANDROID__

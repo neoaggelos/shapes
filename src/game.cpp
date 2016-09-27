@@ -310,20 +310,8 @@ Game::pauseMenu()
 	RenderData *data = gSuper->getRenderData();
 	PauseMenuAction action = Idle;
 
-	resume_button = SDLU_CreateButton(data->getWindow(), "Resume Game", SDLU_BUTTON_TEXT);
-	SDLU_SetButtonAction(resume_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-	SDLU_SetButtonAction(resume_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(resume_button, SDLU_PRESS_CALLBACK, resume_callback, &action);
-	SDLU_SetButtonCallback(resume_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
-	SDLU_SetButtonHotkey(resume_button, SDL_SCANCODE_ESCAPE);
-	SDLU_SetButtonGeometry(resume_button, 140, 270, 200, 45);
-
-	forfeit_button = SDLU_CreateButton(data->getWindow(), "Forfeit Game", SDLU_BUTTON_TEXT);
-	SDLU_SetButtonAction(forfeit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-	SDLU_SetButtonAction(forfeit_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(forfeit_button, SDLU_PRESS_CALLBACK, forfeit_callback, &action);
-	SDLU_SetButtonCallback(forfeit_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
-	SDLU_SetButtonGeometry(forfeit_button, 140, 370, 200, 45);
+	resume_button = CreateButton("Resume Game", { 140, 270, 200, 45 }, 20, resume_callback, &action, SDL_SCANCODE_ESCAPE);
+	forfeit_button = CreateButton("Forfeit Game", { 140, 370, 200, 45 }, 20, forfeit_callback, &action);
 
 	while (action == Idle) {
 		if (SDL_PollEvent(&event)) {
@@ -343,7 +331,8 @@ Game::pauseMenu()
 		SDLU_RenderButton(forfeit_button);
 
 		SDL_RenderPresent(data->getRenderer());
-		//SDL_Delay(10);
+
+		SDL_Delay(1);
 	}
 
 	SDLU_DestroyButton(resume_button);

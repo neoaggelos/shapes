@@ -92,54 +92,15 @@ Super::mainMenu()
     SDL_Event event;
     SDLU_Button *start_button, *settings_button, *scores_button, *exit_button;
 
-    start_button = SDLU_CreateButton(render->getWindow(), "New Game", SDLU_BUTTON_TEXT);
-    SDLU_SetButtonAction(start_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-    SDLU_SetButtonAction(start_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(start_button, SDLU_PRESS_CALLBACK, start_callback, &action);
-	SDLU_SetButtonCallback(start_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
-	SDLU_SetButtonGeometry(start_button, 140, 270, 200, 40);
-	
-	settings_button = SDLU_CreateButton(render->getWindow(), "Settings", SDLU_BUTTON_TEXT);
-	SDLU_SetButtonAction(settings_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-	SDLU_SetButtonAction(settings_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(settings_button, SDLU_PRESS_CALLBACK, settings_callback, &action);
-	SDLU_SetButtonCallback(settings_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
-	SDLU_SetButtonGeometry(settings_button, 140, 430, 200, 40);
-
-	scores_button = SDLU_CreateButton(render->getWindow(), "High Scores", SDLU_BUTTON_TEXT);
-	SDLU_SetButtonAction(scores_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-	SDLU_SetButtonAction(scores_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(scores_button, SDLU_PRESS_CALLBACK, scores_callback, &action);
-	SDLU_SetButtonCallback(scores_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
-	SDLU_SetButtonGeometry(scores_button, 140, 350, 200, 40);
-
-    exit_button = SDLU_CreateButton(render->getWindow(), "Exit", SDLU_BUTTON_TEXT);
-    SDLU_SetButtonAction(exit_button, SDLU_PRESS_ACTION, SDLU_PRESS_INVERT);
-    SDLU_SetButtonAction(exit_button, SDLU_HOVER_ACTION, SDLU_HOVER_BG);
-	SDLU_SetButtonCallback(exit_button, SDLU_PRESS_CALLBACK, exit_callback, &action);
-	SDLU_SetButtonCallback(exit_button, SDLU_HOVER_CALLBACK, on_hover, NULL);
-	SDLU_SetButtonGeometry(exit_button, 140, 510, 200, 40);
+	start_button = CreateButton("New Game", { 140, 270, 200, 40 }, 20, start_callback, &action);
+	scores_button = CreateButton("High Scores", { 140, 350, 200, 40 }, 20, scores_callback, &action);
+	settings_button = CreateButton("Settings", { 140, 430, 200, 40 }, 20, settings_callback, &action);
+	exit_button = CreateButton("Exit", { 140, 510, 200, 40 }, 20, exit_callback, &action);
 
     while (action == None) {
-		SDL_PumpEvents();
         if (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
 				action = Exit;
-			}
-			if (event.type == SDLU_BUTTON_PRESS) {
-				Uint32 button_id = static_cast<Uint32>(event.user.code);
-				if (button_id == start_button->id) {
-					action = StartNewGame;
-				}
-				else if (button_id == settings_button->id) {
-					action = OpenSettings;
-				}
-				else if (button_id == scores_button->id) {
-					action = OpenHighScores;
-				}
-				else if (button_id == exit_button->id) {
-					action = Exit;
-				}
 			}
 		}
 
