@@ -60,3 +60,6 @@ else()
   install(FILES ${BMPASSETS} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/shapes/themes)
   install(FILES ${WAVASSETS} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/shapes/wav)
 endif()
+
+# set startup project for Vs
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Shapes)

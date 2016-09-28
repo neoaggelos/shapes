@@ -135,6 +135,7 @@ combo_callback(void *_button, void *_arg)
 	}
 	else if (SDL_strncmp(name, "theme", 5) == 0) {
 		gSuper->getSettings()->theme = ((SDLU_Styles*)(button->content))->title;
+
 	}
 	else if (SDL_strcmp(name, "sound") == 0) {
 		gSuper->getSettings()->soundEnabled = SDL_strcmp(((SDLU_Styles*)(button->content))->title, "On") == 0;

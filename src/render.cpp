@@ -209,10 +209,7 @@ RenderData::reloadTexture(string theme)
 	SDL_SetColorKey(tmp, colorkey, SDL_MapRGB(tmp->format, 0xff, 0xff, 0xff));
 
 	if (texture != NULL) SDL_DestroyTexture(texture);
-
 	texture = SDL_CreateTextureFromSurface(renderer, tmp);
-	
 	SDL_FreeSurface(tmp);
-	
 	SDL_CHECK(texture != NULL, "Could not load texture");
 }
