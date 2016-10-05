@@ -4,13 +4,13 @@
 add 1 every time something breaking happens in settings code.
 protects from crashes when newer game versions load older version settings
 */
-const int CURRENT_SETTINGS_VERSION = 6;
+const int CURRENT_SETTINGS_VERSION = 8;
 
 bool
 Settings::isOK(SDLU_IniHandler* h)
 {
 	const int num = 6;
-	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeUpKey", "changeShapeDownKey", "theme", "lastName", "soundEnabled", "settings_version" };
+	const char *check_strings[] = { "difficulty", "moveRightKey", "moveLeftKey", "changeShapeUpKey", "changeShapeDownKey", "theme", "lastName", "soundEnabled", "firstRun", "settings_version" };
 	bool OK = true;
 
 	for (int i = 0; (i < num) && OK; i++) {
@@ -34,6 +34,7 @@ Settings::Settings()
 
 	if (!settings || !isOK(settings)) {
 		reset();
+		firstRun = true;
 	}
 	else {
 		moveRightKey = static_cast<SDL_Scancode>(to_int(SDLU_GetIniProperty(settings, NULL, "moveRightKey")));
@@ -44,6 +45,7 @@ Settings::Settings()
 		theme = SDLU_GetIniProperty(settings, NULL, "theme");
 		lastName = SDLU_GetIniProperty(settings, NULL, "lastName");
 		soundEnabled = to_int(SDLU_GetIniProperty(settings, NULL, "soundEnabled")) == 0 ? false : true;
+		firstRun = to_int(SDLU_GetIniProperty(settings, NULL, "firstRun")) == 0 ? false : true;
 		settings_version = to_int(SDLU_GetIniProperty(settings, NULL, "settings_version"));
 	}
 
@@ -64,6 +66,7 @@ Settings::~Settings()
 		SDLU_SetIniProperty(&h, NULL, "theme", theme.c_str());
 		SDLU_SetIniProperty(&h, NULL, "lastName", lastName.c_str());
 		SDLU_SetIniProperty(&h, NULL, "soundEnabled", int_to_string(static_cast<int>(soundEnabled)).c_str());
+		SDLU_SetIniProperty(&h, NULL, "firstRun", int_to_string(static_cast<int>(firstRun)).c_str());
 
 		SDLU_SaveIni(h, settingsIni.c_str());
 		SDLU_DestroyIni(h);
@@ -81,6 +84,7 @@ Settings::reset()
 	theme = "Red";
 	lastName = "";
 	soundEnabled = true;
+	firstRun = false;
 	settings_version = CURRENT_SETTINGS_VERSION;
 }
 
@@ -140,6 +144,9 @@ combo_callback(void *_button, void *_arg)
 	else if (SDL_strcmp(name, "sound") == 0) {
 		gSuper->getSettings()->soundEnabled = SDL_strcmp(((SDLU_Styles*)(button->content))->title, "On") == 0;
 	}
+	else if (SDL_strcmp(name, "tutorial") == 0) {
+		gSuper->getSettings()->firstRun = SDL_strcmp(((SDLU_Styles*)(button->content))->title, "On") == 0;
+	}
 }
 
 void
@@ -149,15 +156,15 @@ Settings::openMenu()
 	SDLU_Button *shapeUpButton, *shapeDownButton, *rightButton, *leftButton;
 #endif /* __ANDROID__ */
 	SDLU_Button *resetButton, *backButton;
-	SDLU_Button *diffButtons[3], *themeButtons[4], *soundButtons[2];
+	SDLU_Button *diffButtons[3], *themeButtons[4], *soundButtons[2], *tutorialButtons[2];
 	RenderData* data = gSuper->getRenderData();
 	SettingsMenuAction action;
 
 #ifndef __ANDROID__
-	rightButton = CreateButton("right", "Change", { 350, 350, 85, 25 }, 15, callback, &action);
-	leftButton = CreateButton("left", "Change", { 350, 400, 85, 25 }, 15, callback, &action);
+	rightButton = CreateButton("right", "Change", { 350, 370, 85, 25 }, 15, callback, &action);
+	leftButton = CreateButton("left", "Change", { 350, 410, 85, 25 }, 15, callback, &action);
 	shapeUpButton = CreateButton("up", "Change", { 350, 450, 85, 25 }, 15, callback, &action);
-	shapeDownButton = CreateButton("down", "Change", { 350, 500, 85, 25 }, 15, callback, &action);
+	shapeDownButton = CreateButton("down", "Change", { 350, 490, 85, 25 }, 15, callback, &action);
 #endif /* __ANDROID__ */
 
 	resetButton = CreateButton("reset", "Reset To Defaults", { 40, 560, 180, 35 }, 18, callback, &action);
@@ -174,14 +181,19 @@ Settings::openMenu()
 	for (int i = 0; i < 4; i++) {
 		int margin = 5;
 		int width = (int)((288 - 3 * margin) / 4.0);
-		themeButtons[i] = CreateButton("theme", themes[i], { 150 + i * (width + 5), 180, width, 25 }, 15, combo_callback, NULL);
+		themeButtons[i] = CreateButton("theme", themes[i], { 150 + i * (width + 5), 170, width, 25 }, 15, combo_callback, NULL);
 	}
 
-	const char* sound[] = { "On", "Off" };
+	const char* onoff[] = { "On", "Off" };
 	for (int i = 0; i < 2; i++) {
 		int margin = 5;
 		int width = (int)((288 - 1 * margin) / 2.0);
-		soundButtons[i] = CreateButton("sound", sound[i], { 150 + i * (width + 5), 230, width, 25 }, 15, combo_callback, NULL);
+		soundButtons[i] = CreateButton("sound", onoff[i], { 150 + i * (width + 5), 210, width, 25 }, 15, combo_callback, NULL);
+	}
+	for (int i = 0; i < 2; i++) {
+		int margin = 5;
+		int width = (int)((288 - 1 * margin) / 2.0);
+		tutorialButtons[i] = CreateButton("tutorial", onoff[i], { 150 + i * (width + 5), 250, width, 25 }, 15, combo_callback, NULL);
 	}
 	
 	SDL_Event event;
@@ -238,17 +250,18 @@ Settings::openMenu()
 		SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
 		gSuper->getTextRenderer()->write(20, "SETTINGS", { 0, 15, 480, 100 }, Center);
 		gSuper->getTextRenderer()->write(20, "General", 5, 70);
-		gSuper->getTextRenderer()->write(20, "Controls", 5, 290);
+		gSuper->getTextRenderer()->write(20, "Controls", 5, 310);
 
 		SDL_RenderDrawLine(target, 180, 50, 300, 50);
 		SDL_RenderDrawLine(target, 5, 105, 475, 105);
-		SDL_RenderDrawLine(target, 5, 325, 475, 325);
+		SDL_RenderDrawLine(target, 5, 345, 475, 345);
 
 		SDL_SetRenderDrawColor(target, 0xaa, 0xaa, 0xaa, 0xff);
 
 		gSuper->getTextRenderer()->write(18, "Difficulty", 15, 130);
-		gSuper->getTextRenderer()->write(18, "Theme", 15, 180);
-		gSuper->getTextRenderer()->write(18, "Sound", 15, 230);
+		gSuper->getTextRenderer()->write(18, "Theme", 15, 170);
+		gSuper->getTextRenderer()->write(18, "Sound", 15, 210);
+		gSuper->getTextRenderer()->write(18, "Play Tutorial", 15, 250);
 
 		for (int i = 0; i < 3; i++) {
 			if (i == gSuper->getSettings()->difficulty - 1)
@@ -278,16 +291,25 @@ Settings::openMenu()
 			SDLU_RenderButton(soundButtons[i]);
 		}
 
+		for (int i = 0; i < 2; i++) {
+			if (i == !gSuper->getSettings()->firstRun)
+				((SDLU_Styles*)tutorialButtons[i]->content)->fill_color = { 30, 30, 30, 0xff };
+			else
+				((SDLU_Styles*)tutorialButtons[i]->content)->fill_color = { 100, 100, 100, 0xff };
+
+			SDLU_RenderButton(tutorialButtons[i]);
+		}
+
 
 #ifndef __ANDROID__
-		gSuper->getTextRenderer()->write(18, "Move Right", 15, 350);
-		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->moveRightKey), { 0, 350, 480, 100 }, Center);
-		gSuper->getTextRenderer()->write(18, "Move Left", 15, 400);
-		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->moveLeftKey), { 0, 400, 480, 100 }, Center);
+		gSuper->getTextRenderer()->write(18, "Move Right", 15, 370);
+		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->moveRightKey), { 0, 370, 480, 100 }, Center);
+		gSuper->getTextRenderer()->write(18, "Move Left", 15, 410);
+		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->moveLeftKey), { 0, 410, 480, 100 }, Center);
 		gSuper->getTextRenderer()->write(18, "Change Shape Up", 15, 450);
 		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->changeShapeUpKey), { 0, 450, 480, 100 }, Center);
-		gSuper->getTextRenderer()->write(18, "Change Shape Down", 15, 500);
-		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->changeShapeDownKey), { 0, 500, 480, 100 }, Center);
+		gSuper->getTextRenderer()->write(18, "Change Shape Down", 15, 490);
+		gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->changeShapeDownKey), { 0, 490, 480, 100 }, Center);
 #else /* if __ANDROID__ */
 
 		const SDL_Rect screenRect = { 30, 350, 120, 160 };

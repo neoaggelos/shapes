@@ -23,6 +23,7 @@ public:
 	SDL_Scancode changeShapeDownKey;
 
 	bool soundEnabled;
+	bool firstRun;
 
 	string theme;
 	string lastName;

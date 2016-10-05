@@ -22,8 +22,8 @@ using namespace std;
 
 /* Libraries */
 #include "SDL.h"
-#include "SDLU.h"
 #include "SDL_mixer.h"
+#include "SDLU.h"
 
 /* Forward declare all classes, so they can see each other */
 class Shape;
@@ -35,6 +35,7 @@ class Difficulty;
 class Settings;
 class Highscores;
 class EnterName;
+class Tutorial;
 class AudioData;
 
 /* Shape headers */
@@ -48,6 +49,7 @@ class AudioData;
 #include "audiodata.h"
 #include "entername.h"
 #include "highscores.h"
+#include "tutorial.h"
 #include "super.h"
 
 /* Globals */

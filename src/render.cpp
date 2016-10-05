@@ -157,6 +157,8 @@ RenderData::RenderData(string theme)
 
 		SDL_SetEventFilter(fix_mouse_coordinates, t);
 	}
+
+	texture = NULL;
 }
 
 RenderData::~RenderData()

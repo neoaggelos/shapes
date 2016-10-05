@@ -32,6 +32,13 @@ Super::finish()
 void
 Super::playGame()
 {
+	if (gSuper->getSettings()->firstRun) {
+		Tutorial t;
+
+		t.run();
+
+		mainMenu();
+	}
     game = new Game();
 
 	game->run();
@@ -84,7 +91,7 @@ Super::mainMenu()
     SDL_Event event;
     SDLU_Button *start_button, *settings_button, *scores_button, *exit_button;
 
-	start_button = CreateButton("start", "New Game", { 140, 270, 200, 40 }, 20, callback, &action);
+	start_button = CreateButton("start", gSuper->getSettings()->firstRun ? "Tutorial" : "New Game", { 140, 270, 200, 40 }, 20, callback, &action);
 	scores_button = CreateButton("scores", "High Scores", { 140, 350, 200, 40 }, 20, callback, &action);
 	settings_button = CreateButton("settings", "Settings", { 140, 430, 200, 40 }, 20, callback, &action);
 	exit_button = CreateButton("exit", "Exit", { 140, 510, 200, 40 }, 20, callback, &action);
