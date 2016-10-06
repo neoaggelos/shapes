@@ -120,13 +120,14 @@ RenderData::RenderData(string theme)
 	int r = SDL_InitSubSystem(SDL_INIT_VIDEO);
 	SDL_CHECK(r != -1, "Could not initialize SDL");
 
+    gWidth = WIDTH;
+    gHeight = HEIGHT;
 	window = SDL_CreateWindow(wintitle, winx, winy, WIDTH, HEIGHT, winflags);
 	SDL_CHECK(window != NULL, "Could not create window");
 
 	renderer = SDL_CreateRenderer(window, rnddriver, rndflags);
 	SDL_CHECK(renderer != NULL, "Could not create renderer");
 
-	SDL_GetWindowSize(window, &gWidth, &gHeight);
 	double ratio = (double)gWidth / (double)gHeight;
 	if (gWidth != WIDTH || gHeight != HEIGHT) {
 		Transformation * t = new Transformation;

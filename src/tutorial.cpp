@@ -1,7 +1,5 @@
 #include "main.h"
 
-#define __ANDROID__
-
 static void
 moveRight(Shape *player)
 {
@@ -163,8 +161,8 @@ Tutorial::run()
 
 #ifdef __ANDROID__
 		SDL_SetRenderDrawColor(renderer, 100, 100, 100, 0xff);
-		SDL_RenderDrawLine(renderer, 120, 0, 120, 640);
-		SDL_RenderDrawLine(renderer, 360, 0, 360, 640);
+		SDL_RenderDrawLine(renderer, 120, 0, 120, 540);
+		SDL_RenderDrawLine(renderer, 360, 0, 360, 540);
 		gSuper->getTextRenderer()->write(20, "Tap right or left to move", { 0, 200, 480, 100 }, Center);
 #else
 		gSuper->getTextRenderer()->write(20, "Use right or left keys to move", { 0, 200, 480, 100 }, Center);
@@ -233,8 +231,8 @@ Tutorial::run()
 
 #ifdef __ANDROID__
 		SDL_SetRenderDrawColor(renderer, 100, 100, 100, 0xff);
-		SDL_RenderDrawLine(renderer, 120, 0, 120, 640);
-		SDL_RenderDrawLine(renderer, 360, 0, 360, 640);
+		SDL_RenderDrawLine(renderer, 120, 0, 120, 540);
+		SDL_RenderDrawLine(renderer, 360, 0, 360, 540);
 		SDL_RenderDrawLine(renderer, 120, 320, 360, 320);
 		gSuper->getTextRenderer()->write(20, "Tap up or down to change shape", { 0, 200, 480, 100 }, Center);
 #else
