@@ -26,7 +26,6 @@ Highscores::Highscores()
 	}
 
 	if (!isOK) {
-		cout << "NOT OK" << endl; //DEBUG
 		for (int diff = 0; diff < 3; diff++) {
 			for (int i = 0; i < 5; i++) {
 				scores[diff][i] = 0;
