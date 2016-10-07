@@ -5,14 +5,14 @@
 
 class Tutorial {
 private:
-	Shape* player;
-	Shape* falling;
+    Shape* player;
+    Shape* falling;
 
 public:
-	Tutorial();
-	~Tutorial();
+    Tutorial();
+    ~Tutorial();
 
-	void run();
+    void run();
 };
 
 #endif /* _tutorial_h */

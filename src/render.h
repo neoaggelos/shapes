@@ -5,20 +5,20 @@
 
 class RenderData {
 private:
-	SDL_Window *window;
-	SDL_Renderer *renderer;
-	SDL_Texture* texture;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    SDL_Texture* texture;
 
 public:
-	RenderData(string theme);
+    RenderData(string theme);
 
-	~RenderData();
+    ~RenderData();
 
-	SDL_Window *getWindow();
-	SDL_Renderer *getRenderer();
+    SDL_Window *getWindow();
+    SDL_Renderer *getRenderer();
 
-	SDL_Texture *getTexture();
-	void reloadTexture(string theme);
+    SDL_Texture *getTexture();
+    void reloadTexture(string theme);
 };
 
 #endif /* _render_h */

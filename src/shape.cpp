@@ -12,9 +12,9 @@ Shape::Shape()
 
 Shape::Shape(double spd, int range)
 {
-	lane = random(1, 3);
+    lane = random(1, 3);
     speed = spd;
-	height = 20;
+    height = 20;
 
     type = random(0, range-1);
 }
@@ -22,46 +22,46 @@ Shape::Shape(double spd, int range)
 void
 Shape::move(double var)
 {
-	height += speed * var;
+    height += speed * var;
 }
 
 void
 Shape::render()
 {
-	RenderData *data = gSuper->getRenderData();
-	SDL_Rect srcRect, dstRect;
+    RenderData *data = gSuper->getRenderData();
+    SDL_Rect srcRect, dstRect;
 
 
-	srcRect.x = 80 * type;
-	srcRect.y = 0;
-	srcRect.w = 80;
-	srcRect.h = 80;
+    srcRect.x = 80 * type;
+    srcRect.y = 0;
+    srcRect.w = 80;
+    srcRect.h = 80;
 
-	/* android is weird */
+    /* android is weird */
 #ifdef __ANDROID__
-	srcRect.x++;
-	srcRect.w--;
+    srcRect.x++;
+    srcRect.w--;
 #endif /* __ANDROID__ */
 
-	dstRect.x = 60 + 20 + (lane - 1) * 120;
-	dstRect.y = static_cast<int>(height);
+    dstRect.x = 60 + 20 + (lane - 1) * 120;
+    dstRect.y = static_cast<int>(height);
 
-	dstRect.w = 80;
-	dstRect.h = 80;
+    dstRect.w = 80;
+    dstRect.h = 80;
 
-	SDL_RenderCopy(data->getRenderer(), data->getTexture(), &srcRect, &dstRect);
+    SDL_RenderCopy(data->getRenderer(), data->getTexture(), &srcRect, &dstRect);
 }
 
 bool
 Shape::isFalling()
 {
-	return height <= 460.0;
+    return height <= 460.0;
 }
 
 void
 Shape::setType(int newType)
 {
-	type = newType;
+    type = newType;
 }
 
 int
@@ -95,6 +95,6 @@ Shape::operator==(const Shape & other) const
 double
 Shape::getHeight()
 {
-	return height;
+    return height;
 }
 

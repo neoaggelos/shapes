@@ -6,15 +6,15 @@
 class EnterName {
 private:
 
-	string message;
-	SDLU_Button *ok;
-	bool done;
+    string message;
+    SDLU_Button *ok;
+    bool done;
 
 public:
-	EnterName(string msg);
-	~EnterName();
+    EnterName(string msg);
+    ~EnterName();
 
-	string openDialog();
+    string openDialog();
 };
 
 #endif /* _entername_h */

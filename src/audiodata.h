@@ -3,17 +3,17 @@
 
 class AudioData {
 private:
-	map<string, Mix_Chunk*> sounds;
-	int channel;
-	bool hasAudio;
+    map<string, Mix_Chunk*> sounds;
+    int channel;
+    bool hasAudio;
 
-	void loadWAV(string name);
+    void loadWAV(string name);
 
 public:
-	AudioData();
-	~AudioData();
+    AudioData();
+    ~AudioData();
 
-	void play(string name);
+    void play(string name);
 };
 
 #endif /* _audiodata_h */

@@ -4,44 +4,44 @@
 #include "main.h"
 
 enum GameMode {
-	Normal,
-	Reverse,
-	Fake,
-	Lots,
-	Shaking,
-	NumModes  /* not actual mode, it is here to keep track of the number of modes */
+    Normal,
+    Reverse,
+    Fake,
+    Lots,
+    Shaking,
+    NumModes  /* not actual mode, it is here to keep track of the number of modes */
 };
 
 class Game {
 private:
-	int score;
+    int score;
 
-	list <Shape*> shapes;
+    list <Shape*> shapes;
     Shape* playerShape;
 
     bool playing;
     int lastAddTime;
-	int pauseTime;
-	int startTime;
+    int pauseTime;
+    int startTime;
 
-	GameMode mode;
-	int lastModeChangeTime;
+    GameMode mode;
+    int lastModeChangeTime;
 
     void addShape(Uint32 newTime);
 
 public:
 
-	Game();
+    Game();
 
-	~Game();
+    ~Game();
 
-	bool isPlaying();
+    bool isPlaying();
 
-	void render();
+    void render();
     
-	void pauseMenu();
-	void run();
-	int getScore();
+    void pauseMenu();
+    void run();
+    int getScore();
 };
 
 #endif /* _game_h */

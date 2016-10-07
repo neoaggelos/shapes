@@ -5,23 +5,23 @@
 
 class Shape {
 private:
-	int lane;
-	double speed;
-	double height;
+    int lane;
+    double speed;
+    double height;
 
-	int type;
+    int type;
 
 public:
     Shape();                /* creates player shape */
-	Shape(double speed, int range);       /* creates falling shape */
+    Shape(double speed, int range);       /* creates falling shape */
     
-	~Shape() {}
+    ~Shape() {}
 
-	void move(double var=1);
-	void render();
+    void move(double var=1);
+    void render();
 
-	bool isFalling();
-	double getHeight();
+    bool isFalling();
+    double getHeight();
 
     void setType(int newType);
     int getType() const;

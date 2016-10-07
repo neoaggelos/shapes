@@ -16,7 +16,7 @@ public:
     
     double shapeSpeed();
     Uint32 respawnTime();
-	Uint32 changeModeTime();
+    Uint32 changeModeTime();
     int score();
     int numShapes();
 
