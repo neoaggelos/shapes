@@ -130,11 +130,11 @@ Tutorial::run()
 				}
 			}
 			else if (event.type == SDL_MOUSEBUTTONDOWN) {
-				if (event.button.x > gWidth * 0.75) {
+				if (event.button.x > WIDTH * 0.75) {
 					movedRight = true;
 					moveRight(player);
 				}
-				else if (event.button.x < gWidth * 0.25) {
+				else if (event.button.x < WIDTH * 0.25) {
 					movedLeft = true;
 					moveLeft(player);
 				}
@@ -161,8 +161,8 @@ Tutorial::run()
 
 #ifdef __ANDROID__
 		SDL_SetRenderDrawColor(renderer, 100, 100, 100, 0xff);
-		SDL_RenderDrawLine(renderer, 120, 0, 120, 540);
-		SDL_RenderDrawLine(renderer, 360, 0, 360, 540);
+		SDL_RenderDrawLine(renderer, WIDTH * 0.25, 0, WIDTH * 0.25, 540);
+		SDL_RenderDrawLine(renderer, WIDTH * 0.75, 0, WIDTH * 0.75, 540);
 		gSuper->getTextRenderer()->write(20, "Tap right or left to move", { 0, 200, 480, 100 }, Center);
 #else
 		gSuper->getTextRenderer()->write(20, "Use right or left keys to move", { 0, 200, 480, 100 }, Center);
@@ -199,12 +199,12 @@ Tutorial::run()
 					changeDown(player);
 				}
 			}
-			else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.x > gWidth * 0.25 && event.button.x < gWidth * 0.75) {
-				if (event.button.y < gHeight * 0.5) {
+			else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.x > WIDTH * 0.25 && event.button.x < WIDTH * 0.75) {
+				if (event.button.y < HEIGHT * 0.5) {
 					changedUp = true;
 					changeUp(player);
 				}
-				else if (event.button.y > gHeight * 0.5) {
+				else if (event.button.y > HEIGHT * 0.5) {
 					changedDown = true;
 					changeDown(player);
 				}
@@ -236,7 +236,7 @@ Tutorial::run()
 		SDL_RenderDrawLine(renderer, 120, 320, 360, 320);
 		gSuper->getTextRenderer()->write(20, "Tap up or down to change shape", { 0, 200, 480, 100 }, Center);
 #else
-		gSuper->getTextRenderer()->write(20, "Use up or down keys to move", { 0, 200, 480, 100 }, Center);
+		gSuper->getTextRenderer()->write(20, "Use up or down keys to change shape", { 0, 200, 480, 100 }, Center);
 #endif /* __ANDROID__ */
 		SDL_RenderPresent(renderer);
 	}
@@ -271,10 +271,10 @@ Tutorial::run()
 				else if (event.key.keysym.scancode == gSuper->getSettings()->moveRightKey) moveRight(player);
 			}
 			else if (event.type == SDL_MOUSEBUTTONDOWN) {
-				if (event.button.x < gWidth * 0.25) moveLeft(player);
-				else if (event.button.x > gWidth * 0.75) moveRight(player);
-				else if (event.button.y < gHeight * 0.5) changeUp(player);
-				else if (event.button.y > gHeight * 0.5) changeDown(player);
+				if (event.button.x < WIDTH * 0.25) moveLeft(player);
+				else if (event.button.x > WIDTH * 0.75) moveRight(player);
+				else if (event.button.y < HEIGHT * 0.5) changeUp(player);
+				else if (event.button.y > HEIGHT * 0.5) changeDown(player);
 			}
 		}
 

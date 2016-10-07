@@ -202,11 +202,11 @@ Game::run()
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				if (event.button.x > gWidth * 0.75)
+				if (event.button.x > WIDTH * 0.75)
 					mode != Reverse ? moveRight(playerShape) : moveLeft(playerShape);
-				else if (event.button.x < gWidth * 0.25)
+				else if (event.button.x < WIDTH * 0.25)
 					mode != Reverse ? moveLeft(playerShape) : moveRight(playerShape);
-				else if (event.button.y > gHeight * 0.5)
+				else if (event.button.y > HEIGHT * 0.5)
 					mode != Reverse ? changeDown(playerShape) : changeUp(playerShape);
 				else
 					mode != Reverse ? changeUp(playerShape) : changeDown(playerShape);

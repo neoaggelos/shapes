@@ -120,10 +120,13 @@ RenderData::RenderData(string theme)
 	int r = SDL_InitSubSystem(SDL_INIT_VIDEO);
 	SDL_CHECK(r != -1, "Could not initialize SDL");
 
+	window = SDL_CreateWindow(wintitle, winx, winy, WIDTH * 1.5, HEIGHT * 1.5, winflags);
+	SDL_CHECK(window != NULL, "Could not create window");
+    /*
     gWidth = WIDTH;
     gHeight = HEIGHT;
-	window = SDL_CreateWindow(wintitle, winx, winy, WIDTH, HEIGHT, winflags);
-	SDL_CHECK(window != NULL, "Could not create window");
+    */
+    SDL_GetWindowSize(window, &gWidth, &gHeight);
 
 	renderer = SDL_CreateRenderer(window, rnddriver, rndflags);
 	SDL_CHECK(renderer != NULL, "Could not create renderer");
