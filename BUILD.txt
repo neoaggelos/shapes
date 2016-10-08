@@ -1,7 +1,7 @@
 Requirements
 --------------
 
-* SDL2 (version 2.0.4 or newer)
+* SDL2 (version 2.0.5 or newer)
 * SDL2_ttf (any version)
 * SDL2_mixer (any version)
 * SDLU (version 2.2 or newer)
