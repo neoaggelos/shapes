@@ -121,13 +121,13 @@ Highscores::openMenu(int currentdiff, int currentindex)
 
     RenderData* data = gSuper->getRenderData();
 
-    again_button = CreateButton("again", "I can beat that", { 140, 480, 200, 40 }, 20, callback, &action);
-    back_button = CreateButton("back", "Back To Menu", { 140, 540, 200, 40 }, 20, callback, &action, SDL_SCANCODE_AC_BACK);
-    right_button = CreateButton("right", ">", { 350, 100, 30, 30 }, 20, callback, &diff, SDL_SCANCODE_RIGHT);
-    left_button = CreateButton("left", "<", { 100, 100, 30, 30 }, 20, callback, &diff, SDL_SCANCODE_LEFT);
+    again_button = CreateButton("again", "I can beat that", SDL_RECT(140, 480, 200, 40), 20, callback, &action);
+    back_button = CreateButton("back", "Back To Menu", SDL_RECT(140, 540, 200, 40), 20, callback, &action, SDL_SCANCODE_AC_BACK);
+    right_button = CreateButton("right", ">", SDL_RECT(350, 100, 30, 30), 20, callback, &diff, SDL_SCANCODE_RIGHT);
+    left_button = CreateButton("left", "<", SDL_RECT(100, 100, 30, 30), 20, callback, &diff, SDL_SCANCODE_LEFT);
     
-    ((SDLU_Styles*)left_button->content)->fill_color = { 0, 0, 0, 0xff };
-    ((SDLU_Styles*)right_button->content)->fill_color = { 0, 0, 0, 0xff };
+    ((SDLU_Styles*)left_button->content)->fill_color = SDL_COLOR(0, 0, 0, 0xff);
+    ((SDLU_Styles*)right_button->content)->fill_color = SDL_COLOR(0, 0, 0, 0xff);
 
     while (action == None) {
         if (SDL_PollEvent(&event)) {
@@ -144,10 +144,10 @@ Highscores::openMenu(int currentdiff, int currentindex)
         SDLU_RenderButton(left_button);
 
         SDL_SetRenderDrawColor(data->getRenderer(), 0xff, 0xff, 0xff, 0xff);
-        gSuper->getTextRenderer()->write(20, "HIGH SCORES", { 0, 20, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(20, "HIGH SCORES", SDL_RECT(0, 20, 480, 100), Center);
         SDL_RenderDrawLine(data->getRenderer(), 140, 60, 340, 60);
 
-        gSuper->getTextRenderer()->write(20, difficultyName(diff), { 0, 100, 480, 30 }, Center, Center);
+        gSuper->getTextRenderer()->write(20, difficultyName(diff), SDL_RECT(0, 100, 480, 30), Center, Center);
 
         SDL_RenderDrawLine(data->getRenderer(), 130, 100, 350, 100);
         SDL_RenderDrawLine(data->getRenderer(), 130, 129, 350, 129);
@@ -165,8 +165,8 @@ Highscores::openMenu(int currentdiff, int currentindex)
             }
 
             gSuper->getTextRenderer()->write(20, int_to_string(i + 1), 100, ypos);
-            gSuper->getTextRenderer()->write(20, names[diff][i], { 0, ypos, 480, 100 }, Center);
-            gSuper->getTextRenderer()->write(20, int_to_string(scores[diff][i]), { 0, ypos, 380, 100 }, Right);
+            gSuper->getTextRenderer()->write(20, names[diff][i], SDL_RECT(0, ypos, 480, 100), Center);
+            gSuper->getTextRenderer()->write(20, int_to_string(scores[diff][i]), SDL_RECT(0, ypos, 380, 100), Right);
 
             ypos += 60;
         }

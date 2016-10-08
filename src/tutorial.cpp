@@ -93,7 +93,7 @@ Tutorial::run()
     SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
     SDL_RenderDrawLine(renderer, 0, 540, 480, 540);
     player->render();
-    gSuper->getTextRenderer()->write(20, "Welcome to Shapes", { 0, 200, 480, 100 }, Center);
+    gSuper->getTextRenderer()->write(20, "Welcome to Shapes", SDL_RECT(0, 200, 480, 100), Center);
 
     SDL_RenderPresent(renderer);
     waitInput();
@@ -105,8 +105,8 @@ Tutorial::run()
     SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
     SDL_RenderDrawLine(renderer, 0, 540, 480, 540);
     player->render();
-    gSuper->getTextRenderer()->write(20, "Your goal is to catch", { 0, 200, 480, 100 }, Center);
-    gSuper->getTextRenderer()->write(20, "the shapes falling from above", { 0, 230, 480, 100 }, Center);
+    gSuper->getTextRenderer()->write(20, "Your goal is to catch", SDL_RECT(0, 200, 480, 100), Center);
+    gSuper->getTextRenderer()->write(20, "the shapes falling from above", SDL_RECT(0, 230, 480, 100), Center);
 
     SDL_RenderPresent(renderer);
     waitInput();
@@ -129,12 +129,12 @@ Tutorial::run()
                     moveLeft(player);
                 }
             }
-            else if (event.type == SDL_MOUSEBUTTONDOWN) {
-                if (event.button.x > WIDTH * 0.75) {
+            else if (event.type == SDL_FINGERDOWN) {
+                if (event.tfinger.x > 0.75) {
                     movedRight = true;
                     moveRight(player);
                 }
-                else if (event.button.x < WIDTH * 0.25) {
+                else if (event.tfinger.x < 0.25) {
                     movedLeft = true;
                     moveLeft(player);
                 }
@@ -149,8 +149,8 @@ Tutorial::run()
         player->render();
 
         for (int i = 0; i < 5; i++) {
-            SDL_Rect src = { 80 * i, 0, 80, 80 };
-            SDL_Rect dest = { 480 - 35, 510 - i * 30, 30, 30 };
+            SDL_Rect src = SDL_RECT(80 * i, 0, 80, 80);
+            SDL_Rect dest = SDL_RECT(480 - 35, 510 - i * 30, 30, 30);
 
             SDL_RenderCopy(renderer, data->getTexture(), &src, &dest);
             if (player->getType() == i) {
@@ -163,9 +163,9 @@ Tutorial::run()
         SDL_SetRenderDrawColor(renderer, 100, 100, 100, 0xff);
         SDL_RenderDrawLine(renderer, WIDTH * 0.25, 0, WIDTH * 0.25, 540);
         SDL_RenderDrawLine(renderer, WIDTH * 0.75, 0, WIDTH * 0.75, 540);
-        gSuper->getTextRenderer()->write(20, "Tap right or left to move", { 0, 200, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(20, "Tap right or left to move", SDL_RECT(0, 200, 480, 100), Center);
 #else
-        gSuper->getTextRenderer()->write(20, "Use right or left keys to move", { 0, 200, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(20, "Use right or left keys to move", SDL_RECT(0, 200, 480, 100), Center);
 #endif /* __ANDROID__ */
         SDL_RenderPresent(renderer);
     }
@@ -177,7 +177,7 @@ Tutorial::run()
     SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
     SDL_RenderDrawLine(renderer, 0, 540, 480, 540);
     player->render();
-    gSuper->getTextRenderer()->write(20, "Nice job!", { 0, 200, 480, 100 }, Center);
+    gSuper->getTextRenderer()->write(20, "Nice job!", SDL_RECT(0, 200, 480, 100), Center);
 
     SDL_RenderPresent(renderer);
     waitInput();
@@ -199,12 +199,12 @@ Tutorial::run()
                     changeDown(player);
                 }
             }
-            else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.x > WIDTH * 0.25 && event.button.x < WIDTH * 0.75) {
-                if (event.button.y < HEIGHT * 0.5) {
+            else if (event.type == SDL_FINGERDOWN && event.tfinger.x > 0.25 && event.tfinger.x < 0.75) {
+                if (event.tfinger.y < 0.5) {
                     changedUp = true;
                     changeUp(player);
                 }
-                else if (event.button.y > HEIGHT * 0.5) {
+                else if (event.tfinger.y > 0.5) {
                     changedDown = true;
                     changeDown(player);
                 }
@@ -219,8 +219,8 @@ Tutorial::run()
         player->render();
 
         for (int i = 0; i < 5; i++) {
-            SDL_Rect src = { 80 * i, 0, 80, 80 };
-            SDL_Rect dest = { 480 - 35, 510 - i * 30, 30, 30 };
+            SDL_Rect src = SDL_RECT(80 * i, 0, 80, 80);
+            SDL_Rect dest = SDL_RECT(480 - 35, 510 - i * 30, 30, 30);
 
             SDL_RenderCopy(renderer, data->getTexture(), &src, &dest);
             if (player->getType() == i) {
@@ -233,10 +233,10 @@ Tutorial::run()
         SDL_SetRenderDrawColor(renderer, 100, 100, 100, 0xff);
         SDL_RenderDrawLine(renderer, 120, 0, 120, 540);
         SDL_RenderDrawLine(renderer, 360, 0, 360, 540);
-        SDL_RenderDrawLine(renderer, 120, 320, 360, 320);
-        gSuper->getTextRenderer()->write(20, "Tap up or down to change shape", { 0, 200, 480, 100 }, Center);
+        SDL_RenderDrawLine(renderer, 120, HEIGHT * 0.5, 360, HEIGHT * 0.5);
+        gSuper->getTextRenderer()->write(20, "Tap up or down to change shape", SDL_RECT(0, 200, 480, 100), Center);
 #else
-        gSuper->getTextRenderer()->write(20, "Use up or down keys to change shape", { 0, 200, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(20, "Use up or down keys to change shape", SDL_RECT(0, 200, 480, 100), Center);
 #endif /* __ANDROID__ */
         SDL_RenderPresent(renderer);
     }
@@ -248,9 +248,9 @@ Tutorial::run()
     SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
     SDL_RenderDrawLine(renderer, 0, 540, 480, 540);
     player->render();
-    gSuper->getTextRenderer()->write(20, "Nice job!", { 0, 200, 480, 100 }, Center);
-    gSuper->getTextRenderer()->write(20, "Now try to catch the shape", { 0, 230, 480, 100 }, Center);
-    gSuper->getTextRenderer()->write(20, "using what you learned", { 0, 260, 480, 100 }, Center);
+    gSuper->getTextRenderer()->write(20, "Nice job!", SDL_RECT(0, 200, 480, 100), Center);
+    gSuper->getTextRenderer()->write(20, "Now try to catch the shape", SDL_RECT(0, 230, 480, 100), Center);
+    gSuper->getTextRenderer()->write(20, "using what you learned", SDL_RECT(0, 260, 480, 100), Center);
 
     SDL_RenderPresent(renderer);
     waitInput();
@@ -270,11 +270,11 @@ Tutorial::run()
                 else if (event.key.keysym.scancode == gSuper->getSettings()->moveLeftKey) moveLeft(player);
                 else if (event.key.keysym.scancode == gSuper->getSettings()->moveRightKey) moveRight(player);
             }
-            else if (event.type == SDL_MOUSEBUTTONDOWN) {
-                if (event.button.x < WIDTH * 0.25) moveLeft(player);
-                else if (event.button.x > WIDTH * 0.75) moveRight(player);
-                else if (event.button.y < HEIGHT * 0.5) changeUp(player);
-                else if (event.button.y > HEIGHT * 0.5) changeDown(player);
+            else if (event.type == SDL_FINGERDOWN) {
+                if (event.tfinger.x < 0.25) moveLeft(player);
+                else if (event.tfinger.x > 0.75) moveRight(player);
+                else if (event.tfinger.y < 0.5) changeUp(player);
+                else if (event.tfinger.y > 0.5) changeDown(player);
             }
         }
 
@@ -287,8 +287,8 @@ Tutorial::run()
         falling->render();
 
         for (int i = 0; i < 5; i++) {
-            SDL_Rect src = { 80 * i, 0, 80, 80 };
-            SDL_Rect dest = { 480 - 35, 510 - i * 30, 30, 30 };
+            SDL_Rect src = SDL_RECT(80 * i, 0, 80, 80);
+            SDL_Rect dest = SDL_RECT(480 - 35, 510 - i * 30, 30, 30);
 
             SDL_RenderCopy(renderer, data->getTexture(), &src, &dest);
             if (player->getType() == i) {
@@ -321,9 +321,9 @@ Tutorial::run()
     SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
     SDL_RenderDrawLine(renderer, 0, 540, 480, 540);
     player->render();
-    gSuper->getTextRenderer()->write(20, "Congratulations!", { 0, 200, 480, 100 }, Center);
-    gSuper->getTextRenderer()->write(20, "You have successfully completed the tutorial!", { 0, 230, 480, 100 }, Center);
-    gSuper->getTextRenderer()->write(20, "Remember to have fun!", { 0, 260, 480, 100 }, Center);
+    gSuper->getTextRenderer()->write(20, "Congratulations!", SDL_RECT(0, 200, 480, 100), Center);
+    gSuper->getTextRenderer()->write(20, "You have successfully completed the tutorial!", SDL_RECT(0, 230, 480, 100), Center);
+    gSuper->getTextRenderer()->write(20, "Remember to have fun!", SDL_RECT(0, 260, 480, 100), Center);
 
     SDL_RenderPresent(renderer);
     waitInput();

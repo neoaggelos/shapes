@@ -161,39 +161,39 @@ Settings::openMenu()
     SettingsMenuAction action;
 
 #ifndef __ANDROID__
-    rightButton = CreateButton("right", "Change", { 350, 370, 85, 25 }, 15, callback, &action);
-    leftButton = CreateButton("left", "Change", { 350, 410, 85, 25 }, 15, callback, &action);
-    shapeUpButton = CreateButton("up", "Change", { 350, 450, 85, 25 }, 15, callback, &action);
-    shapeDownButton = CreateButton("down", "Change", { 350, 490, 85, 25 }, 15, callback, &action);
+    rightButton = CreateButton("right", "Change", SDL_RECT(350, 370, 85, 25), 15, callback, &action);
+    leftButton = CreateButton("left", "Change", SDL_RECT(350, 410, 85, 25), 15, callback, &action);
+    shapeUpButton = CreateButton("up", "Change", SDL_RECT(350, 450, 85, 25), 15, callback, &action);
+    shapeDownButton = CreateButton("down", "Change", SDL_RECT(350, 490, 85, 25), 15, callback, &action);
 #endif /* __ANDROID__ */
 
-    resetButton = CreateButton("reset", "Reset To Defaults", { 40, 560, 180, 35 }, 18, callback, &action);
-    backButton = CreateButton("back", "Back To Menu", { 260, 560, 180, 35 }, 18, callback, &action, SDL_SCANCODE_AC_BACK);
+    resetButton = CreateButton("reset", "Reset To Defaults", SDL_RECT(40, 560, 180, 35), 18, callback, &action);
+    backButton = CreateButton("back", "Back To Menu", SDL_RECT(260, 560, 180, 35), 18, callback, &action, SDL_SCANCODE_AC_BACK);
 
     const char* diffs[] = { "Easy", "Medium", "Hard" };
     for (int i = 0; i < 3; i++) {
         int margin = 5;
         int width = (int)((288 - 2 * margin) / 3.0);
-        diffButtons[i] = CreateButton("difficulty", diffs[i], { 150 + i * (width+5), 130, width, 25 }, 15, combo_callback, NULL);
+        diffButtons[i] = CreateButton("difficulty", diffs[i], SDL_RECT(150 + i * (width+5), 130, width, 25), 15, combo_callback, NULL);
     }
 
     const char* themes[] = { "Red", "Blue", "Cats", "Old" };
     for (int i = 0; i < 4; i++) {
         int margin = 5;
         int width = (int)((288 - 3 * margin) / 4.0);
-        themeButtons[i] = CreateButton("theme", themes[i], { 150 + i * (width + 5), 170, width, 25 }, 15, combo_callback, NULL);
+        themeButtons[i] = CreateButton("theme", themes[i], SDL_RECT(150 + i * (width + 5), 170, width, 25), 15, combo_callback, NULL);
     }
 
     const char* onoff[] = { "On", "Off" };
     for (int i = 0; i < 2; i++) {
         int margin = 5;
         int width = (int)((288 - 1 * margin) / 2.0);
-        soundButtons[i] = CreateButton("sound", onoff[i], { 150 + i * (width + 5), 210, width, 25 }, 15, combo_callback, NULL);
+        soundButtons[i] = CreateButton("sound", onoff[i], SDL_RECT(150 + i * (width + 5), 210, width, 25), 15, combo_callback, NULL);
     }
     for (int i = 0; i < 2; i++) {
         int margin = 5;
         int width = (int)((288 - 1 * margin) / 2.0);
-        tutorialButtons[i] = CreateButton("tutorial", onoff[i], { 150 + i * (width + 5), 250, width, 25 }, 15, combo_callback, NULL);
+        tutorialButtons[i] = CreateButton("tutorial", onoff[i], SDL_RECT(150 + i * (width + 5), 250, width, 25), 15, combo_callback, NULL);
     }
     
     SDL_Event event;
@@ -248,7 +248,7 @@ Settings::openMenu()
         SDL_RenderClear(target);
 
         SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
-        gSuper->getTextRenderer()->write(20, "SETTINGS", { 0, 15, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(20, "SETTINGS", SDL_RECT(0, 15, 480, 100), Center);
         gSuper->getTextRenderer()->write(20, "General", 5, 70);
         gSuper->getTextRenderer()->write(20, "Controls", 5, 310);
 
@@ -265,37 +265,37 @@ Settings::openMenu()
 
         for (int i = 0; i < 3; i++) {
             if (i == gSuper->getSettings()->difficulty - 1)
-                ((SDLU_Styles*)diffButtons[i]->content)->fill_color = { 30, 30, 30, 0xff };
+                ((SDLU_Styles*)diffButtons[i]->content)->fill_color = SDL_COLOR(30, 30, 30, 0xff);
             else
-                ((SDLU_Styles*)diffButtons[i]->content)->fill_color = { 100, 100, 100, 0xff };
+                ((SDLU_Styles*)diffButtons[i]->content)->fill_color = SDL_COLOR(100, 100, 100, 0xff);
 
             SDLU_RenderButton(diffButtons[i]);
 
         }
 
         for (int i = 0; i < 4; i++) {
-            if (themes[i] == gSuper->getSettings()->theme)
-                ((SDLU_Styles*)themeButtons[i]->content)->fill_color = { 30, 30, 30, 0xff };
+			if (themes[i] == gSuper->getSettings()->theme)
+				((SDLU_Styles*)themeButtons[i]->content)->fill_color = SDL_COLOR(30, 30, 30, 0xff);
             else
-                ((SDLU_Styles*)themeButtons[i]->content)->fill_color = { 100, 100, 100, 0xff };
+                ((SDLU_Styles*)themeButtons[i]->content)->fill_color = SDL_COLOR(100, 100, 100, 0xff);
 
             SDLU_RenderButton(themeButtons[i]);
         }
         
         for (int i = 0; i < 2; i++) {
             if (i == ! gSuper->getSettings()->soundEnabled)
-                ((SDLU_Styles*)soundButtons[i]->content)->fill_color = { 30, 30, 30, 0xff };
+                ((SDLU_Styles*)soundButtons[i]->content)->fill_color = SDL_COLOR(30, 30, 30, 0xff);
             else
-                ((SDLU_Styles*)soundButtons[i]->content)->fill_color = { 100, 100, 100, 0xff };
+                ((SDLU_Styles*)soundButtons[i]->content)->fill_color = SDL_COLOR(100, 100, 100, 0xff);
 
             SDLU_RenderButton(soundButtons[i]);
         }
 
         for (int i = 0; i < 2; i++) {
             if (i == !gSuper->getSettings()->firstRun)
-                ((SDLU_Styles*)tutorialButtons[i]->content)->fill_color = { 30, 30, 30, 0xff };
+                ((SDLU_Styles*)tutorialButtons[i]->content)->fill_color = SDL_COLOR(30, 30, 30, 0xff);
             else
-                ((SDLU_Styles*)tutorialButtons[i]->content)->fill_color = { 100, 100, 100, 0xff };
+                ((SDLU_Styles*)tutorialButtons[i]->content)->fill_color = SDL_COLOR(100, 100, 100, 0xff);
 
             SDLU_RenderButton(tutorialButtons[i]);
         }
@@ -303,20 +303,20 @@ Settings::openMenu()
 
 #ifndef __ANDROID__
         gSuper->getTextRenderer()->write(18, "Move Right", 15, 370);
-        gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->moveRightKey), { 0, 370, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->moveRightKey), SDL_RECT(0, 370, 480, 100), Center);
         gSuper->getTextRenderer()->write(18, "Move Left", 15, 410);
-        gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->moveLeftKey), { 0, 410, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->moveLeftKey), SDL_RECT(0, 410, 480, 100), Center);
         gSuper->getTextRenderer()->write(18, "Change Shape Up", 15, 450);
-        gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->changeShapeUpKey), { 0, 450, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->changeShapeUpKey), SDL_RECT(0, 450, 480, 100), Center);
         gSuper->getTextRenderer()->write(18, "Change Shape Down", 15, 490);
-        gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->changeShapeDownKey), { 0, 490, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(18, SDL_GetScancodeName(s->changeShapeDownKey), SDL_RECT(0, 490, 480, 100), Center);
 #else /* if __ANDROID__ */
 
-        const SDL_Rect screenRect = { 30, 350, 120, 160 };
-        const SDL_Rect leftRect = { 30, 350, 30, 160 };
-        const SDL_Rect rightRect = { 120, 350, 30, 160 };
-        const SDL_Rect upRect = { 60, 350, 60, 80 };
-        const SDL_Rect downRect = { 60, 430, 60, 80 };
+        const SDL_Rect screenRect = SDL_RECT(30, 350, 120, 160);
+        const SDL_Rect leftRect = SDL_RECT(30, 350, 30, 160);
+        const SDL_Rect rightRect = SDL_RECT(120, 350, 30, 160);
+        const SDL_Rect upRect = SDL_RECT(60, 350, 60, 80);
+        const SDL_Rect downRect = SDL_RECT(60, 430, 60, 80);
 
         SDL_SetRenderDrawColor(target, 0xff, 0xff, 0xff, 0xff);
         SDL_RenderDrawRect(target, &screenRect);
@@ -337,10 +337,10 @@ Settings::openMenu()
         gSuper->getTextRenderer()->write(18, "3:", 200, 440);
         gSuper->getTextRenderer()->write(18, "4:", 200, 480);
 
-        gSuper->getTextRenderer()->write(18, "Move Left", { 200, 360, 250, 100 }, Center);
-        gSuper->getTextRenderer()->write(18, "Move Right", { 200, 400, 250, 100 }, Center);
-        gSuper->getTextRenderer()->write(18, "Change Shape Up", { 200, 440, 250, 100 }, Center);
-        gSuper->getTextRenderer()->write(18, "Change Shape Down", { 200, 480, 250, 100 }, Center);
+        gSuper->getTextRenderer()->write(18, "Move Left", SDL_RECT(200, 360, 250, 100), Center);
+        gSuper->getTextRenderer()->write(18, "Move Right", SDL_RECT(200, 400, 250, 100), Center);
+        gSuper->getTextRenderer()->write(18, "Change Shape Up", SDL_RECT(200, 440, 250, 100), Center);
+        gSuper->getTextRenderer()->write(18, "Change Shape Down", SDL_RECT(200, 480, 250, 100), Center);
 #endif
 
 #ifndef __ANDROID__

@@ -55,32 +55,6 @@ int fix_mouse_coordinates(void *_t, SDL_Event *event)
         badIdea = true;
     }
 
-#ifndef __ANDROID__
-    if (event->type == SDL_MOUSEBUTTONDOWN) {
-        event->button.x -= t->vp.x;
-        event->button.y -= t->vp.y;
-    }
-    else if (event->type == SDL_MOUSEBUTTONUP) {
-        event->button.x -= t->vp.x;
-        event->button.y -= t->vp.y;
-    }
-    else if (event->type == SDL_MOUSEMOTION) {
-        event->motion.x -= t->vp.x;
-        event->motion.y -= t->vp.y;
-    }
-    if (event->type == SDL_MOUSEBUTTONDOWN) {
-        event->button.x /= t->sc;
-        event->button.y /= t->sc;
-    }
-    else if (event->type == SDL_MOUSEBUTTONUP) {
-        event->button.x /= t->sc;
-        event->button.y /= t->sc;
-    }
-    else if (event->type == SDL_MOUSEMOTION) {
-        event->motion.x /= t->sc;
-        event->motion.y /= t->sc;
-    }
-#else
     if (event->type == SDL_MOUSEBUTTONDOWN) {
         event->button.x -= 2 * t->vp.x;
         event->button.y -= 2 * t->vp.y;
@@ -105,7 +79,6 @@ int fix_mouse_coordinates(void *_t, SDL_Event *event)
             event->motion.y -= t->vp.y;
         }
     }
-#endif
 
     return 1;
 }
@@ -120,12 +93,9 @@ RenderData::RenderData(string theme)
     int r = SDL_InitSubSystem(SDL_INIT_VIDEO);
     SDL_CHECK(r != -1, "Could not initialize SDL");
 
-    window = SDL_CreateWindow(wintitle, winx, winy, WIDTH * 1.5, HEIGHT * 1.5, winflags);
+    window = SDL_CreateWindow(wintitle, winx, winy, WIDTH + 200, HEIGHT+150, winflags);
     SDL_CHECK(window != NULL, "Could not create window");
-    /*
-    gWidth = WIDTH;
-    gHeight = HEIGHT;
-    */
+
     SDL_GetWindowSize(window, &gWidth, &gHeight);
 
     renderer = SDL_CreateRenderer(window, rnddriver, rndflags);
@@ -159,8 +129,10 @@ RenderData::RenderData(string theme)
         SDL_RenderSetViewport(renderer, &(t->vp));
         SDL_RenderSetScale(renderer, t->sc, t->sc);
 
+#ifdef __ANDROID__
         SDL_SetEventFilter(fix_mouse_coordinates, t);
-    }
+#endif
+	}
 
     texture = NULL;
 }

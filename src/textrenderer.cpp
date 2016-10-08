@@ -47,7 +47,7 @@ TextRenderer::getFont(int size)
 void
 TextRenderer::write(int size, string text, int x, int y)
 {
-    return write(size, text, { x, y, 0, 0});
+    return write(size, text, SDL_RECT(x, y, 0, 0));
 }
 
 void

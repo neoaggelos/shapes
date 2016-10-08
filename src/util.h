@@ -26,5 +26,8 @@ SDLU_Button * CreateButton(
 SDLU_ComboBox * CreateComboBox(string items[], int n, string active, int x, int y, int w = -1, int h = -1, int fontsize = 15);
 SDLU_ComboBox * CreateComboBox(string items[], int n, int active, int x, int y, int w = -1, int h = -1, int fontsize = 15);
 
+SDL_Rect SDL_RECT(int x, int y, int w, int h);
+SDL_Color SDL_COLOR(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
 
 #endif /* _util_h */

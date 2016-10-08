@@ -91,10 +91,10 @@ Super::mainMenu()
     SDL_Event event;
     SDLU_Button *start_button, *settings_button, *scores_button, *exit_button;
 
-    start_button = CreateButton("start", gSuper->getSettings()->firstRun ? "Tutorial" : "New Game", { 140, 270, 200, 40 }, 20, callback, &action);
-    scores_button = CreateButton("scores", "High Scores", { 140, 350, 200, 40 }, 20, callback, &action);
-    settings_button = CreateButton("settings", "Settings", { 140, 430, 200, 40 }, 20, callback, &action);
-    exit_button = CreateButton("exit", "Exit", { 140, 510, 200, 40 }, 20, callback, &action);
+    start_button = CreateButton("start", gSuper->getSettings()->firstRun ? "Tutorial" : "New Game", SDL_RECT(140, 270, 200, 40), 20, callback, &action);
+    scores_button = CreateButton("scores", "High Scores", SDL_RECT(140, 350, 200, 40), 20, callback, &action);
+    settings_button = CreateButton("settings", "Settings", SDL_RECT(140, 430, 200, 40), 20, callback, &action);
+    exit_button = CreateButton("exit", "Exit", SDL_RECT(140, 510, 200, 40), 20, callback, &action);
 
     while (action == None) {
         if (SDL_PollEvent(&event)) {
@@ -112,8 +112,8 @@ Super::mainMenu()
         SDLU_RenderButton(exit_button);
 
         SDL_SetRenderDrawColor(render->getRenderer(), 0xff, 0xff, 0xff, 0xff);
-        textrenderer->write(14, "Shapes v" VERSION " Written by Aggelos Kolaitis", { 0, 0, 480, 640 }, Right, Bottom);
-        textrenderer->write(42, "SHAPES", { 0, 100, 480, 100 }, Center);
+        textrenderer->write(14, "Shapes v" VERSION " Written by Aggelos Kolaitis", SDL_RECT(0, 0, 480, 640), Right, Bottom);
+        textrenderer->write(42, "SHAPES", SDL_RECT(0, 100, 480, 100), Center);
         SDL_RenderPresent(render->getRenderer());
 
         SDL_Delay(1);

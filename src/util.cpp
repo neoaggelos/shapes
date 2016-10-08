@@ -163,3 +163,26 @@ CreateComboBox(string items[], int n, int active, int x, int y, int w, int h, in
     return ret;
 }
 
+
+SDL_Rect
+SDL_RECT(int x, int y, int w, int h)
+{
+	SDL_Rect r;
+	r.x = x;
+	r.y = y;
+	r.w = w;
+	r.h = h;
+	return r;
+}
+
+
+SDL_Color
+SDL_COLOR(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+	SDL_Color c;
+	c.r = r;
+	c.g = g;
+	c.b = b;
+	c.a = a;
+	return c;
+}

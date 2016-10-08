@@ -111,14 +111,14 @@ Game::render()
     SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
     double time = d.changeModeTime() /1000.0 - (pauseTime ? pauseTime - lastModeChangeTime : (SDL_GetTicks() - lastModeChangeTime)) / 1000.0;
     time = static_cast<int>(time * 10) / 10.0; /* keep one digit after dot */
-    gSuper->getTextRenderer()->write(20, double_to_string(time), { 0, 5, 475, 100 }, Right);
+    gSuper->getTextRenderer()->write(20, double_to_string(time), SDL_RECT(0, 5, 475, 100), Right);
     
     if (mode != Normal)
-        gSuper->getTextRenderer()->write(20, getDescription(mode), { 0, 30, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(20, getDescription(mode), SDL_RECT(0, 30, 480, 100), Center);
 
     SDL_SetRenderDrawColor(data->getRenderer(), 0x00, 0xaa, 0xaa, 0xff);
     gSuper->getTextRenderer()->write(20, "Score: " + int_to_string(getScore()), 0, 5);
-    gSuper->getTextRenderer()->write(20, "High Score: " + int_to_string(h->getScore(gSuper->getSettings()->difficulty, 0)), { 0, 5, 480, 100 }, Center);
+    gSuper->getTextRenderer()->write(20, "High Score: " + int_to_string(h->getScore(gSuper->getSettings()->difficulty, 0)), SDL_RECT(0, 5, 480, 100), Center);
     
     playerShape->render();
 
@@ -201,12 +201,12 @@ Game::run()
                     pauseMenu();
                 }
                 break;
-            case SDL_MOUSEBUTTONDOWN:
-                if (event.button.x > WIDTH * 0.75)
+            case SDL_FINGERDOWN:
+                if (event.tfinger.x > 0.75)
                     mode != Reverse ? moveRight(playerShape) : moveLeft(playerShape);
-                else if (event.button.x < WIDTH * 0.25)
+                else if (event.tfinger.x < 0.25)
                     mode != Reverse ? moveLeft(playerShape) : moveRight(playerShape);
-                else if (event.button.y > HEIGHT * 0.5)
+                else if (event.tfinger.y > 0.5)
                     mode != Reverse ? changeDown(playerShape) : changeUp(playerShape);
                 else
                     mode != Reverse ? changeUp(playerShape) : changeDown(playerShape);
@@ -312,8 +312,8 @@ Game::pauseMenu()
     RenderData *data = gSuper->getRenderData();
     PauseMenuAction action = Idle;
 
-    resume_button = CreateButton("resume", "Resume Game", { 140, 270, 200, 45 }, 20, callback, &action, SDL_SCANCODE_ESCAPE);
-    forfeit_button = CreateButton("forfeit", "Forfeit Game", { 140, 370, 200, 45 }, 20, callback, &action);
+    resume_button = CreateButton("resume", "Resume Game", SDL_RECT(140, 270, 200, 45), 20, callback, &action, SDL_SCANCODE_ESCAPE);
+    forfeit_button = CreateButton("forfeit", "Forfeit Game", SDL_RECT(140, 370, 200, 45), 20, callback, &action);
 
     while (action == Idle) {
         if (SDL_PollEvent(&event)) {
@@ -327,7 +327,7 @@ Game::pauseMenu()
         this->render();
 
         SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
-        gSuper->getTextRenderer()->write(42, "Game Paused", { 0, 130, 480, 100 }, Center);
+        gSuper->getTextRenderer()->write(42, "Game Paused", SDL_RECT(0, 130, 480, 100), Center);
 
         SDLU_RenderButton(resume_button);
         SDLU_RenderButton(forfeit_button);
@@ -349,7 +349,7 @@ Game::pauseMenu()
 
             SDL_SetRenderDrawColor(data->getRenderer(), 0xaa, 0xaa, 0xaa, 0xff);
 
-            gSuper->getTextRenderer()->write(42, "Resuming in " + int_to_string(3 - i) + "...", { 0,0,480,640 }, Center, Center);
+			gSuper->getTextRenderer()->write(42, "Resuming in " + int_to_string(3 - i) + "...", SDL_RECT(0, 0, 480, 640), Center, Center);
 
             SDL_RenderPresent(data->getRenderer());
 
